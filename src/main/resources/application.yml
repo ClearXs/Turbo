@@ -1,0 +1,81 @@
+server:
+  port: 8600
+
+spring:
+  profiles:
+    active: dev
+  security:
+    oauth2:
+      authorizationserver:
+        endpoint:
+          # 授权码
+          authorization-uri: /oauth2/authorize
+          # token
+          token-uri: /oauth2/token
+          # revoke
+          token-revocation-uri: /oauth2/revoke
+          oidc:
+            client-registration-uri: /connect/register
+            logout-uri: /connect/logout
+            user-info-uri: /userinfo
+# mybatis 配置
+mybatis-plus:
+  # mybatis mapper路径
+  mapper-locations: classpath:cc/allio/uno/turbo/**/*Mapper.xml
+  type-aliases-package: cc.allio.uno.turbo.**.entity
+  global-config:
+    db-config:
+      # 使用SnowflakeIdentifierGenerator
+      id-type: assign_id
+      # 逻辑删除字段
+      logic-delete-field: is_deleted
+      # 逻辑删除值，0未删除，1删除
+      logic-delete-value: 1
+      # 逻辑未删除值
+      logic-not-delete-value: 0
+      # 是否控制台 print mybatis-plus 的 LOGO
+    banner: false
+  configuration:
+    # 是否开启自动驼峰命名规则（camel case）映射
+    map-underscore-to-camel-case: true
+
+# swagger 配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+knife4j:
+  enable: true
+  production: false
+
+# 安全配置
+secure:
+  # 密码加密解码的密钥
+  secret-key: efogaWfblI3TK5u1
+  skip-list:
+    - ${spring.security.oauth2.authorizationserver.endpoint.authorization-uri}
+    - ${spring.security.oauth2.authorizationserver.endpoint.token-uri}
+    - ${spring.security.oauth2.authorizationserver.endpoint.token-revocation-uri}
+    - ${spring.security.oauth2.authorizationserver.endpoint.oidc.client-registration-uri}
+    - ${spring.security.oauth2.authorizationserver.endpoint.oidc.user-info-uri}
+    - ${spring.security.oauth2.authorizationserver.endpoint.oidc.logout-uri}
+    - /login
+    - /doc.html
+    - /webjars/** # knife4j 静态资源
+    - /v3/api-docs/**
+    - /auth/captcha # 验证码
+    - /sys/tenant/list #租户
+  secure-algorithm: aes
+  jwt:
+    issuer: https://allio.cc
+    subject: token
+    expire-at: d_1
+  captcha:
+    width: 120
+    height: 30
+    length: 4
+    expire-at: M_5

@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://43.143.195.208:5432/test
+    username: postgres
+    password: allio@2022
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: 43.143.195.208
+      port: 6379
+      password: allio

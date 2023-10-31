@@ -12,13 +12,4 @@ public class TurboApplication {
         SpringApplication.run(TurboApplication.class, args);
     }
 
-    @RestController
-    public static class Demo {
-
-        @GetMapping("/hello")
-        public String hello() {
-            return "hello world";
-        }
-    }
-
 }
