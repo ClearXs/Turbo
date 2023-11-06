@@ -38,6 +38,6 @@ public class AuthEndpoint extends TurboController {
     @GetMapping("/current-userr")
     @Operation(summary = "获取当前用户")
     public R<TurboUser> currentUser() {
-        return JwtUtil.getCurrentUser();
+        return R.ok(JwtUtil.getCurrentUser());
     }
 }
