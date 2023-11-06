@@ -1,6 +1,7 @@
 package cc.allio.uno.turbo.system.entity;
 
 import cc.allio.uno.turbo.common.mybatis.entity.TenantEntity;
+import cc.allio.uno.turbo.system.constant.UserStatus;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -53,4 +54,10 @@ public class SysUser extends TenantEntity {
     @Schema(description = "电话号码")
     private String phone;
 
+    /**
+     * 用户状态
+     */
+    @TableField("status")
+    @Schema(description = "电话号码")
+    private UserStatus status;
 }

@@ -1,5 +1,7 @@
 package cc.allio.uno.turbo.auth.config;
 
+import cc.allio.uno.turbo.auth.SecureProperties;
+import cc.allio.uno.turbo.auth.util.JwtUtil;
 import cc.allio.uno.turbo.common.util.SecureUtil;
 import com.google.common.collect.Lists;
 import com.nimbusds.jose.JOSEException;
@@ -22,7 +24,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import java.text.ParseException;
 
 @Configuration
-public class JwtConfig {
+public class JwtConfiguration {
 
     @Bean
     public JwtEncoder turboJwtEncoder() {
@@ -52,5 +54,14 @@ public class JwtConfig {
                 return null;
             }
         });
+    }
+
+    @Bean
+    public JwtUtil jwtUtil(JwtEncoder jwtEncoder,
+                           JwtDecoder jwtDecoder,
+                           SecureProperties secureProperties) {
+        JwtUtil instance = new JwtUtil(jwtEncoder, jwtDecoder, secureProperties);
+        JwtUtil.instance = instance;
+        return instance;
     }
 }

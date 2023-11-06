@@ -64,11 +64,13 @@ secure:
     - ${spring.security.oauth2.authorizationserver.endpoint.oidc.user-info-uri}
     - ${spring.security.oauth2.authorizationserver.endpoint.oidc.logout-uri}
     - /login
+    - /auth/login
     - /doc.html
     - /webjars/** # knife4j 静态资源
     - /v3/api-docs/**
     - /auth/captcha # 验证码
-    - /sys/tenant/list #租户
+    - /sys/tenant/list # 租户
+    - /auth/register # 注册
   secure-algorithm: aes
   jwt:
     issuer: https://allio.cc

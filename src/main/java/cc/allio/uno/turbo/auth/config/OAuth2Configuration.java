@@ -31,7 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Configuration
-public class OAuth2Config {
+public class OAuth2Configuration {
 
     @Bean
     @Order(1)

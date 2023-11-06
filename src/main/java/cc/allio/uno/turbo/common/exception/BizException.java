@@ -1,5 +1,7 @@
 package cc.allio.uno.turbo.common.exception;
 
+import lombok.Getter;
+
 /**
  * 通用业务异常
  *
@@ -9,6 +11,9 @@ package cc.allio.uno.turbo.common.exception;
  */
 public class BizException extends Exception {
 
+    @Getter
+    private String i18nCode;
+
     public BizException() {
     }
 
@@ -16,15 +21,15 @@ public class BizException extends Exception {
         super(message);
     }
 
-    public BizException(String message, Throwable cause) {
-        super(message, cause);
+    /**
+     * 创建turbo统一异常，它将会使用i18n作为国际化的异常消息处理，如果未找到国际化的信息，则使用提供的默认消息
+     *
+     * @param i18nCode       i18nCode
+     * @param defaultMessage defaultMessage
+     */
+    public BizException(String i18nCode, String defaultMessage) {
+        super(defaultMessage);
+        this.i18nCode = i18nCode;
     }
 
-    public BizException(Throwable cause) {
-        super(cause);
-    }
-
-    public BizException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }

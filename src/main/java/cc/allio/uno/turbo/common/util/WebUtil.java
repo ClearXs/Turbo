@@ -17,8 +17,8 @@ import java.util.Optional;
  */
 public final class WebUtil extends org.springframework.web.util.WebUtils {
 
-    public static final String Authentication = "T-Authentication";
-    public static final String Tenant = "T-Tenant";
+    public static final String Authentication = "X-Authentication";
+    public static final String Tenant = "X-Tenant";
 
     /**
      * 获取http request中的租户号

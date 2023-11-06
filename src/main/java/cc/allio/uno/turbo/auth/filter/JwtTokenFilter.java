@@ -2,8 +2,7 @@ package cc.allio.uno.turbo.auth.filter;
 
 import cc.allio.uno.core.util.DateUtil;
 import cc.allio.uno.core.util.StringUtils;
-import cc.allio.uno.turbo.common.i18n.ExceptionCodes;
-import cc.allio.uno.turbo.common.i18n.LocaleFormatter;
+import cc.allio.uno.turbo.auth.util.JwtUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,7 +17,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.authentication.*;
@@ -46,16 +44,11 @@ import java.time.Instant;
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-    private final JwtDecoder jwtDecoder;
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder
             .getContextHolderStrategy();
     private final SecurityContextRepository securityContextRepository = new RequestAttributeSecurityContextRepository();
     private final AuthenticationFailureHandler failureHandler = new AuthenticationEntryPointFailureHandler(
             new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
-
-    public JwtTokenFilter(JwtDecoder jwtDecoder) {
-        this.jwtDecoder = jwtDecoder;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -67,7 +60,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return;
             }
             // 2.验签
-            Jwt jwt = jwtDecoder.decode(token);
+            Jwt jwt = JwtUtil.decode(token);
             if (jwt == null) {
                 throw new BadCredentialsException("bad credentials");
             }

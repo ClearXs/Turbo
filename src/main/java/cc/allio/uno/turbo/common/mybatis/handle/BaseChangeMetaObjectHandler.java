@@ -1,4 +1,4 @@
-package cc.allio.uno.turbo.common.mybatis;
+package cc.allio.uno.turbo.common.mybatis.handle;
 
 import cc.allio.uno.core.util.DateUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;

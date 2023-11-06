@@ -2,8 +2,8 @@ package cc.allio.uno.turbo.auth.config;
 
 import cc.allio.uno.turbo.auth.SecureProperties;
 import cc.allio.uno.turbo.auth.provider.TurboJwtAuthenticationProvider;
-import cc.allio.uno.turbo.auth.provider.TurboPasswordEncoder;
-import cc.allio.uno.turbo.auth.provider.TurboUserServiceDetails;
+import cc.allio.uno.turbo.auth.userdetails.TurboPasswordEncoder;
+import cc.allio.uno.turbo.auth.userdetails.TurboUserDetailsService;
 import cc.allio.uno.turbo.auth.exception.AccessDeniedExceptionHandler;
 import cc.allio.uno.turbo.auth.exception.AuthenticationExceptionHandler;
 import cc.allio.uno.turbo.auth.filter.JwtTokenFilter;
@@ -18,10 +18,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 
@@ -29,14 +25,18 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 @EnableWebSecurity
 @EnableMethodSecurity
 @EnableConfigurationProperties(SecureProperties.class)
-public class SecurityConfig {
+public class SecurityConfiguration {
 
     @Bean
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http,
                                                           SecureProperties secureProperties,
-                                                          TurboJwtAuthenticationProvider turboJwtAuthenticationProvider,
-                                                          JwtTokenFilter jwtTokenFilter) throws Exception {
+                                                          AuthenticationExceptionHandler authenticationExceptionHandler,
+                                                          ISysUserService userService) throws Exception {
+        TurboUserDetailsService userDetailsService = new TurboUserDetailsService(userService);
+        TurboPasswordEncoder passwordEncoder = new TurboPasswordEncoder(secureProperties);
+        TurboJwtAuthenticationProvider jwtAuthenticationProvider = new TurboJwtAuthenticationProvider(userDetailsService, passwordEncoder);
+        JwtTokenFilter jwtTokenFilter = new JwtTokenFilter();
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
                         // 忽略放行请求路径
@@ -49,19 +49,19 @@ public class SecurityConfig {
                 .addFilterBefore(jwtTokenFilter, AuthorizationFilter.class)
                 .exceptionHandling(ex ->
                         // 异常处理器
-                        ex.authenticationEntryPoint(new AuthenticationExceptionHandler())
+                        ex.authenticationEntryPoint(authenticationExceptionHandler)
                                 .accessDeniedHandler(new AccessDeniedExceptionHandler()))
                 // 使过滤器包含UsernamePasswordAuthenticationFilter，提供login接口
                 // 默认使用DaoAuthenticationProvider，调用TurboUserServiceDetails#loadUserByUsername方法
                 // AuthenticationManager -> AuthenticationProvider -> UserDetailsService
                 .formLogin(login ->
                         // 登陆页面
-                        login.loginPage("/login")
-                                // 登陆失败跳转的地址
-                                .failureUrl("/login")
+                        login.loginPage("/auth/login")
+                                // 当存在failureHandler实例时，不走重定向的逻辑，而是选择走自定义的失败处理器
+                                .failureHandler(authenticationExceptionHandler)
                                 // 认证成功后的回调
                                 .successHandler(new JwtAuthenticationSuccessHandler()))
-                .authenticationProvider(turboJwtAuthenticationProvider)
+                .authenticationProvider(jwtAuthenticationProvider)
                 .sessionManagement(sessionManager -> {
                     sessionManager.sessionCreationPolicy(SessionCreationPolicy.NEVER);// 禁止用session来进行认证
                 })
@@ -69,26 +69,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public TurboUserServiceDetails turboUserServiceDetails(ISysUserService userService) {
-        return new TurboUserServiceDetails(userService);
-    }
-
-    @Bean
-    public TurboPasswordEncoder turboPasswordEncoder(SecureProperties secureProperties) {
-        return new TurboPasswordEncoder(secureProperties);
-    }
-
-    @Bean
-    public TurboJwtAuthenticationProvider turboJwtAuthenticationProvider(UserDetailsService userDetailsService,
-                                                                         PasswordEncoder passwordEncoder,
-                                                                         JwtEncoder jwtEncoder,
-                                                                         SecureProperties secureProperties) {
-        return new TurboJwtAuthenticationProvider(userDetailsService, passwordEncoder, jwtEncoder, secureProperties);
-    }
-
-    @Bean
-    public JwtTokenFilter jwtTokenFilter(JwtDecoder jwtDecoder) {
-        return new JwtTokenFilter(jwtDecoder);
+    public AuthenticationExceptionHandler authenticationExceptionHandler() {
+        return new AuthenticationExceptionHandler();
     }
 
 }

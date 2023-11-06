@@ -2,6 +2,7 @@ package cc.allio.uno.turbo.system.service;
 
 import cc.allio.uno.turbo.common.exception.BizException;
 import cc.allio.uno.turbo.system.entity.SysUser;
+import cc.allio.uno.turbo.system.vo.SysUserVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 public interface ISysUserService extends IService<SysUser> {
@@ -20,5 +21,5 @@ public interface ISysUserService extends IService<SysUser> {
      * @param username username
      * @return sysuser or null
      */
-    SysUser findByUsername(String username);
+    SysUserVO findByUsername(String username);
 }

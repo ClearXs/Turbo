@@ -15,6 +15,7 @@ import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -26,20 +27,29 @@ import java.nio.charset.StandardCharsets;
  * @date 2023/10/23 17:12
  * @since 1.0.0
  */
-public class AuthenticationExceptionHandler implements AuthenticationEntryPoint {
+public class AuthenticationExceptionHandler implements AuthenticationEntryPoint, AuthenticationFailureHandler {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        String authenticationExceptionMessage = StringPool.EMPTY;
-        if (authException instanceof CredentialsExpiredException) {
-            authenticationExceptionMessage = LocaleFormatter.getMessage(ExceptionCodes.AUTHENTICATION_FAILED);
-        } else if (authException instanceof InsufficientAuthenticationException) {
-            authenticationExceptionMessage = LocaleFormatter.getMessage(ExceptionCodes.AUTHENTICATION_FAILED);
-        } else if (authException instanceof CaptchaExpiredException) {
-            authenticationExceptionMessage = LocaleFormatter.getMessage(ExceptionCodes.CAPTCHA_EXPIRED);
-        } else if (authException instanceof CaptchaError) {
-            authenticationExceptionMessage = LocaleFormatter.getMessage(ExceptionCodes.CAPTCHA_ERROR);
-        }
+        doHandleAuthenticationException(request, response, authException);
+    }
+
+    @Override
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+        doHandleAuthenticationException(request, response, exception);
+    }
+
+    private void doHandleAuthenticationException(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
+        String authenticationExceptionMessage = switch (authException) {
+            case CredentialsExpiredException credentialsExpiredException ->
+                    LocaleFormatter.getMessage(ExceptionCodes.AUTHENTICATION_FAILED);
+            case InsufficientAuthenticationException insufficientAuthenticationException ->
+                    LocaleFormatter.getMessage(ExceptionCodes.AUTHENTICATION_FAILED);
+            case CaptchaExpiredException captchaExpiredException ->
+                    LocaleFormatter.getMessage(ExceptionCodes.CAPTCHA_EXPIRED);
+            case CaptchaError captchaError -> LocaleFormatter.getMessage(ExceptionCodes.CAPTCHA_ERROR);
+            case null, default -> authException.getMessage();
+        };
         R<Object> error = R.error(HttpStatus.UNAUTHORIZED.value(), authenticationExceptionMessage);
         response.setStatus(error.getCode());
         ServletOutputStream outputStream = response.getOutputStream();

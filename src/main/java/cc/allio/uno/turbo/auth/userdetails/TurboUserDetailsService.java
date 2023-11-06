@@ -1,9 +1,8 @@
-package cc.allio.uno.turbo.auth.provider;
+package cc.allio.uno.turbo.auth.userdetails;
 
-import cc.allio.uno.turbo.system.entity.SysUser;
 import cc.allio.uno.turbo.system.service.ISysUserService;
+import cc.allio.uno.turbo.system.vo.SysUserVO;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,18 +17,19 @@ import java.util.Collections;
  * @since 1.0.0
  */
 @AllArgsConstructor
-public class TurboUserServiceDetails implements UserDetailsService {
+public class TurboUserDetailsService implements UserDetailsService {
 
     private final ISysUserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        SysUser sysUser = userService.findByUsername(username);
-        if (sysUser == null) {
+        SysUserVO user = userService.findByUsername(username);
+        if (user == null) {
             throw new UsernameNotFoundException(String.format("username %s not found", username));
         }
-        // 1.实现角色组织赋值
-        // 2.实现权限授予
-        return new User(sysUser.getUsername(), sysUser.getPassword(), Collections.emptyList());
+        // 1.角色授权
+        user.setRoles(Collections.emptyList());
+        // 2.权限授予
+        return new TurboUser(user);
     }
 }

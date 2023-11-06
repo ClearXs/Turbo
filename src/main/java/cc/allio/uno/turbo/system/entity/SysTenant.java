@@ -10,6 +10,7 @@ import java.util.Date;
 import static com.baomidou.mybatisplus.annotation.IdType.ASSIGN_ID;
 
 @Data
+@TableName("sys_tenant")
 public class SysTenant {
 
     /**
