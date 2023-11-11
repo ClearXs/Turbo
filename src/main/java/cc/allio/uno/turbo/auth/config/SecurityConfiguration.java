@@ -2,8 +2,8 @@ package cc.allio.uno.turbo.auth.config;
 
 import cc.allio.uno.turbo.auth.SecureProperties;
 import cc.allio.uno.turbo.auth.provider.TurboJwtAuthenticationProvider;
-import cc.allio.uno.turbo.auth.userdetails.TurboPasswordEncoder;
-import cc.allio.uno.turbo.auth.userdetails.TurboUserDetailsService;
+import cc.allio.uno.turbo.auth.provider.TurboPasswordEncoder;
+import cc.allio.uno.turbo.auth.provider.TurboUserDetailsService;
 import cc.allio.uno.turbo.auth.exception.AccessDeniedExceptionHandler;
 import cc.allio.uno.turbo.auth.exception.AuthenticationExceptionHandler;
 import cc.allio.uno.turbo.auth.filter.JwtTokenFilter;

@@ -1,6 +1,7 @@
 package cc.allio.uno.turbo.system.service;
 
 import cc.allio.uno.turbo.common.exception.BizException;
+import cc.allio.uno.turbo.system.dto.BindingRoleDTO;
 import cc.allio.uno.turbo.system.entity.SysUser;
 import cc.allio.uno.turbo.system.vo.SysUserVO;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -21,5 +22,13 @@ public interface ISysUserService extends IService<SysUser> {
      * @param username username
      * @return sysuser or null
      */
-    SysUserVO findByUsername(String username);
+    SysUserVO findByUsername(String username) throws BizException;
+
+    /**
+     * 用户绑定角色
+     *
+     * @param bindingRole bindingRole
+     * @return
+     */
+    Boolean bindingRoles(BindingRoleDTO bindingRole);
 }

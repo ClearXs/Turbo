@@ -2,7 +2,11 @@ package cc.allio.uno.turbo.auth.service;
 
 import cc.allio.uno.turbo.auth.authentication.TurboJwtAuthenticationToken;
 import cc.allio.uno.turbo.auth.dto.CaptchaDTO;
+import cc.allio.uno.turbo.common.exception.BizException;
 import cc.allio.uno.turbo.system.entity.SysUser;
+import cc.allio.uno.turbo.system.vo.SysMenuTreeVO;
+
+import java.util.List;
 
 public interface IAuthService {
 
@@ -19,5 +23,12 @@ public interface IAuthService {
      * @param sysUser sysUser 实体
      * @return
      */
-    TurboJwtAuthenticationToken register(SysUser sysUser);
+    TurboJwtAuthenticationToken register(SysUser sysUser) throws BizException;
+
+    /**
+     * 获取当前用户的
+     *
+     * @return
+     */
+    List<SysMenuTreeVO> currentUserMenus();
 }

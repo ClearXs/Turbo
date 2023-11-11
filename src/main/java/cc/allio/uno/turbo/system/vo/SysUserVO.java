@@ -18,9 +18,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class SysUserVO extends SysUser {
 
-    // TODO 用户组信息
-    // TODO 组织信息
-
     /**
      * 角色信息
      */

@@ -1,4 +1,4 @@
-package cc.allio.uno.turbo.auth.userdetails;
+package cc.allio.uno.turbo.auth.provider;
 
 import cc.allio.uno.core.util.StringUtils;
 import cc.allio.uno.turbo.auth.SecureProperties;

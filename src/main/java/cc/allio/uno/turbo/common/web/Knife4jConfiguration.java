@@ -33,7 +33,7 @@ public class Knife4jConfiguration implements WebMvcConfigurer {
     public GroupedOpenApi authApi() {
         return GroupedOpenApi.builder()
                 .group("auth")
-                .displayName("验证模块")
+                .displayName("认证模块")
                 .pathsToMatch("/auth/**")
                 .build();
     }

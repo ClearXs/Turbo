@@ -8,4 +8,6 @@ package cc.allio.uno.turbo.common.i18n;
  * @since 1.0.0
  */
 public final class MessageCodes {
+
+
 }

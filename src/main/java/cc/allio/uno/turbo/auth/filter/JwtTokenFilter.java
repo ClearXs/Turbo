@@ -2,13 +2,14 @@ package cc.allio.uno.turbo.auth.filter;
 
 import cc.allio.uno.core.util.DateUtil;
 import cc.allio.uno.core.util.StringUtils;
-import cc.allio.uno.turbo.auth.util.JwtUtil;
+import cc.allio.uno.turbo.common.util.JwtUtil;
+import cc.allio.uno.turbo.common.util.WebUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.Authentication;
@@ -54,7 +55,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             // 1.验证请求头
-            String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+            String token = request.getHeader(WebUtil.Authentication);
             if (StringUtils.isBlank(token)) {
                 filterChain.doFilter(request, response);
                 return;
@@ -72,8 +73,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 AbstractAuthenticationToken newAuthentication = converter.convert(jwt);
                 successfulAuthentication(request, response, filterChain, newAuthentication);
             }
-        } catch (AuthenticationException ex) {
-            unsuccessfulAuthentication(request, response, ex);
+        } catch (Throwable ex) {
+            unsuccessfulAuthentication(request, response, new AuthenticationServiceException(ex.getMessage()));
         }
     }
 

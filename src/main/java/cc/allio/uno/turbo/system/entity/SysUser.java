@@ -58,6 +58,20 @@ public class SysUser extends TenantEntity {
      * 用户状态
      */
     @TableField("status")
-    @Schema(description = "电话号码")
+    @Schema(description = "用户状态")
     private UserStatus status;
+
+    /**
+     * 头像
+     */
+    @TableField("avatar")
+    @Schema(description = "头像")
+    private String avatar;
+
+    /**
+     * 昵称
+     */
+    @TableField("nickname")
+    @Schema(description = "昵称")
+    private String nickname;
 }

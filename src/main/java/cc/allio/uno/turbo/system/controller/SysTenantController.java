@@ -2,16 +2,17 @@ package cc.allio.uno.turbo.system.controller;
 
 import cc.allio.uno.turbo.common.R;
 import cc.allio.uno.turbo.common.TurboController;
-import cc.allio.uno.turbo.common.exception.BizException;
 import cc.allio.uno.turbo.system.entity.SysTenant;
 import cc.allio.uno.turbo.system.entity.SysUser;
 import cc.allio.uno.turbo.system.service.ISysTenantService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,48 +27,51 @@ public class SysTenantController extends TurboController {
 
     @PostMapping("/save")
     @Operation(summary = "保存")
-    public R save(@RequestBody SysTenant sysTenant) throws BizException {
+    public R save(@Validated @RequestBody SysTenant sysTenant) {
         boolean save = tenantService.save(sysTenant);
         return ok(save);
     }
 
-    @Operation(summary = "批量保存")
     @PostMapping("/batchSave")
-    public R batchSave(@RequestBody List<SysTenant> tenants) {
+    @Operation(summary = "批量保存")
+    public R batchSave(@Validated @RequestBody List<SysTenant> tenants) {
         boolean save = tenantService.saveBatch(tenants);
         return ok(save);
     }
 
-    @Operation(summary = "修改")
     @PutMapping("/edit")
-    public R edit(@RequestBody SysTenant sysTenant) {
-        boolean edit = tenantService.updateById(sysTenant);
+    @Operation(summary = "修改")
+    public R edit(@Validated @RequestBody SysTenant sysTenant) {
+        boolean edit =
+                tenantService.update(
+                        sysTenant,
+                        Wrappers.<SysTenant>lambdaQuery().ge(SysTenant::getTenantId, sysTenant.getTenantId()));
         return ok(edit);
     }
 
-    @Operation(summary = "删除")
     @DeleteMapping("/delete")
+    @Operation(summary = "删除")
     public R delete(long id) {
         boolean removed = tenantService.removeById(id);
         return ok(removed);
     }
 
-    @Operation(summary = "详情")
     @GetMapping("/details")
+    @Operation(summary = "详情")
     public R<SysTenant> details(long id) {
         SysTenant sysTenant = tenantService.getById(id);
         return ok(sysTenant);
     }
 
-    @Operation(summary = "用户列表")
     @GetMapping("/list")
+    @Operation(summary = "列表")
     public R<List<SysTenant>> list(SysTenant sysTenant) {
         List<SysTenant> list = tenantService.list(new QueryWrapper<>(sysTenant));
         return ok(list);
     }
 
-    @Operation(summary = "分页")
     @GetMapping("/page")
+    @Operation(summary = "分页")
     public R<IPage<SysUser>> page(Page page, SysTenant sysTenant) {
         IPage<SysUser> sysUserPage = tenantService.page(page, new QueryWrapper<>(sysTenant));
         return ok(sysUserPage);

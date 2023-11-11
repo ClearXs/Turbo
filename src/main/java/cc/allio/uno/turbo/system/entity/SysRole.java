@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@TableName("sys_user")
+@TableName("sys_role")
 @Schema(description = "系统角色")
 public class SysRole extends TenantEntity {
 
@@ -23,7 +23,7 @@ public class SysRole extends TenantEntity {
     private String name;
 
     /**
-     * 角色编码
+     * 角色名称
      */
     @TableField("code")
     @Schema(description = "角色编码")
@@ -35,7 +35,6 @@ public class SysRole extends TenantEntity {
      */
     @TableField("des")
     @Schema(description = "角色描述")
-    @NotBlank
     private String des;
 
     /**
@@ -43,6 +42,5 @@ public class SysRole extends TenantEntity {
      */
     @TableField("sort")
     @Schema(description = "排序")
-    @NotBlank
     private Integer sort;
 }

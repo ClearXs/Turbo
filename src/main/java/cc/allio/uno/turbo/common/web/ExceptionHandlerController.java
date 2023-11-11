@@ -2,7 +2,10 @@ package cc.allio.uno.turbo.common.web;
 
 import cc.allio.uno.turbo.common.R;
 import cc.allio.uno.turbo.common.exception.BizException;
+import cc.allio.uno.turbo.common.i18n.LocaleFormatter;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -17,15 +20,41 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice
 public class ExceptionHandlerController {
 
-    @ExceptionHandler(BizException.class)
+    /**
+     * 自定义业务异常
+     */
     @ResponseBody
+    @ExceptionHandler(BizException.class)
     public R handleBizException(BizException ex) {
-        return R.internalError(ex);
+        String i18nCode = ex.getI18nCode();
+        String errMsg = LocaleFormatter.getMessage(i18nCode);
+        return R.internalError(errMsg);
     }
 
-    @ExceptionHandler(AuthenticationException.class)
+    /**
+     * 认证异常处理
+     */
     @ResponseBody
+    @ExceptionHandler(AuthenticationException.class)
     public R handleAccessDenied(AuthenticationException ex) {
         return R.authorize(ex);
+    }
+
+    /**
+     * 参数校验错误处理
+     */
+    @ResponseBody
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public R handleNotValidateException(MethodArgumentNotValidException ex) {
+        return R.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+    }
+
+    /**
+     * 通用异常处理
+     */
+    @ResponseBody
+    @ExceptionHandler(Throwable.class)
+    public R handleGeneralException(Throwable ex) {
+        return R.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
     }
 }

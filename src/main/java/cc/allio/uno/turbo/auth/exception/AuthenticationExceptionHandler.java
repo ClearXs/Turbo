@@ -1,6 +1,5 @@
 package cc.allio.uno.turbo.auth.exception;
 
-import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.util.IoUtil;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.uno.turbo.common.R;
@@ -40,6 +39,7 @@ public class AuthenticationExceptionHandler implements AuthenticationEntryPoint,
     }
 
     private void doHandleAuthenticationException(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
+        // 获取i18n错误信息
         String authenticationExceptionMessage = switch (authException) {
             case CredentialsExpiredException credentialsExpiredException ->
                     LocaleFormatter.getMessage(ExceptionCodes.AUTHENTICATION_FAILED);

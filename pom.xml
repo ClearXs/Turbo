@@ -32,6 +32,7 @@
         <knife4j.version>4.3.0</knife4j.version>
         <bcpkix-jdk15on.version>1.70</bcpkix-jdk15on.version>
         <capatcha.version>2.2.3</capatcha.version>
+        <ognl.version>3.1.26</ognl.version>
     </properties>
 
     <dependencyManagement>
@@ -95,6 +96,10 @@
             <artifactId>postgresql</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
@@ -148,6 +153,11 @@
             <groupId>cc.allio</groupId>
             <artifactId>uno-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ognl</groupId>
+            <artifactId>ognl</artifactId>
+            <version>${ognl.version}</version>
         </dependency>
     </dependencies>
 

@@ -1,5 +1,6 @@
 package cc.allio.uno.turbo.common;
 
+import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.util.StringUtils;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
@@ -84,8 +85,17 @@ public final class R<T> {
      *
      * @see #of(int, Object, String, Throwable)
      */
+    public static <T> R<T> internalError(String errMsg) {
+        return of(HttpStatus.INTERNAL_SERVER_ERROR.value(), null, errMsg, null);
+    }
+
+    /**
+     * {@link HttpStatus#INTERNAL_SERVER_ERROR}
+     *
+     * @see #of(int, Object, String, Throwable)
+     */
     public static <T> R<T> internalError(Throwable ex) {
-        return of(HttpStatus.INTERNAL_SERVER_ERROR.value(), null, HttpStatus.INTERNAL_SERVER_ERROR.name(), ex);
+        return of(HttpStatus.INTERNAL_SERVER_ERROR.value(), null, StringPool.EMPTY, ex);
     }
 
     /**

@@ -24,6 +24,7 @@ public class TurboTenantLineHandler implements TenantLineHandler {
         // 忽略租户的表需要进行添加，cloud版本需要考虑用配置进行过滤
         ignoreTables.add("sys_tenant");
         ignoreTables.add("sys_user_role");
+        ignoreTables.add("sys_role_menu");
     }
 
     @Override

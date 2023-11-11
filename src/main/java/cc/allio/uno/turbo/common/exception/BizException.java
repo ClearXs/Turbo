@@ -9,16 +9,18 @@ import lombok.Getter;
  * @date 2023/10/23 12:52
  * @since 1.0.0
  */
+@Getter
 public class BizException extends Exception {
 
-    @Getter
-    private String i18nCode;
+    private final String i18nCode;
 
-    public BizException() {
-    }
-
-    public BizException(String message) {
-        super(message);
+    /**
+     * 创建turbo统一异常，它将会使用i18n作为国际化的异常消息处理，如果未找到国际化的信息，则使用提供的默认消息
+     *
+     * @param i18nCode i18nCode
+     */
+    public BizException(String i18nCode) {
+        this.i18nCode = i18nCode;
     }
 
     /**
@@ -31,5 +33,4 @@ public class BizException extends Exception {
         super(defaultMessage);
         this.i18nCode = i18nCode;
     }
-
 }

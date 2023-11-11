@@ -15,4 +15,20 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
      * @return SysRole for list
      */
     List<SysRole> findSysRoleByUserId(Long userId);
+
+    /**
+     * 获取角色对应的菜单id
+     *
+     * @param roleIds roleIds
+     * @return
+     */
+    List<Long> findRoleMenuIdByIds(List<Long> roleIds);
+
+    /**
+     * 获取角色对应的菜单id
+     *
+     * @param codes
+     * @return
+     */
+    List<Long> findRoleMenuIdByCodes(List<String> codes);
 }

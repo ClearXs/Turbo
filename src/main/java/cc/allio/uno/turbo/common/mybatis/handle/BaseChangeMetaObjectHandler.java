@@ -1,6 +1,7 @@
 package cc.allio.uno.turbo.common.mybatis.handle;
 
 import cc.allio.uno.core.util.DateUtil;
+import cc.allio.uno.turbo.common.util.AuthUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
 
@@ -17,21 +18,25 @@ public class BaseChangeMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
+        Long currentUserId = AuthUtil.getCurrentUserId();
         // 创建时间
         this.strictInsertFill(metaObject, "createdTime", Date.class, DateUtil.now());
-        // TODO 创建人
-//        this.strictInsertFill(metaObject, "createdTime", LocalDateTime.class, LocalDateTime.now());
+        // 创建人
+        this.strictInsertFill(metaObject, "createdBy", Long.class, currentUserId);
         // 更新时间
         this.strictInsertFill(metaObject, "updatedTime", Date.class, DateUtil.now());
-        // TODO 更新人
+        // 更新人
+        this.strictInsertFill(metaObject, "updatedBy", Long.class, currentUserId);
         // 逻辑删除
         this.strictInsertFill(metaObject, "isDeleted", Integer.class, 0);
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
+        Long currentUserId = AuthUtil.getCurrentUserId();
         // 更新时间
         this.strictInsertFill(metaObject, "updatedTime", Date.class, DateUtil.now());
-        // TODO 更新人
+        // 更新人
+        this.strictInsertFill(metaObject, "updatedBy", Long.class, currentUserId);
     }
 }

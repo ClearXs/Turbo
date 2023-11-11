@@ -40,4 +40,23 @@ public final class ExceptionCodes {
      * 验证码错误
      */
     public static final String CAPTCHA_ERROR = "auth.captcha.error";
+
+    // ============================== menu ==============================
+
+    /**
+     * 用户未找到
+     */
+    public static final String USER_NOT_FOUND = "user.not.found";
+
+    /**
+     * 用户重复
+     */
+    public static final String USER_REPEAT = "user.repeat";
+
+    // ============================== menu ==============================
+
+    /**
+     * 菜单删除
+     */
+    public static final String MENU_DELETE_FAILED = "menu.delete.failed";
 }

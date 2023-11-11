@@ -9,9 +9,9 @@ import lombok.Data;
 import static com.baomidou.mybatisplus.annotation.IdType.ASSIGN_ID;
 
 @Data
-@TableName("sys_menu_role")
-@Schema(description = "菜单角色关联")
-public class SysMenuRole {
+@TableName("sys_role_menu")
+@Schema(description = "角色菜单关联")
+public class SysRoleMenu {
 
     /**
      * 主键
@@ -21,16 +21,16 @@ public class SysMenuRole {
     private Long id;
 
     /**
-     * 用户id
-     */
-    @TableField("menu_id")
-    @Schema(description = "角色id")
-    private Long menuId;
-
-    /**
      * 角色id
      */
     @TableField("role_id")
-    @Schema(description = "角色id")
+    @Schema(description = "角色Id")
     private Long roleId;
+
+    /**
+     * 用户id
+     */
+    @TableField("menu_id")
+    @Schema(description = "菜单Id")
+    private Long menuId;
 }

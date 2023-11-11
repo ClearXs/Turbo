@@ -16,11 +16,6 @@ public class LoginParams {
     private String password;
 
     /**
-     * 租户id
-     */
-    private String tenant;
-
-    /**
      * 验证码id
      */
     private String captchaId;
@@ -30,8 +25,4 @@ public class LoginParams {
      */
     private String captcha;
 
-    /**
-     * rememberMe
-     */
-    private boolean rememberMe;
 }

@@ -9,6 +9,7 @@ spring:
       host: 43.143.195.208
       port: 6379
       password: allio
+      database: 1
 
 mybatis-plus:
   configuration:

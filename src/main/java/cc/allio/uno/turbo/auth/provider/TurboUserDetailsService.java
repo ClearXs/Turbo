@@ -1,5 +1,6 @@
-package cc.allio.uno.turbo.auth.userdetails;
+package cc.allio.uno.turbo.auth.provider;
 
+import cc.allio.uno.turbo.common.exception.BizException;
 import cc.allio.uno.turbo.system.service.ISysUserService;
 import cc.allio.uno.turbo.system.vo.SysUserVO;
 import lombok.AllArgsConstructor;
@@ -23,8 +24,10 @@ public class TurboUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        SysUserVO user = userService.findByUsername(username);
-        if (user == null) {
+        SysUserVO user = null;
+        try {
+            user = userService.findByUsername(username);
+        } catch (BizException e) {
             throw new UsernameNotFoundException(String.format("username %s not found", username));
         }
         // 1.角色授权

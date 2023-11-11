@@ -1,7 +1,7 @@
 package cc.allio.uno.turbo.auth.config;
 
 import cc.allio.uno.turbo.auth.SecureProperties;
-import cc.allio.uno.turbo.auth.util.JwtUtil;
+import cc.allio.uno.turbo.common.util.JwtUtil;
 import cc.allio.uno.turbo.common.util.SecureUtil;
 import com.google.common.collect.Lists;
 import com.nimbusds.jose.JOSEException;
