@@ -49,10 +49,20 @@ public class SysTenantController extends TurboController {
         return ok(edit);
     }
 
+    @PutMapping("/save-or-update")
+    @Operation(summary = "修改")
+    public R saveOrUpdate(@Validated @RequestBody SysTenant sysTenant) {
+        boolean edit =
+                tenantService.saveOrUpdate(
+                        sysTenant,
+                        Wrappers.<SysTenant>lambdaQuery().ge(SysTenant::getTenantId, sysTenant.getTenantId()));
+        return ok(edit);
+    }
+
     @DeleteMapping("/delete")
     @Operation(summary = "删除")
-    public R delete(long id) {
-        boolean removed = tenantService.removeById(id);
+    public R delete(@RequestBody List<Long> ids) {
+        boolean removed = tenantService.removeByIds(ids);
         return ok(removed);
     }
 

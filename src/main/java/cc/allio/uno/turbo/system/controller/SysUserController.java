@@ -51,10 +51,20 @@ public class SysUserController extends TurboController {
         return ok(edit);
     }
 
+    @Operation(summary = "保存或修改")
+    @PutMapping("/save-or-update")
+    public R saveOrUpdate(@Validated @RequestBody SysUser sysUser) {
+        boolean edit =
+                sysUserService.saveOrUpdate(
+                        sysUser,
+                        Wrappers.<SysUser>lambdaQuery().eq(SysUser::getId, sysUser.getId()));
+        return ok(edit);
+    }
+
     @Operation(summary = "删除")
     @DeleteMapping("/delete")
-    public R delete(long id) {
-        boolean removed = sysUserService.removeById(id);
+    public R delete(@RequestBody List<Long> ids) {
+        boolean removed = sysUserService.removeByIds(ids);
         return ok(removed);
     }
 

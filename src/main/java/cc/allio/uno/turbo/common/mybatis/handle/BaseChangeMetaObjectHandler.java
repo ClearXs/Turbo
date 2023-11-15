@@ -35,8 +35,8 @@ public class BaseChangeMetaObjectHandler implements MetaObjectHandler {
     public void updateFill(MetaObject metaObject) {
         Long currentUserId = AuthUtil.getCurrentUserId();
         // 更新时间
-        this.strictInsertFill(metaObject, "updatedTime", Date.class, DateUtil.now());
+        this.setFieldValByName("updatedTime", DateUtil.now(), metaObject);
         // 更新人
-        this.strictInsertFill(metaObject, "updatedBy", Long.class, currentUserId);
+        this.setFieldValByName("updatedBy", currentUserId, metaObject);
     }
 }

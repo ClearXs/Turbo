@@ -42,6 +42,16 @@ public class SysMenuController extends TurboController {
         return ok(edit);
     }
 
+    @Operation(summary = "保存或修改")
+    @PutMapping("/save-or-update")
+    public R saveOrUpdate(@Validated @RequestBody SysMenu sysMenu) {
+        boolean edit =
+                menuService.saveOrUpdate(
+                        sysMenu,
+                        Wrappers.<SysMenu>lambdaQuery().eq(SysMenu::getId, sysMenu.getId()));
+        return ok(edit);
+    }
+
     @Operation(summary = "删除")
     @DeleteMapping("/delete")
     public R delete(long id) throws BizException {

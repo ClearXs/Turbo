@@ -4,7 +4,7 @@
 
     <select id="tree" resultType="cc.allio.uno.turbo.system.entity.SysMenu">
         WITH RECURSIVE menu_tree AS (SELECT
-        id, code, name, sort, parent_id, alias, route, icon, created_by, created_time, updated_by, updated_time,
+        id, code, name, sort, parent_id, alias, route, icon, type, created_by, created_time, updated_by, updated_time,
         is_deleted,
         version, tenant_id
         FROM sys_menu
@@ -25,7 +25,7 @@
         </where>
         UNION
         SELECT sub.id, sub.code,
-        sub.name, sub.sort, sub.parent_id, sub.alias, sub.route, sub.icon, sub.created_by, sub.created_time,
+        sub.name, sub.sort, sub.parent_id, sub.alias, sub.route, sub.icon,sub.type, sub.created_by, sub.created_time,
         sub.updated_by, sub.updated_time, sub.is_deleted, sub.version, sub.tenant_id
         FROM sys_menu sub
         INNER JOIN menu_tree P ON P.ID = sub.parent_id AND p.is_deleted = 0 AND sub.is_deleted = 0)

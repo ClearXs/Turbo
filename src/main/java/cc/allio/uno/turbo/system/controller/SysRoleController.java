@@ -2,6 +2,7 @@ package cc.allio.uno.turbo.system.controller;
 
 import cc.allio.uno.turbo.common.R;
 import cc.allio.uno.turbo.common.TurboController;
+import cc.allio.uno.turbo.common.mybatis.entity.BaseEntity;
 import cc.allio.uno.turbo.system.dto.GrantPermissionDTO;
 import cc.allio.uno.turbo.system.entity.SysRole;
 import cc.allio.uno.turbo.system.service.ISysRoleService;
@@ -35,14 +36,21 @@ public class SysRoleController extends TurboController {
     @PutMapping("/edit")
     @Operation(summary = "修改")
     public R edit(@Validated @RequestBody SysRole sysRole) {
-        boolean edit = roleService.update(sysRole, Wrappers.<SysRole>lambdaQuery().ge(SysRole::getId, sysRole.getId()));
+        boolean edit = roleService.update(sysRole, Wrappers.<SysRole>lambdaQuery().eq(SysRole::getId, sysRole.getId()));
+        return ok(edit);
+    }
+
+    @PutMapping("/save-or-update")
+    @Operation(summary = "保存或者修改")
+    public R saveOrUpdate(@Validated @RequestBody SysRole sysRole) {
+        boolean edit = roleService.saveOrUpdate(sysRole, Wrappers.<SysRole>lambdaQuery().eq(SysRole::getId, sysRole.getId()));
         return ok(edit);
     }
 
     @Operation(summary = "删除")
     @DeleteMapping("/delete")
-    public R delete(long id) {
-        boolean removed = roleService.removeById(id);
+    public R delete(@RequestBody List<Long> ids) {
+        boolean removed = roleService.removeByIds(ids);
         return ok(removed);
     }
 
@@ -56,14 +64,14 @@ public class SysRoleController extends TurboController {
     @GetMapping("/list")
     @Operation(summary = "列表")
     public R<List<SysRole>> list(SysRole sysRole) {
-        List<SysRole> list = roleService.list(new QueryWrapper<>(sysRole));
+        List<SysRole> list = roleService.list(Wrappers.lambdaQuery(sysRole).orderByDesc(BaseEntity::getUpdatedTime));
         return ok(list);
     }
 
     @GetMapping("/page")
     @Operation(summary = "分页")
     public R<IPage<SysRole>> page(Page page, SysRole sysRole) {
-        IPage<SysRole> sysRolePage = roleService.page(page, new QueryWrapper<>(sysRole));
+        IPage<SysRole> sysRolePage = roleService.page(page, Wrappers.lambdaQuery(sysRole).orderByDesc(BaseEntity::getUpdatedTime));
         return ok(sysRolePage);
     }
 
