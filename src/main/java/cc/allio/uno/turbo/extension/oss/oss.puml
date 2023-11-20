@@ -1,0 +1,42 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class OssResponse {
+    String object;
+    Reader reader;
+}
+
+class OssRequest {
+    String object;
+    InputStream is;
+}
+
+class OssTrait {
+
+}
+
+interface OssExecute {
+
+    +void upload(OssRequest ossRequest)
+    +OssResult download(OssRequest ossRequest)
+}
+
+class MinioOssExecute implements OssExecute {
+}
+
+class AliyunOssExecute implements OssExecute {
+}
+
+class OssExecuteFactory {
+
+    +OssExecute load(trait OssTrait)
+}
+
+OssRequest *-- OssExecute : use
+
+OssResponse *-- OssExecute : use
+
+OssExecute *-- OssExecuteFactory : includes
+OssTrait *-- OssExecuteFactory : use
+
+@enduml

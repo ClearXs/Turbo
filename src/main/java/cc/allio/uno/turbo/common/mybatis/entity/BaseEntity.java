@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import static com.baomidou.mybatisplus.annotation.IdType.ASSIGN_ID;
 
 @Data
-public class BaseEntity {
+public abstract class BaseEntity implements Serializable {
 
     /**
      * 主键

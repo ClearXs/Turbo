@@ -150,7 +150,7 @@ public abstract class PrefixKeyRedisCache implements TenantCache {
                 return conversionService.convert(key, String.class);
             } catch (ConversionFailedException cause) {
 
-                // May fail if the given key is a collection
+                // May fail if the given key inputStream a collection
                 if (Types.isList(source.getType()) || Types.isMap(source.getType())) {
                     return convertCollectionLikeOrMapKey(key, source);
                 }

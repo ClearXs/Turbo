@@ -25,6 +25,7 @@ public class TurboTenantLineHandler implements TenantLineHandler {
         ignoreTables.add("sys_tenant");
         ignoreTables.add("sys_user_role");
         ignoreTables.add("sys_role_menu");
+        ignoreTables.add("sys_cloud_storage_config");
     }
 
     @Override

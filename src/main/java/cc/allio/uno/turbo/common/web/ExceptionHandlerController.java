@@ -1,6 +1,5 @@
 package cc.allio.uno.turbo.common.web;
 
-import cc.allio.uno.turbo.common.R;
 import cc.allio.uno.turbo.common.exception.BizException;
 import cc.allio.uno.turbo.common.i18n.LocaleFormatter;
 import org.springframework.http.HttpStatus;

@@ -2,6 +2,8 @@ server:
   port: 8600
 
 spring:
+  application:
+    name: turbo
   profiles:
     active: dev
   security:
@@ -54,8 +56,11 @@ knife4j:
 
 # 安全配置
 secure:
-  # 密码加密解码的密钥
+  # 系统加密密钥
   secret-key: efogaWfblI3TK5u1
+  # 系统加密算法
+  secure-algorithm: aes
+  # 忽略认证的接口地址
   skip-list:
     - ${spring.security.oauth2.authorizationserver.endpoint.authorization-uri}
     - ${spring.security.oauth2.authorizationserver.endpoint.token-uri}
@@ -64,20 +69,30 @@ secure:
     - ${spring.security.oauth2.authorizationserver.endpoint.oidc.user-info-uri}
     - ${spring.security.oauth2.authorizationserver.endpoint.oidc.logout-uri}
     - /login
-    - /auth/login
+    - /auth/login # 登陆
     - /doc.html
     - /webjars/** # knife4j 静态资源
     - /v3/api-docs/**
     - /auth/captcha # 验证码
     - /sys/tenant/list # 租户
     - /auth/register # 注册
-  secure-algorithm: aes
+    - /sys/attachment/download/** # 文件下载
   jwt:
     issuer: https://allio.cc
     subject: token
+    # token过期时间
     expire-at: d_1
   captcha:
+    # 验证码宽度
     width: 120
+    # 验证码高度
     height: 30
+    # 验证码字符长度
     length: 4
+    # 验证码过期时间
     expire-at: M_5
+file:
+  upload:
+    path: http://localhost:8600
+    # 文件上传最大大小
+    max-size: 10485760

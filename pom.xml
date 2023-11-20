@@ -33,6 +33,9 @@
         <bcpkix-jdk15on.version>1.70</bcpkix-jdk15on.version>
         <capatcha.version>2.2.3</capatcha.version>
         <ognl.version>3.1.26</ognl.version>
+        <aliyunoss.version>3.15.1</aliyunoss.version>
+        <minio.version>8.5.7</minio.version>
+        <okhttp>4.12.0</okhttp>
     </properties>
 
     <dependencyManagement>
@@ -71,6 +74,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
@@ -147,7 +160,7 @@
         <!-- uno -->
         <dependency>
             <groupId>cc.allio</groupId>
-            <artifactId>uno-core</artifactId>
+            <artifactId>uno-starter-core</artifactId>
         </dependency>
         <dependency>
             <groupId>cc.allio</groupId>
@@ -158,6 +171,41 @@
             <groupId>ognl</groupId>
             <artifactId>ognl</artifactId>
             <version>${ognl.version}</version>
+        </dependency>
+
+        <!-- oss -->
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+            <version>${aliyunoss.version}</version>
+        </dependency>
+        <!-- jdk9 版本需要依赖 -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <!-- no more than 2.3.3-->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+        <!-- minio -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okhttp.version}</version>
         </dependency>
     </dependencies>
 

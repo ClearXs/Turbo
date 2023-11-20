@@ -1,6 +1,6 @@
 package cc.allio.uno.turbo.auth.userdetails;
 
-import cc.allio.uno.turbo.auth.provider.TurboUser;
+import cc.allio.uno.turbo.modules.auth.provider.TurboUser;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

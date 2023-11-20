@@ -14,7 +14,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class TenantEntity extends BaseEntity {
+public abstract class TenantEntity extends BaseEntity {
 
     @TableField("tenant_id")
     @Schema(description = "租户")
