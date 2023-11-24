@@ -1,20 +1,12 @@
 package cc.allio.uno.turbo.modules.system.service;
 
 import cc.allio.uno.turbo.common.exception.BizException;
+import cc.allio.uno.turbo.common.mybatis.service.ITurboCrudService;
 import cc.allio.uno.turbo.modules.system.dto.BindingRoleDTO;
 import cc.allio.uno.turbo.modules.system.entity.SysUser;
 import cc.allio.uno.turbo.modules.system.vo.SysUserVO;
-import com.baomidou.mybatisplus.extension.service.IService;
 
-public interface ISysUserService extends IService<SysUser> {
-
-    /**
-     * 保存用户
-     *
-     * @param sysUser
-     * @return
-     */
-    boolean saveUser(SysUser sysUser) throws BizException;
+public interface ISysUserService extends ITurboCrudService<SysUser> {
 
     /**
      * 根据用户名获取用户

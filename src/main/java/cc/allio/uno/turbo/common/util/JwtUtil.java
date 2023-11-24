@@ -2,7 +2,6 @@ package cc.allio.uno.turbo.common.util;
 
 import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.util.DateUtil;
-import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.uno.core.util.StringUtils;
 import cc.allio.uno.core.util.id.IdGenerator;
 import cc.allio.uno.turbo.modules.auth.properties.SecureProperties;
@@ -38,7 +37,7 @@ public final class JwtUtil {
     /**
      * 提供{@link UserDetails}实例生成jwt token
      *
-     * @param userDetails 实例
+     * @param user 实例
      * @return
      */
     public static synchronized TurboJwtAuthenticationToken encode(TurboUser user) {
@@ -52,7 +51,6 @@ public final class JwtUtil {
                 .subject(instance.secureProperties.getJwt().getSubject())
                 .expiresAt(expiresAt)
                 // 加密用户信息 jws
-                .claim("profile", JsonUtils.toJson(user))
                 .claim("accountNonExpired", user.isAccountNonExpired())
                 .claim("accountNonLocked", user.isAccountNonLocked())
                 .claim("credentialsNonExpired", user.isCredentialsNonExpired())
@@ -65,6 +63,7 @@ public final class JwtUtil {
                 .claim("phone", Optional.ofNullable(user.getPhone()).orElse(StringPool.EMPTY))
                 .claim("avatar", Optional.ofNullable(user.getAvatar()).orElse(StringPool.EMPTY))
                 .claim("nickname", Optional.ofNullable(user.getNickname()).orElse(StringPool.EMPTY))
+                .claim("tenantId", Optional.ofNullable(user.getTenantId()).orElse(0L))
                 .build();
         Jwt jwt = instance.jwtEncoder.encode(JwtEncoderParameters.from(jwtClaimsSet));
         return new TurboJwtAuthenticationToken(jwt, user);

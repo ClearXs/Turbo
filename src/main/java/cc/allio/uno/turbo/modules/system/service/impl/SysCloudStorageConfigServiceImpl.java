@@ -1,6 +1,7 @@
 package cc.allio.uno.turbo.modules.system.service.impl;
 
 import cc.allio.uno.core.util.CoreBeanUtil;
+import cc.allio.uno.turbo.common.mybatis.service.impl.TurboCrudServiceImpl;
 import cc.allio.uno.turbo.extension.oss.OssExecutorFactory;
 import cc.allio.uno.turbo.extension.oss.OssTrait;
 import cc.allio.uno.turbo.extension.oss.OssUpdateEvent;
@@ -12,7 +13,6 @@ import cc.allio.uno.turbo.modules.system.service.ISysCloudStorageConfigService;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import reactor.util.function.Tuples;
 
 @Service
-public class SysCloudStorageConfigServiceImpl extends ServiceImpl<SysCloudStorageConfigMapper, SysCloudStorageConfig>
+public class SysCloudStorageConfigServiceImpl extends TurboCrudServiceImpl<SysCloudStorageConfigMapper, SysCloudStorageConfig>
         implements ISysCloudStorageConfigService, ApplicationContextAware {
 
     private ApplicationContext applicationContext;

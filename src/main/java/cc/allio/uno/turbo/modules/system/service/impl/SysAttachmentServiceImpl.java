@@ -3,6 +3,7 @@ package cc.allio.uno.turbo.modules.system.service.impl;
 import cc.allio.uno.core.util.IoUtil;
 import cc.allio.uno.turbo.common.exception.BizException;
 import cc.allio.uno.turbo.common.i18n.ExceptionCodes;
+import cc.allio.uno.turbo.common.mybatis.service.impl.TurboCrudServiceImpl;
 import cc.allio.uno.turbo.common.util.InetUtil;
 import cc.allio.uno.turbo.extension.oss.*;
 import cc.allio.uno.turbo.modules.system.entity.SysAttachment;
@@ -10,7 +11,6 @@ import cc.allio.uno.turbo.modules.system.mapper.SysAttachmentMapper;
 import cc.allio.uno.turbo.modules.system.properties.FileProperties;
 import cc.allio.uno.turbo.modules.system.service.ISysAttachmentService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -32,7 +32,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class SysAttachmentServiceImpl extends ServiceImpl<SysAttachmentMapper, SysAttachment> implements ISysAttachmentService {
+public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachmentMapper, SysAttachment> implements ISysAttachmentService {
 
     private final FileProperties fileProperties;
 
@@ -75,16 +75,16 @@ public class SysAttachmentServiceImpl extends ServiceImpl<SysAttachmentMapper, S
         SysAttachment sysAttachment = getOne(Wrappers.<SysAttachment>lambdaQuery().eq(SysAttachment::getKey, ossPutRequest.getObject()));
         if (sysAttachment == null) {
             sysAttachment = new SysAttachment();
-            sysAttachment.setFilename(file.getName());
-            sysAttachment.setKey(file.getName());
+            sysAttachment.setFilename(file.getOriginalFilename());
+            sysAttachment.setKey(ossPutRequest.getObject());
             sysAttachment.setFilepath(filepath);
             sysAttachment.setProvider(ossExecutor.getProvider());
             save(sysAttachment);
         } else {
             sysAttachment.setProvider(ossExecutor.getProvider());
-            sysAttachment.setFilename(file.getName());
+            sysAttachment.setFilename(file.getOriginalFilename());
+            sysAttachment.setKey(ossPutRequest.getObject());
             sysAttachment.setFilepath(filepath);
-            sysAttachment.setKey(file.getName());
             sysAttachment.setProvider(ossExecutor.getProvider());
             updateById(sysAttachment);
         }

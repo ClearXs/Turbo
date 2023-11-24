@@ -23,4 +23,13 @@ public final class Printer {
     public static void print(String formatContent, Object... source) {
         log.debug(formatContent, JsonUtils.toJson(source));
     }
+
+    /**
+     * 输出错误信息
+     *
+     * @param ex ex
+     */
+    public static void error(Throwable ex) {
+        log.error(ex.getMessage(), ex);
+    }
 }

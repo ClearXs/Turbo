@@ -1,7 +1,7 @@
 package cc.allio.uno.turbo.modules.system.entity;
 
-import cc.allio.uno.core.datastructure.tree.Expand;
-import cc.allio.uno.turbo.common.mybatis.entity.TenantEntity;
+import cc.allio.uno.turbo.common.mybatis.constraint.Unique;
+import cc.allio.uno.turbo.common.mybatis.entity.TreeEntity;
 import cc.allio.uno.turbo.modules.system.constant.MenuType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -14,7 +14,7 @@ import lombok.EqualsAndHashCode;
 @Schema(description = "系统菜单")
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SysMenu extends TenantEntity implements Expand {
+public class SysMenu extends TreeEntity {
 
     /**
      * 菜单名称
@@ -22,6 +22,7 @@ public class SysMenu extends TenantEntity implements Expand {
     @TableField("code")
     @Schema(description = "菜单编码")
     @NotNull
+    @Unique
     private String code;
 
     /**
@@ -46,13 +47,6 @@ public class SysMenu extends TenantEntity implements Expand {
     @TableField("sort")
     @Schema(description = "菜单序号")
     private Integer sort;
-
-    /**
-     * 父级菜单
-     */
-    @TableField("parent_id")
-    @Schema(description = "父级菜单")
-    private Long parentId;
 
     /**
      * 别名

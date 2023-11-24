@@ -7,9 +7,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Comparator;
+
 @Setter
 @Getter
-public class SysMenuTreeVO extends DomainTree<SysMenu> {
+public class SysMenuTree extends DomainTree<SysMenuTree, SysMenu> {
+
+    public SysMenuTree(SysMenu sysMenu) {
+        super(sysMenu, Comparator.comparingInt(SysMenuTree::getSort));
+    }
 
     /**
      * 菜单编码
@@ -59,7 +65,4 @@ public class SysMenuTreeVO extends DomainTree<SysMenu> {
     @Schema(description = "icon")
     private String icon;
 
-    public SysMenuTreeVO(SysMenu expand) {
-        super(expand);
-    }
 }

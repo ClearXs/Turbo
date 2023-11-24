@@ -9,7 +9,7 @@ import cc.allio.uno.turbo.common.util.AuthUtil;
 import cc.allio.uno.turbo.common.web.R;
 import cc.allio.uno.turbo.common.web.TurboController;
 import cc.allio.uno.turbo.modules.system.entity.SysUser;
-import cc.allio.uno.turbo.modules.system.vo.SysMenuTreeVO;
+import cc.allio.uno.turbo.modules.system.vo.SysMenuTree;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
@@ -49,7 +49,7 @@ public class AuthEndpoint extends TurboController {
 
     @GetMapping("/menus")
     @Operation(summary = "获取当前用户菜单")
-    public R<List<SysMenuTreeVO>> currentUserMenus() {
+    public R<List<SysMenuTree>> currentUserMenus() {
         return R.ok(authService.currentUserMenus());
     }
 
@@ -60,17 +60,17 @@ public class AuthEndpoint extends TurboController {
         return success();
     }
 
-    @GetMapping("/changePassword")
+    @PutMapping("/changePassword")
     @Operation(summary = "修改密码")
-    public R changePassword(@Validated @Min(6) String newPassword) throws BizException {
-        authService.changePassword(newPassword);
-        return R.ok();
+    public R<TurboJwtAuthenticationToken> changePassword(@Validated @Min(6) String newPassword) throws BizException {
+        TurboJwtAuthenticationToken newToken = authService.changePassword(newPassword);
+        return R.ok(newToken);
     }
 
-    @GetMapping("/modify")
+    @PutMapping("/modify")
     @Operation(summary = "修改用户信息")
-    public R modify(@Validated @Min(6) String newPassword) throws BizException {
-        authService.changePassword(newPassword);
-        return R.ok();
+    public R<TurboJwtAuthenticationToken> modify(@RequestBody TurboUser user) throws BizException {
+        TurboJwtAuthenticationToken newToken = authService.modify(user);
+        return R.ok(newToken);
     }
 }

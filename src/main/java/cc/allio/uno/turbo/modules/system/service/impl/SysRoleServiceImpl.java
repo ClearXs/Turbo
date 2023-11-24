@@ -1,5 +1,6 @@
 package cc.allio.uno.turbo.modules.system.service.impl;
 
+import cc.allio.uno.turbo.common.mybatis.service.impl.TurboCrudServiceImpl;
 import cc.allio.uno.turbo.modules.system.dto.GrantPermissionDTO;
 import cc.allio.uno.turbo.modules.system.entity.SysRole;
 import cc.allio.uno.turbo.modules.system.entity.SysRoleMenu;
@@ -7,15 +8,15 @@ import cc.allio.uno.turbo.modules.system.service.ISysRoleMenuService;
 import cc.allio.uno.turbo.modules.system.mapper.SysRoleMapper;
 import cc.allio.uno.turbo.modules.system.service.ISysRoleService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> implements ISysRoleService {
+public class SysRoleServiceImpl extends TurboCrudServiceImpl<SysRoleMapper, SysRole> implements ISysRoleService {
 
     private final ISysRoleMenuService sysRoleMenuService;
 
@@ -35,9 +36,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     }
 
     @Override
+    @Transactional
     public boolean grant(GrantPermissionDTO grantPermission) {
-        // 移除当前角色绑定菜单
-        sysRoleMenuService.remove(Wrappers.<SysRoleMenu>lambdaQuery().eq(SysRoleMenu::getRoleId, grantPermission.getRoleId()));
         List<SysRoleMenu> sysRoleMenus = grantPermission.getMenuId()
                 .stream()
                 .map(menuId -> {
@@ -47,6 +47,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                     return sysRoleMenu;
                 })
                 .toList();
+        // 移除当前角色绑定菜单
+        sysRoleMenuService.remove(Wrappers.<SysRoleMenu>lambdaQuery().eq(SysRoleMenu::getRoleId, grantPermission.getRoleId()));
         // TODO 数据权限
         // TODO 接口权限
         return sysRoleMenuService.saveBatch(sysRoleMenus);

@@ -3,8 +3,9 @@ package cc.allio.uno.turbo.modules.auth.service;
 import cc.allio.uno.turbo.modules.auth.authentication.TurboJwtAuthenticationToken;
 import cc.allio.uno.turbo.modules.auth.dto.CaptchaDTO;
 import cc.allio.uno.turbo.common.exception.BizException;
+import cc.allio.uno.turbo.modules.auth.provider.TurboUser;
 import cc.allio.uno.turbo.modules.system.entity.SysUser;
-import cc.allio.uno.turbo.modules.system.vo.SysMenuTreeVO;
+import cc.allio.uno.turbo.modules.system.vo.SysMenuTree;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public interface IAuthService {
      *
      * @return
      */
-    List<SysMenuTreeVO> currentUserMenus();
+    List<SysMenuTree> currentUserMenus();
 
     /**
      * 更改密码
@@ -39,4 +40,12 @@ public interface IAuthService {
      * @return 重新生成的jwt token
      */
     TurboJwtAuthenticationToken changePassword(String newPassword) throws BizException;
+
+    /**
+     * 修改个人信息
+     *
+     * @param user user
+     * @return 重新生成的jwt token
+     */
+    TurboJwtAuthenticationToken modify(TurboUser user) throws BizException;
 }

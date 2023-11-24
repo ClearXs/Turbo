@@ -1,18 +1,17 @@
 package cc.allio.uno.turbo.modules.auth.provider;
 
+import cc.allio.uno.core.bean.MapWrapper;
+import cc.allio.uno.turbo.modules.auth.authority.TurboGrantedAuthority;
 import cc.allio.uno.turbo.modules.system.constant.UserStatus;
 import cc.allio.uno.turbo.modules.system.vo.SysUserVO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -22,60 +21,65 @@ import java.util.stream.Collectors;
  * @date 2023/11/1 16:48
  * @since 1.0.0
  */
+@Setter
 @Getter
 @AllArgsConstructor
 public class TurboUser implements UserDetails {
 
-    private final Set<GrantedAuthority> authorities;
+    private Set<TurboGrantedAuthority> authorities;
 
-    private final boolean accountNonExpired;
+    private boolean accountNonExpired;
 
-    private final boolean accountNonLocked;
+    private boolean accountNonLocked;
 
-    private final boolean credentialsNonExpired;
+    private boolean credentialsNonExpired;
 
-    private final boolean enabled;
+    private boolean enabled;
 
     /**
      * 用户id
      */
-    private final long userId;
+    private long userId;
 
     /**
      * 用户名
      */
-    private final String username;
+    private String username;
 
     /**
      * 密码
      */
-    private final String password;
+    private String password;
 
     /**
      * 邮箱
      */
-    private final String email;
+    private String email;
 
     /**
      * 电话号码
      */
-    private final String phone;
+    private String phone;
 
     /**
      * 头像
      */
-    private final String avatar;
+    private String avatar;
 
     /**
      * 昵称
      */
-    private final String nickname;
+    private String nickname;
 
+    /**
+     * 租户
+     */
+    private Long tenantId;
 
     public TurboUser(SysUserVO user) {
         this.authorities = user.getRoles()
                 .stream()
-                .map(role -> new OAuth2UserAuthority(role.getCode(), Collections.emptyMap()))
+                .map(role -> new TurboGrantedAuthority(role.getId(), role.getCode(), role.getName()))
                 .collect(Collectors.toSet());
         UserStatus userStatus = user.getStatus();
         this.accountNonLocked = userStatus != UserStatus.LOCK;
@@ -89,6 +93,7 @@ public class TurboUser implements UserDetails {
         this.phone = user.getPhone();
         this.avatar = user.getAvatar();
         this.nickname = user.getNickname();
+        this.tenantId = user.getTenantId();
     }
 
     public TurboUser(Jwt jwt) {
@@ -97,9 +102,15 @@ public class TurboUser implements UserDetails {
         this.credentialsNonExpired = jwt.getClaimAsBoolean("credentialsNonExpired");
         this.enabled = jwt.getClaimAsBoolean("enabled");
         this.userId = jwt.getClaim("userId");
-        List<String> claimAuthorities = jwt.getClaimAsStringList("authorities");
+        List<Map<String, Object>> claimAuthorities = jwt.getClaim("authorities");
         this.authorities = claimAuthorities.stream()
-                .map(auth -> new OAuth2UserAuthority(auth, Collections.emptyMap()))
+                .map(auth -> {
+                    MapWrapper wrapper = new MapWrapper(auth);
+                    Long roleId = wrapper.getForce("roleId", Long.class);
+                    String roleCode = wrapper.getForce("roleCode", String.class);
+                    String roleName = wrapper.getForce("roleName", String.class);
+                    return new TurboGrantedAuthority(roleId, roleCode, roleName);
+                })
                 .collect(Collectors.toSet());
         this.username = jwt.getClaimAsString("username");
         this.password = jwt.getClaimAsString("password");
@@ -107,6 +118,7 @@ public class TurboUser implements UserDetails {
         this.phone = jwt.getClaimAsString("phone");
         this.avatar = jwt.getClaimAsString("avatar");
         this.nickname = jwt.getClaimAsString("nickname");
+        this.tenantId = jwt.getClaim("tenantId");
     }
 
     @Override

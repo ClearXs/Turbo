@@ -1,5 +1,6 @@
 package cc.allio.uno.turbo.modules.system.entity;
 
+import cc.allio.uno.turbo.common.mybatis.entity.IdEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -7,18 +8,9 @@ import lombok.Data;
 
 import java.util.Date;
 
-import static com.baomidou.mybatisplus.annotation.IdType.ASSIGN_ID;
-
 @Data
 @TableName("sys_tenant")
-public class SysTenant {
-
-    /**
-     * 主键
-     */
-    @TableId(type = ASSIGN_ID)
-    @Schema(description = "主键")
-    private String tenantId;
+public class SysTenant extends IdEntity {
 
     /**
      * 角色名称

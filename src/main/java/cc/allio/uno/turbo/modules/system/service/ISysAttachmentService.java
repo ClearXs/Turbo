@@ -1,13 +1,13 @@
 package cc.allio.uno.turbo.modules.system.service;
 
 import cc.allio.uno.turbo.common.exception.BizException;
+import cc.allio.uno.turbo.common.mybatis.service.ITurboCrudService;
 import cc.allio.uno.turbo.modules.system.entity.SysAttachment;
-import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
-public interface ISysAttachmentService extends IService<SysAttachment> {
+public interface ISysAttachmentService extends ITurboCrudService<SysAttachment> {
 
     /**
      * 附件上传，通过系统云存储配置进行上传，不存储于本地

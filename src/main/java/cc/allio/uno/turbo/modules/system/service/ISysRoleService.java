@@ -1,12 +1,12 @@
 package cc.allio.uno.turbo.modules.system.service;
 
+import cc.allio.uno.turbo.common.mybatis.service.ITurboCrudService;
 import cc.allio.uno.turbo.modules.system.dto.GrantPermissionDTO;
 import cc.allio.uno.turbo.modules.system.entity.SysRole;
-import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 
-public interface ISysRoleService extends IService<SysRole> {
+public interface ISysRoleService extends ITurboCrudService<SysRole> {
 
     /**
      * 根据角色编码获取角色实体

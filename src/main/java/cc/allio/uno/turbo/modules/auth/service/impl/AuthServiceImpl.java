@@ -1,5 +1,6 @@
 package cc.allio.uno.turbo.modules.auth.service.impl;
 
+import cc.allio.uno.core.util.CoreBeanUtil;
 import cc.allio.uno.core.util.StringUtils;
 import cc.allio.uno.core.util.id.IdGenerator;
 import cc.allio.uno.turbo.modules.auth.properties.SecureProperties;
@@ -22,7 +23,7 @@ import cc.allio.uno.turbo.modules.system.param.SysMenuParam;
 import cc.allio.uno.turbo.modules.system.service.ISysMenuService;
 import cc.allio.uno.turbo.modules.system.service.ISysRoleService;
 import cc.allio.uno.turbo.modules.system.service.ISysUserService;
-import cc.allio.uno.turbo.modules.system.vo.SysMenuTreeVO;
+import cc.allio.uno.turbo.modules.system.vo.SysMenuTree;
 import cc.allio.uno.turbo.modules.system.vo.SysUserVO;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.springboot.captcha.SpecCaptcha;
@@ -71,7 +72,7 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     @Override
-    public List<SysMenuTreeVO> currentUserMenus() {
+    public List<SysMenuTree> currentUserMenus() {
         TurboUser currentUser = AuthUtil.getCurrentUser();
         if (currentUser == null) {
             return Collections.emptyList();
@@ -84,7 +85,7 @@ public class AuthServiceImpl implements IAuthService {
         SysMenuParam sysMenuParam = new SysMenuParam();
         sysMenuParam.setMenuIds(menuIds);
         List<SysMenu> expandTree = menuService.tree(sysMenuParam);
-        return menuService.treeify(expandTree, SysMenuTreeVO.class);
+        return menuService.treeify(expandTree, SysMenuTree.class);
     }
 
     @Override
@@ -101,6 +102,20 @@ public class AuthServiceImpl implements IAuthService {
         // 生成新的jwt
         SysUserVO user = sysUserService.findByUsername(currentUsername);
         return JwtUtil.encode(new TurboUser(user));
+    }
+
+    @Override
+    @Transactional
+    public TurboJwtAuthenticationToken modify(TurboUser user) throws BizException {
+        SysUser sysUser = CoreBeanUtil.copy(user, SysUser.class);
+        if (sysUser == null) {
+            throw new BizException(ExceptionCodes.OPERATE_ERROR);
+        }
+        sysUser.setId(user.getUserId());
+        sysUserService.updateById(sysUser);
+        // 生成新的jwt
+        SysUserVO newUserInfo = sysUserService.findByUsername(user.getUsername());
+        return JwtUtil.encode(new TurboUser(newUserInfo));
     }
 
     private String encryptPassword(String rawPassword) {

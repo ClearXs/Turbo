@@ -1,5 +1,6 @@
 package cc.allio.uno.turbo.modules.system.entity;
 
+import cc.allio.uno.turbo.common.mybatis.constraint.Unique;
 import cc.allio.uno.turbo.common.mybatis.entity.TenantEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -28,6 +29,7 @@ public class SysRole extends TenantEntity {
     @TableField("code")
     @Schema(description = "角色编码")
     @NotBlank
+    @Unique
     private String code;
 
     /**

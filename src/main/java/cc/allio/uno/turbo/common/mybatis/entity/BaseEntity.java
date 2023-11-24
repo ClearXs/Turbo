@@ -10,14 +10,7 @@ import java.util.Date;
 import static com.baomidou.mybatisplus.annotation.IdType.ASSIGN_ID;
 
 @Data
-public abstract class BaseEntity implements Serializable {
-
-    /**
-     * 主键
-     */
-    @TableId(type = ASSIGN_ID)
-    @Schema(description = "主键")
-    private Long id;
+public abstract class BaseEntity extends IdEntity {
 
     /**
      * 创建时间

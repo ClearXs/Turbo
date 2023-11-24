@@ -1,13 +1,13 @@
 package cc.allio.uno.turbo.modules.system.service;
 
 import cc.allio.uno.turbo.common.exception.BizException;
-import cc.allio.uno.turbo.common.mybatis.service.ITurboService;
+import cc.allio.uno.turbo.common.mybatis.service.ITurboTreeCrudService;
 import cc.allio.uno.turbo.modules.system.entity.SysMenu;
 import cc.allio.uno.turbo.modules.system.param.SysMenuParam;
 
 import java.util.List;
 
-public interface ISysMenuService extends ITurboService<SysMenu> {
+public interface ISysMenuService extends ITurboTreeCrudService<SysMenu> {
 
     /**
      * 菜单树查询

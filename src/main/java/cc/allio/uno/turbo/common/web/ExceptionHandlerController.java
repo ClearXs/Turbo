@@ -2,6 +2,8 @@ package cc.allio.uno.turbo.common.web;
 
 import cc.allio.uno.turbo.common.exception.BizException;
 import cc.allio.uno.turbo.common.i18n.LocaleFormatter;
+import cc.allio.uno.turbo.extension.log.Printer;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,10 +26,13 @@ public class ExceptionHandlerController {
      */
     @ResponseBody
     @ExceptionHandler(BizException.class)
-    public R handleBizException(BizException ex) {
+    public R handleBizException(HttpServletResponse response, BizException ex) {
+        printError(ex);
         String i18nCode = ex.getI18nCode();
         String errMsg = LocaleFormatter.getMessage(i18nCode);
-        return R.internalError(errMsg);
+        R<?> r = R.internalError(errMsg);
+        response.setStatus(r.getCode());
+        return r;
     }
 
     /**
@@ -36,6 +41,7 @@ public class ExceptionHandlerController {
     @ResponseBody
     @ExceptionHandler(AuthenticationException.class)
     public R handleAccessDenied(AuthenticationException ex) {
+        printError(ex);
         return R.authorize(ex);
     }
 
@@ -45,6 +51,7 @@ public class ExceptionHandlerController {
     @ResponseBody
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public R handleNotValidateException(MethodArgumentNotValidException ex) {
+        printError(ex);
         return R.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
     }
 
@@ -53,7 +60,14 @@ public class ExceptionHandlerController {
      */
     @ResponseBody
     @ExceptionHandler(Throwable.class)
-    public R handleGeneralException(Throwable ex) {
-        return R.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+    public R handleGeneralException(HttpServletResponse response, Throwable ex) {
+        printError(ex);
+        R<?> r = R.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+        response.setStatus(r.getCode());
+        return r;
+    }
+
+    private void printError(Throwable ex) {
+        Printer.error(ex);
     }
 }

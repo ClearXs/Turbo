@@ -2,6 +2,7 @@ package cc.allio.uno.turbo.modules.system.service.impl;
 
 import cc.allio.uno.core.util.CoreBeanUtil;
 import cc.allio.uno.core.util.ObjectUtils;
+import cc.allio.uno.turbo.common.mybatis.service.impl.TurboCrudServiceImpl;
 import cc.allio.uno.turbo.modules.auth.properties.SecureProperties;
 import cc.allio.uno.turbo.common.exception.BizException;
 import cc.allio.uno.turbo.common.i18n.ExceptionCodes;
@@ -17,7 +18,6 @@ import cc.allio.uno.turbo.modules.system.entity.SysUserRole;
 import cc.allio.uno.turbo.modules.system.service.ISysRoleService;
 import cc.allio.uno.turbo.modules.system.vo.SysUserVO;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements ISysUserService {
+public class SysUserServiceImpl extends TurboCrudServiceImpl<SysUserMapper, SysUser> implements ISysUserService {
 
     private final SecureProperties secureProperties;
     private final ISysRoleService roleService;
@@ -34,17 +34,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     @Transactional
-    public boolean saveUser(SysUser sysUser) throws BizException {
+    public boolean saveOrUpdate(SysUser sysUser) {
         // 1.验证是否有相同的用户名（考虑后续手机号、邮箱）
         long count = count(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getUsername, sysUser.getUsername()));
         if (count > 0) {
-            throw new BizException(ExceptionCodes.USER_REPEAT);
+            try {
+                throw new BizException(ExceptionCodes.USER_REPEAT);
+            } catch (BizException e) {
+                throw new RuntimeException(e);
+            }
         }
         SecureUtil.SecureCipher secureCipher = SecureUtil.getSecureCipher(secureProperties.getSecureAlgorithm());
         String encryptPassword = secureCipher.encrypt(sysUser.getPassword(), secureProperties.getSecretKey(), null);
         sysUser.setPassword(encryptPassword);
         sysUser.setStatus(UserStatus.ENABLE);
-        return save(sysUser);
+        return super.saveOrUpdate(sysUser);
     }
 
     @Override

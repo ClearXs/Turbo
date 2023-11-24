@@ -2,7 +2,7 @@ package cc.allio.uno.turbo.modules.system.service.impl;
 
 import cc.allio.uno.turbo.common.exception.BizException;
 import cc.allio.uno.turbo.common.i18n.ExceptionCodes;
-import cc.allio.uno.turbo.common.mybatis.service.impl.TurboServiceImpl;
+import cc.allio.uno.turbo.common.mybatis.service.impl.TurboTreeCrudServiceImpl;
 import cc.allio.uno.turbo.modules.system.entity.SysMenu;
 import cc.allio.uno.turbo.modules.system.mapper.SysMenuMapper;
 import cc.allio.uno.turbo.modules.system.service.ISysMenuService;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SysMenuServiceImpl extends TurboServiceImpl<SysMenuMapper, SysMenu> implements ISysMenuService {
+public class SysMenuServiceImpl extends TurboTreeCrudServiceImpl<SysMenuMapper, SysMenu> implements ISysMenuService {
 
     @Override
     public List<SysMenu> tree(SysMenuParam menuParam) {

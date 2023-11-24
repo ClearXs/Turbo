@@ -30,9 +30,6 @@ public class TurboUserDetailsService implements UserDetailsService {
         } catch (BizException e) {
             throw new UsernameNotFoundException(String.format("username %s not found", username));
         }
-        // 1.角色授权
-        user.setRoles(Collections.emptyList());
-        // 2.权限授予
         return new TurboUser(user);
     }
 }
