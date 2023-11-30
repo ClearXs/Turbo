@@ -1,4 +1,4 @@
-package cc.allio.uno.turbo.common.mybatis.params;
+package cc.allio.uno.turbo.common.web.params;
 
 import cc.allio.uno.turbo.common.constant.Direction;
 import io.swagger.v3.oas.annotations.media.Schema;

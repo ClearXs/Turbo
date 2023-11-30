@@ -3,10 +3,11 @@ package cc.allio.uno.turbo.common.web;
 import cc.allio.uno.turbo.common.exception.BizException;
 import cc.allio.uno.turbo.common.mybatis.help.Conditions;
 import cc.allio.uno.turbo.common.mybatis.entity.IdEntity;
-import cc.allio.uno.turbo.common.mybatis.params.GeneralParams;
+import cc.allio.uno.turbo.common.web.params.QueryParam;
 import cc.allio.uno.turbo.common.mybatis.service.ITurboCrudService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,7 +53,7 @@ public abstract class TurboCrudController<T extends IdEntity, S extends ITurboCr
      * 保存或者更新
      */
     @Operation(summary = "保存或修改")
-    @PutMapping("/save-or-update")
+    @PostMapping("/save-or-update")
     public R<Boolean> saveOrUpdate(@Validated @RequestBody T entity) {
         boolean edit = service.saveOrUpdate(entity, Wrappers.<T>query().eq("id", entity.getId()));
         return ok(edit);
@@ -93,8 +94,8 @@ public abstract class TurboCrudController<T extends IdEntity, S extends ITurboCr
      */
     @PostMapping("/list")
     @Operation(summary = "列表")
-    public R<List<T>> list(@RequestBody GeneralParams<T> params) throws BizException {
-        QueryWrapper<T> queryWrapper = Conditions.query(params);
+    public R<List<T>>  list(@RequestBody QueryParam<T> params) throws BizException {
+        QueryWrapper<T> queryWrapper = Conditions.query(params, getEntityType());
         List<T> list = service.list(queryWrapper);
         return ok(list);
     }
@@ -104,10 +105,17 @@ public abstract class TurboCrudController<T extends IdEntity, S extends ITurboCr
      */
     @Operation(summary = "分页")
     @PostMapping("/page")
-    public R<IPage<T>> page(@RequestBody GeneralParams<T> params) {
-        QueryWrapper<T> queryWrapper = Conditions.query(params);
+    public R<IPage<T>> page(@RequestBody QueryParam<T> params) {
+        QueryWrapper<T> queryWrapper = Conditions.query(params, getEntityType());
         Page<T> entityPage = service.page(params.getPage(), queryWrapper);
         return ok(entityPage);
+    }
+
+    /**
+     * 获取实体类型
+     */
+    protected Class<T> getEntityType() {
+        return (Class<T>) ReflectionKit.getSuperClassGenericType(this.getClass(), TurboCrudController.class, 0);
     }
 
     protected S getService() {

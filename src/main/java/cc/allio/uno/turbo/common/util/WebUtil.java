@@ -20,6 +20,9 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
     public static final String Authentication = "X-Authentication";
     public static final String Tenant = "X-Tenant";
 
+    private WebUtil() {
+    }
+
     /**
      * 获取http request中的租户号
      *

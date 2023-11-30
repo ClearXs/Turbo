@@ -13,8 +13,4 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 @Tag(name = "组织")
 public class SysOrgController extends TurboTreeCrudController<SysOrgTree, SysOrg> {
-    @Override
-    protected Class<SysOrgTree> getTreeType() {
-        return SysOrgTree.class;
-    }
 }

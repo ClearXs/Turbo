@@ -1,5 +1,6 @@
 package cc.allio.uno.turbo.modules.system.vo;
 
+import cc.allio.uno.turbo.modules.system.entity.SysOrg;
 import cc.allio.uno.turbo.modules.system.entity.SysRole;
 import cc.allio.uno.turbo.modules.system.entity.SysUser;
 import lombok.Data;
@@ -22,4 +23,9 @@ public class SysUserVO extends SysUser {
      * 角色信息
      */
     private List<SysRole> roles;
+
+    /**
+     * 组织信息
+     */
+    private List<SysOrg> orgs;
 }

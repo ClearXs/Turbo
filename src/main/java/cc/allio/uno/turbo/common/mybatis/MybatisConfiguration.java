@@ -2,17 +2,22 @@ package cc.allio.uno.turbo.common.mybatis;
 
 import cc.allio.uno.turbo.common.mybatis.handle.BaseChangeMetaObjectHandler;
 import cc.allio.uno.turbo.common.mybatis.id.SnowflakeIdentifierGenerator;
+import cc.allio.uno.turbo.common.mybatis.injetor.TurboSqlInjector;
 import cc.allio.uno.turbo.common.mybatis.plugins.inner.ConstraintInnerInterceptor;
 import cc.allio.uno.turbo.common.mybatis.plugins.inner.TurboTenantLineHandler;
 import cc.allio.uno.turbo.common.persistent.PersistentProperties;
+import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@AutoConfigureBefore(MybatisPlusAutoConfiguration.class)
 public class MybatisConfiguration {
 
     @Bean
@@ -23,6 +28,11 @@ public class MybatisConfiguration {
     @Bean
     public SnowflakeIdentifierGenerator snowflakeIdentifierGenerator() {
         return new SnowflakeIdentifierGenerator();
+    }
+
+    @Bean
+    public TurboSqlInjector turboSqlInjector() {
+        return new TurboSqlInjector();
     }
 
     @Bean

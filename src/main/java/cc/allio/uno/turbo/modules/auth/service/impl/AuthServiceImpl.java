@@ -19,7 +19,6 @@ import cc.allio.uno.turbo.common.util.SecureUtil;
 import cc.allio.uno.turbo.modules.system.entity.SysMenu;
 import cc.allio.uno.turbo.modules.system.entity.SysRole;
 import cc.allio.uno.turbo.modules.system.entity.SysUser;
-import cc.allio.uno.turbo.modules.system.param.SysMenuParam;
 import cc.allio.uno.turbo.modules.system.service.ISysMenuService;
 import cc.allio.uno.turbo.modules.system.service.ISysRoleService;
 import cc.allio.uno.turbo.modules.system.service.ISysUserService;
@@ -81,11 +80,8 @@ public class AuthServiceImpl implements IAuthService {
         // TODO 需要优化该接口的查询逻辑
         List<SysRole> roles = roleService.getRolesByUser(userId);
         List<Long> menuIds = roleService.getRoleMenuIdByIds(roles.stream().map(SysRole::getId).toList());
-        // 根据菜单id获取菜单树
-        SysMenuParam sysMenuParam = new SysMenuParam();
-        sysMenuParam.setMenuIds(menuIds);
-        List<SysMenu> expandTree = menuService.tree(sysMenuParam);
-        return menuService.treeify(expandTree, SysMenuTree.class);
+        // 获取菜单树
+        return menuService.tree(Wrappers.<SysMenu>lambdaQuery().in(SysMenu::getId, menuIds), SysMenuTree.class);
     }
 
     @Override
@@ -118,7 +114,8 @@ public class AuthServiceImpl implements IAuthService {
         return JwtUtil.encode(new TurboUser(newUserInfo));
     }
 
-    private String encryptPassword(String rawPassword) {
+    @Override
+    public String encryptPassword(String rawPassword) {
         SecureUtil.SecureCipher secureCipher = SecureUtil.getSecureCipher(secureProperties.getSecureAlgorithm());
         return secureCipher.encrypt(rawPassword, secureProperties.getSecretKey(), null);
     }

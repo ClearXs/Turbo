@@ -18,6 +18,9 @@ import java.util.Optional;
 @Slf4j
 public final class AuthUtil {
 
+    private AuthUtil() {
+    }
+
     /**
      * 获取当前登陆用户的id
      *

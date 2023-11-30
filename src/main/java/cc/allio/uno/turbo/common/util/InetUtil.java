@@ -18,6 +18,8 @@ import java.net.UnknownHostException;
 @Slf4j
 public final class InetUtil {
 
+    private InetUtil() {
+    }
 
     /**
      * 获取当前系统的Http协议下的系统地址

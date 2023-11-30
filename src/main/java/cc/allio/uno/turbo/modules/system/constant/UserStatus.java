@@ -16,7 +16,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum UserStatus {
     ENABLE("ENABLE", "启用"),
-    LOCK("LOCK", "异常");
+    LOCK("LOCK", "锁定");
 
     @JsonValue
     @EnumValue

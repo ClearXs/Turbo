@@ -14,6 +14,6 @@ public class TreeEntity extends TenantEntity implements Expand {
      * 父级菜单
      */
     @TableField("parent_id")
-    @Schema(description = "父级菜单")
+    @Schema(description = "父项")
     private Long parentId;
 }

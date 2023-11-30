@@ -1,5 +1,7 @@
 mybatis-plus:
   type-aliases-package: cc.allio.uno.turbo.**.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 spring:
   datasource:
@@ -12,3 +14,5 @@ persistent:
   tenant:
     ignore-list:
       - student
+      - org
+      - biz_tree

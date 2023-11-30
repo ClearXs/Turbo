@@ -13,8 +13,4 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "菜单")
 public class SysMenuController extends TurboTreeCrudController<SysMenuTree, SysMenu> {
 
-    @Override
-    protected Class<SysMenuTree> getTreeType() {
-        return SysMenuTree.class;
-    }
 }

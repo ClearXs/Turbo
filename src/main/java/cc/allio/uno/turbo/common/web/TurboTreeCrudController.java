@@ -4,34 +4,37 @@ import cc.allio.uno.turbo.common.exception.BizException;
 import cc.allio.uno.turbo.common.i18n.ExceptionCodes;
 import cc.allio.uno.turbo.common.mybatis.help.Conditions;
 import cc.allio.uno.turbo.common.mybatis.entity.TreeEntity;
-import cc.allio.uno.turbo.common.mybatis.params.GeneralParams;
+import cc.allio.uno.turbo.common.web.params.QueryParam;
 import cc.allio.uno.turbo.common.mybatis.service.ITurboTreeCrudService;
 import cc.allio.uno.turbo.common.support.DomainTree;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
 public abstract class TurboTreeCrudController<Z extends DomainTree<Z, T>, T extends TreeEntity>
         extends TurboCrudController<T, ITurboTreeCrudService<T>> {
 
-    @GetMapping("/tree")
-    @Operation(summary = "树")
-    public R<List<Z>> tree(GeneralParams<T> params) throws BizException {
-        ITurboTreeCrudService<T> service = getService();
-        QueryWrapper<T> queryWrapper = Conditions.query(params);
-        List<T> list = service.list(queryWrapper);
+    @PostMapping("/tree")
+    @Operation(summary = "树查询")
+    public R<List<Z>> tree(@RequestBody QueryParam<T> params) throws BizException {
         Class<Z> treeType = getTreeType();
         if (treeType == null) {
             throw new BizException(ExceptionCodes.OPERATE_ERROR);
         }
-        List<Z> treeify = service.treeify(list, treeType);
+        ITurboTreeCrudService<T> service = getService();
+        QueryWrapper<T> queryWrapper = Conditions.query(params, getEntityType());
+        List<Z> treeify = service.tree(queryWrapper, treeType);
         return ok(treeify);
     }
 
     /**
      * 获取树类型
      */
-    protected abstract Class<Z> getTreeType();
+    protected Class<Z> getTreeType() {
+        return (Class<Z>) ReflectionKit.getSuperClassGenericType(this.getClass(), TurboTreeCrudController.class, 0);
+    }
 }

@@ -15,6 +15,6 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
-#logging:
-#  level:
-#    org.springframework: debug
+logging:
+  level:
+    cc.allio.uno: info

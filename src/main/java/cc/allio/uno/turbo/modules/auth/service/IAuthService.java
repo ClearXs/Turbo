@@ -48,4 +48,12 @@ public interface IAuthService {
      * @return 重新生成的jwt token
      */
     TurboJwtAuthenticationToken modify(TurboUser user) throws BizException;
+
+    /**
+     * 通用系统的加密算法对密码加密
+     *
+     * @param rawPassword 明文密码
+     * @return 密文
+     */
+    String encryptPassword(String rawPassword);
 }

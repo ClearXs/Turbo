@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@TableName("sys_menu")
+@TableName("sys_dic")
 @Schema(description = "系统菜单")
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -28,7 +28,7 @@ public class SysDic extends TreeEntity {
      * 字典编码
      */
     @TableField("code")
-    @Schema(description = "字典类型")
+    @Schema(description = "字典编码")
     @NotNull
     @Unique
     private String code;
