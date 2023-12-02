@@ -11,6 +11,6 @@ import cc.allio.uno.turbo.common.mybatis.service.ITurboCrudService;
  * @since 1.0.0
  */
 public abstract class GenericTurboCrudController<T extends IdEntity>
-        extends TurboCrudController<T, ITurboCrudService<T>> {
+        extends TurboCrudController<T, ITurboCrudService<T>, T> {
 
 }

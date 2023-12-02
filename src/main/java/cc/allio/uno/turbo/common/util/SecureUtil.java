@@ -1,10 +1,10 @@
 package cc.allio.uno.turbo.common.util;
 
 import cc.allio.uno.core.StringPool;
-import cc.allio.uno.core.util.FileUtils;
+import cc.allio.uno.core.env.Envs;
 import cc.allio.uno.core.util.IoUtil;
+import cc.allio.uno.core.util.StringUtils;
 import cc.allio.uno.turbo.common.constant.SecureAlgorithm;
-import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,6 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
@@ -26,7 +25,6 @@ import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
-import java.util.List;
 
 /**
  * 安全相关工具类
@@ -50,13 +48,37 @@ public class SecureUtil {
     private static final String PBE_ALGORITHM = "PBEWithMD5andDES";
     private static final String AES_ALGORITHM = "AES";
     private static final PBECipher pbeCipher = new PBECipher();
-    public static final AESCipher aecCipher = new AESCipher();
+    private static final AESCipher aesCipher = new AESCipher();
+
+    /**
+     * 获取当前系统使用的密钥
+     */
+    public static String getSystemSecretKey() {
+        return Envs.getProperty("secure.secret-key");
+    }
+
+    /**
+     * 获取当前系统使用的加密算法，如果系统没有内置则使用AES作为默认
+     */
+    public static SecureCipher getSystemSecureCipher() {
+        String algorithm = Envs.getProperty("secure.secure-algorithm");
+        if (StringUtils.isBlank(algorithm)) {
+            return aesCipher;
+        } else {
+            SecureAlgorithm secureAlgorithm = SecureAlgorithm.getAlgorithm(algorithm);
+            if (secureAlgorithm == null) {
+                return aesCipher;
+            } else {
+                return getSecureCipher(secureAlgorithm);
+            }
+        }
+    }
 
     public static SecureCipher getSecureCipher(SecureAlgorithm algorithm) {
         if (SecureAlgorithm.PBE == algorithm) {
             return pbeCipher;
         }
-        return aecCipher;
+        return aesCipher;
     }
 
     public static class AESCipher implements SecureCipher {

@@ -16,9 +16,9 @@ import java.util.function.Supplier;
  */
 public class TurboCacheManager extends AbstractCacheManager {
 
-    private final List<TurboCache> caches;
+    private final List<TurboCache<?>> caches;
 
-    public TurboCacheManager(List<TurboCache> caches) {
+    public TurboCacheManager(List<TurboCache<?>> caches) {
         this.caches = caches;
     }
 
@@ -62,13 +62,7 @@ public class TurboCacheManager extends AbstractCacheManager {
      * @param cacheName cacheName
      */
     public void createCache(String cacheName) {
-        TurboCache defaultCache =
-                new PrefixKeyRedisCache() {
-                    @Override
-                    public String getName() {
-                        return cacheName;
-                    }
-                };
+        TurboCache<?> defaultCache = new DefaultTurboCache<>(cacheName);
         caches.add(defaultCache);
         initializeCaches();
     }
@@ -78,7 +72,7 @@ public class TurboCacheManager extends AbstractCacheManager {
      *
      * @param cache cache instance
      */
-    public void createCache(TurboCache cache) {
+    public void createCache(TurboCache<?> cache) {
         caches.add(cache);
         initializeCaches();
     }

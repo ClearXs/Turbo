@@ -10,5 +10,9 @@ package cc.allio.uno.turbo.common.constant;
 public enum SecureAlgorithm {
 
     AES,
-    PBE
+    PBE;
+
+    public static SecureAlgorithm getAlgorithm(String algorithm) {
+        return valueOf(algorithm);
+    }
 }

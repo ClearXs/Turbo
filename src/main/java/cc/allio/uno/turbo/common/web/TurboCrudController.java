@@ -1,5 +1,6 @@
 package cc.allio.uno.turbo.common.web;
 
+import cc.allio.uno.core.util.ReflectTool;
 import cc.allio.uno.turbo.common.exception.BizException;
 import cc.allio.uno.turbo.common.mybatis.help.Conditions;
 import cc.allio.uno.turbo.common.mybatis.entity.IdEntity;
@@ -7,10 +8,10 @@ import cc.allio.uno.turbo.common.web.params.QueryParam;
 import cc.allio.uno.turbo.common.mybatis.service.ITurboCrudService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +24,12 @@ import java.util.List;
  * @author j.x
  * @date 2023/11/16 18:10
  * @since 1.0.0
+ * @param <T> 实体结构
+ * @param <S> 实体对应service类型
+ * @param <V> 复合类型（或者成为VO）
  */
-public abstract class TurboCrudController<T extends IdEntity, S extends ITurboCrudService<T>> extends TurboController {
+@Getter
+public abstract class TurboCrudController<T extends IdEntity, S extends ITurboCrudService<T>, V extends T> extends TurboController {
 
     @Autowired
     protected S service;
@@ -84,8 +89,8 @@ public abstract class TurboCrudController<T extends IdEntity, S extends ITurboCr
      */
     @Operation(summary = "详情")
     @GetMapping("/details")
-    public R<T> details(long id) {
-        T entity = service.getById(id);
+    public R<V> details(long id) {
+        V entity = service.details(id);
         return ok(entity);
     }
 
@@ -115,10 +120,6 @@ public abstract class TurboCrudController<T extends IdEntity, S extends ITurboCr
      * 获取实体类型
      */
     protected Class<T> getEntityType() {
-        return (Class<T>) ReflectionKit.getSuperClassGenericType(this.getClass(), TurboCrudController.class, 0);
-    }
-
-    protected S getService() {
-        return service;
+        return (Class<T>) ReflectTool.getGenericType(this, TurboCrudController.class);
     }
 }

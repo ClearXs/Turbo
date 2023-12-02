@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @Tag(name = "云存储配置")
 public class SysCloudStorageConfigController
-        extends TurboCrudController<SysCloudStorageConfig, ISysCloudStorageConfigService> {
+        extends TurboCrudController<SysCloudStorageConfig, ISysCloudStorageConfigService, SysCloudStorageConfig> {
 
     @PutMapping("/enable")
     @Operation(summary = "是否启用")
-    public R enable(long id, Enable enable) {
-        return bool(getService().enable(id, enable));
+    public R enable(@RequestBody Long id) {
+        return bool(getService().enable(id, Enable.ENABLE));
     }
 
 }

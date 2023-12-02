@@ -74,4 +74,11 @@ public class SysUser extends TenantEntity {
     @TableField("nickname")
     @Schema(description = "昵称")
     private String nickname;
+
+    /**
+     * 所属组织
+     */
+    @TableField("org_id")
+    @Schema(description = "所属组织")
+    private Long orgId;
 }

@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class TreeEntity extends TenantEntity implements Expand {
+public abstract class TreeEntity extends TenantEntity implements Expand {
 
     /**
      * 父级菜单

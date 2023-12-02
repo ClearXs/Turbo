@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/sys/role")
 @AllArgsConstructor
 @Tag(name = "角色")
-public class SysRoleController extends TurboCrudController<SysRole, ISysRoleService> {
+public class SysRoleController extends TurboCrudController<SysRole, ISysRoleService, SysRole> {
 
     @PostMapping("/grant")
     @Operation(summary = "授权")

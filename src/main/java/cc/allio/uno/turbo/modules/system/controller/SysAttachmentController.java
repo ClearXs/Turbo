@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/sys/attachment")
 @Tag(name = "附件")
-public class SysAttachmentController extends TurboCrudController<SysAttachment, ISysAttachmentService> {
+public class SysAttachmentController extends TurboCrudController<SysAttachment, ISysAttachmentService, SysAttachment> {
 
     @PostMapping("/upload")
     @Operation(summary = "上传")

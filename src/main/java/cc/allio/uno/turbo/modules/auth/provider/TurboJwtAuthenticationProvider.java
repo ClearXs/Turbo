@@ -8,7 +8,7 @@ import cc.allio.uno.turbo.modules.auth.exception.CaptchaError;
 import cc.allio.uno.turbo.modules.auth.exception.CaptchaExpiredException;
 import cc.allio.uno.turbo.modules.auth.params.LoginParams;
 import cc.allio.uno.turbo.common.util.JwtUtil;
-import cc.allio.uno.turbo.common.cache.Caches;
+import cc.allio.uno.turbo.common.cache.CacheHelper;
 import cc.allio.uno.turbo.common.cache.TurboCache;
 import cc.allio.uno.turbo.common.util.WebUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,7 +60,7 @@ public class TurboJwtAuthenticationProvider extends DaoAuthenticationProvider {
             throw new AuthenticationServiceException("login request not standard, it's must be 'content-type':'application/json' 'request-method':'POST' 'url':'/auth/login'");
         }
         // 2.验证验证码
-        TurboCache cache = Caches.getIfAbsent(Caches.CAPTCHA);
+        TurboCache cache = CacheHelper.getIfAbsent(CacheHelper.CAPTCHA);
         LoginParams loginParams = getLoginParams(request);
         String captchaId = loginParams.getCaptchaId();
         // 判断是否存在

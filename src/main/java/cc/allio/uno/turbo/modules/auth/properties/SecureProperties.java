@@ -24,7 +24,7 @@ public class SecureProperties {
     /**
      * 加密算法
      */
-    private SecureAlgorithm secureAlgorithm;
+    private SecureAlgorithm secureAlgorithm = SecureAlgorithm.AES;
 
     /**
      * jwt配置

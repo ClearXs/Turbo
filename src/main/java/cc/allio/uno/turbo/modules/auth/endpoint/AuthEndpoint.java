@@ -8,6 +8,9 @@ import cc.allio.uno.turbo.common.exception.BizException;
 import cc.allio.uno.turbo.common.util.AuthUtil;
 import cc.allio.uno.turbo.common.web.R;
 import cc.allio.uno.turbo.common.web.TurboController;
+import cc.allio.uno.turbo.modules.system.entity.SysOrg;
+import cc.allio.uno.turbo.modules.system.entity.SysPost;
+import cc.allio.uno.turbo.modules.system.entity.SysRole;
 import cc.allio.uno.turbo.modules.system.entity.SysUser;
 import cc.allio.uno.turbo.modules.system.vo.SysMenuTree;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,7 +53,29 @@ public class AuthEndpoint extends TurboController {
     @GetMapping("/menus")
     @Operation(summary = "获取当前用户菜单")
     public R<List<SysMenuTree>> currentUserMenus() {
-        return R.ok(authService.currentUserMenus());
+        List<SysMenuTree> sysMenuTrees = authService.currentUserMenus();
+        return R.ok(sysMenuTrees);
+    }
+
+    @GetMapping("/current-user-org")
+    @Operation(summary = "获取当前用户组织")
+    public R<SysOrg> currentUserOrg() {
+        SysOrg sysOrg = authService.currentUserOrg();
+        return R.ok(sysOrg);
+    }
+
+    @GetMapping("/current-user-role")
+    @Operation(summary = "获取当前用户角色")
+    public R<List<SysRole>> currentUserRole() {
+        List<SysRole> sysRoles = authService.currentUserRole();
+        return R.ok(sysRoles);
+    }
+
+    @GetMapping("/current-user-post")
+    @Operation(summary = "获取当前用户岗位")
+    public R<List<SysPost>> currentUserPost() {
+        List<SysPost> sysPosts = authService.currentUserPost();
+        return R.ok(sysPosts);
     }
 
     @GetMapping("/logout")
@@ -62,8 +87,8 @@ public class AuthEndpoint extends TurboController {
 
     @PutMapping("/changePassword")
     @Operation(summary = "修改密码")
-    public R<TurboJwtAuthenticationToken> changePassword(@Validated @Min(6) String newPassword) throws BizException {
-        TurboJwtAuthenticationToken newToken = authService.changePassword(newPassword);
+    public R<TurboJwtAuthenticationToken> changePassword(@Validated @Min(6) String rawPassword, @Min(6) String newPassword) throws BizException {
+        TurboJwtAuthenticationToken newToken = authService.changePassword(rawPassword, newPassword);
         return R.ok(newToken);
     }
 

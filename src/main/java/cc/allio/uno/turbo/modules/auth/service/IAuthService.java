@@ -4,6 +4,9 @@ import cc.allio.uno.turbo.modules.auth.authentication.TurboJwtAuthenticationToke
 import cc.allio.uno.turbo.modules.auth.dto.CaptchaDTO;
 import cc.allio.uno.turbo.common.exception.BizException;
 import cc.allio.uno.turbo.modules.auth.provider.TurboUser;
+import cc.allio.uno.turbo.modules.system.entity.SysOrg;
+import cc.allio.uno.turbo.modules.system.entity.SysPost;
+import cc.allio.uno.turbo.modules.system.entity.SysRole;
 import cc.allio.uno.turbo.modules.system.entity.SysUser;
 import cc.allio.uno.turbo.modules.system.vo.SysMenuTree;
 
@@ -39,7 +42,7 @@ public interface IAuthService {
      * @param newPassword 新密码
      * @return 重新生成的jwt token
      */
-    TurboJwtAuthenticationToken changePassword(String newPassword) throws BizException;
+    TurboJwtAuthenticationToken changePassword(String rawPassword, String newPassword) throws BizException;
 
     /**
      * 修改个人信息
@@ -56,4 +59,19 @@ public interface IAuthService {
      * @return 密文
      */
     String encryptPassword(String rawPassword);
+
+    /**
+     * 获取当前用户组织
+     */
+    SysOrg currentUserOrg();
+
+    /**
+     * 获取当前用户角色
+     */
+    List<SysRole> currentUserRole();
+
+    /**
+     * 获取当前用户岗位
+     */
+    List<SysPost> currentUserPost();
 }

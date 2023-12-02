@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationContextAware;
  * @date 2023/10/27 15:56
  * @since 1.0.0
  */
-public class Caches implements ApplicationContextAware {
+public class CacheHelper implements ApplicationContextAware {
 
     // 记录缓存名称
     public static final String CAPTCHA = "captcha";
@@ -20,7 +20,7 @@ public class Caches implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        Caches.cacheManager = applicationContext.getBean(TurboCacheManager.class);
+        CacheHelper.cacheManager = applicationContext.getBean(TurboCacheManager.class);
     }
 
     /**
@@ -29,8 +29,8 @@ public class Caches implements ApplicationContextAware {
      * @param cacheName cacheName
      * @return TurboCache instance
      */
-    public static TurboCache getCache(String cacheName) {
-        return (TurboCache) cacheManager.getCache(cacheName);
+    public static <T> TurboCache<T> getCache(String cacheName) {
+        return (TurboCache<T>) cacheManager.getCache(cacheName);
     }
 
     /**
@@ -39,7 +39,7 @@ public class Caches implements ApplicationContextAware {
      * @param cacheName cacheName must be unique
      * @return TurboCache
      */
-    public static TurboCache getIfAbsent(String cacheName) {
+    public static <T> TurboCache<T> getIfAbsent(String cacheName) {
         return cacheManager.getIfAbsent(cacheName);
     }
 }

@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * @see org.springframework.data.redis.cache.RedisCache
  * @since 1.0.0
  */
-public abstract class PrefixKeyRedisCache implements TenantCache {
+public abstract class PrefixKeyRedisCache<T> implements TenantCache<T> {
 
     // 默认key前缀模版
     private static final String PREFIX_TEMPLATE = "turbo:#{name}:";
@@ -49,7 +49,7 @@ public abstract class PrefixKeyRedisCache implements TenantCache {
     }
 
     @Override
-    public boolean hasKey(Object key) {
+    public boolean hasKey(String key) {
         String cacheKey = createCacheKey(key);
 
         return RedisUtil.hasKey(cacheKey);
@@ -63,7 +63,7 @@ public abstract class PrefixKeyRedisCache implements TenantCache {
     }
 
     @Override
-    public Long getExpire(Object key, TimeUnit unit) {
+    public Long getExpire(String key, TimeUnit unit) {
         String cacheKey = createCacheKey(key);
         return RedisUtil.getExpire(cacheKey);
     }

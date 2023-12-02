@@ -51,5 +51,5 @@ public interface ISysRoleService extends ITurboCrudService<SysRole> {
      * @param userId userId
      * @return
      */
-    List<SysRole> getRolesByUser(Long userId);
+    List<SysRole> findRolesByUserId(Long userId);
 }

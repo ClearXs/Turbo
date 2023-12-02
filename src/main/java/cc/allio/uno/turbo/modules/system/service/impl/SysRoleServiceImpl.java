@@ -55,7 +55,7 @@ public class SysRoleServiceImpl extends TurboCrudServiceImpl<SysRoleMapper, SysR
     }
 
     @Override
-    public List<SysRole> getRolesByUser(Long userId) {
+    public List<SysRole> findRolesByUserId(Long userId) {
         return getBaseMapper().findSysRoleByUserId(userId);
     }
 }

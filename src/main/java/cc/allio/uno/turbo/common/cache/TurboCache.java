@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2023/10/27 14:47
  * @since 1.0.0
  */
-public interface TurboCache extends Cache {
+public interface TurboCache<T> extends Cache {
 
     /**
      * 在缓存中是否存在指定的key
@@ -19,7 +19,7 @@ public interface TurboCache extends Cache {
      * @param key key
      * @return true or false
      */
-    boolean hasKey(Object key);
+    boolean hasKey(String key);
 
     /**
      * 设置key过期时间
@@ -30,7 +30,7 @@ public interface TurboCache extends Cache {
      * @param timeUnit timeUnit
      * @param <T>      泛型
      */
-    default <T> void setEx(String key, T value, long time, TimeUnit timeUnit) {
+    default void setEx(String key, T value, long time, TimeUnit timeUnit) {
         setEx(key, () -> value, time, timeUnit);
     }
 
@@ -50,7 +50,7 @@ public interface TurboCache extends Cache {
      * @param key key
      * @return expire for time
      */
-    default Long getExpire(Object key) {
+    default Long getExpire(String key) {
         return getExpire(key, TimeUnit.MICROSECONDS);
     }
 
@@ -61,5 +61,5 @@ public interface TurboCache extends Cache {
      * @param unit unit
      * @return expire for time
      */
-    Long getExpire(Object key, TimeUnit unit);
+    Long getExpire(String key, TimeUnit unit);
 }

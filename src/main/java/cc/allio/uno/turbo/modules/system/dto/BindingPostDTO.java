@@ -7,15 +7,15 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * 绑定组织
+ * 绑定岗位
  *
  * @author j.x
- * @date 2023/11/30 11:28
+ * @date 2023/12/1 11:34
  * @since 1.0.0
  */
 @Data
-@Schema(description = "绑定组织数据传输对象")
-public class BindingOrgDTO {
+@Schema(description = "绑定岗位数据传输对象")
+public class BindingPostDTO {
 
     /**
      * 用户id
@@ -25,9 +25,9 @@ public class BindingOrgDTO {
     private Long userId;
 
     /**
-     * 用户id
+     * 岗位ids
      */
-    @Schema(description = "组织id")
+    @Schema(description = "岗位ids")
     @NotNull
-    private Long orgId;
+    private List<Long> postIds;
 }

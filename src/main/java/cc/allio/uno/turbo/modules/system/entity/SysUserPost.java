@@ -7,9 +7,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@TableName("sys_user_org")
-@Schema(description = "用户组织关联")
-public class SysUserOrg extends IdEntity {
+@TableName("sys_user_post")
+@Schema(description = "用户岗位关联")
+public class SysUserPost extends IdEntity {
 
     /**
      * 用户id
@@ -21,7 +21,7 @@ public class SysUserOrg extends IdEntity {
     /**
      * 组织id
      */
-    @TableField("org_id")
-    @Schema(description = "组织id")
-    private Long orgId;
+    @TableField("post_id")
+    @Schema(description = "岗位id")
+    private Long postId;
 }

@@ -39,7 +39,7 @@ public class TurboUser implements UserDetails {
     /**
      * 用户id
      */
-    private long userId;
+    private Long userId;
 
     /**
      * 用户名
@@ -76,6 +76,11 @@ public class TurboUser implements UserDetails {
      */
     private Long tenantId;
 
+    /**
+     * 组织id
+     */
+    private Long orgId;
+
     public TurboUser(SysUserVO user) {
         this.authorities = user.getRoles()
                 .stream()
@@ -94,6 +99,7 @@ public class TurboUser implements UserDetails {
         this.avatar = user.getAvatar();
         this.nickname = user.getNickname();
         this.tenantId = user.getTenantId();
+        this.orgId = user.getOrgId();
     }
 
     public TurboUser(Jwt jwt) {
@@ -119,6 +125,7 @@ public class TurboUser implements UserDetails {
         this.avatar = jwt.getClaimAsString("avatar");
         this.nickname = jwt.getClaimAsString("nickname");
         this.tenantId = jwt.getClaim("tenantId");
+        this.orgId = jwt.getClaim("orgId");
     }
 
     @Override

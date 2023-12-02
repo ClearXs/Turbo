@@ -44,19 +44,41 @@ public final class AuthUtil {
     }
 
     /**
+     * 获取当前用户组织id
+     *
+     * @return orgid or null
+     */
+    public static Long getCurrentUserOrgId() {
+        return Optional.ofNullable(getCurrentUser())
+                .map(TurboUser::getOrgId)
+                .orElse(null);
+    }
+
+    /**
+     * 获取当前用户租户id
+     *
+     * @return tenant id or null
+     */
+    public static Long getCurrentTenantId() {
+        return Optional.ofNullable(getCurrentUser())
+                .map(TurboUser::getTenantId)
+                .orElse(null);
+    }
+
+    /**
      * 获取当前登陆的用户
      *
      * @return TurboUser or null
      */
     public static TurboUser getCurrentUser() {
-        Jwt jwt = null;
         try {
-            jwt = JwtUtil.decode(WebUtil.getToken());
+            Jwt jwt = JwtUtil.decode(WebUtil.getToken());
+            return Optional.ofNullable(jwt)
+                    .map(TurboUser::new)
+                    .orElse(null);
         } catch (BadJwtException ex) {
             log.debug("decode jwt token error", ex);
         }
-        return Optional.ofNullable(jwt)
-                .map(TurboUser::new)
-                .orElse(null);
+        return null;
     }
 }

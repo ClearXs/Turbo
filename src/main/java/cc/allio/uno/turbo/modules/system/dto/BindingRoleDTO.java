@@ -25,9 +25,9 @@ public class BindingRoleDTO {
     private Long userId;
 
     /**
-     * 用户id
+     * 角色ids
      */
-    @Schema(description = "角色id")
+    @Schema(description = "角色ids")
     @NotNull
     private List<Long> roleIds;
 }

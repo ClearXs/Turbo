@@ -9,7 +9,7 @@ import cc.allio.uno.turbo.common.util.WebUtil;
  * @date 2023/10/27 14:49
  * @since 1.0.0
  */
-public interface TenantCache extends TurboCache {
+public interface TenantCache<T> extends TurboCache<T> {
 
     /**
      * 获取租户号

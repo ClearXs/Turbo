@@ -108,5 +108,5 @@ persistent:
       - sys_user_role
       - sys_role_menu
       - sys_cloud_storage_config
-      - sys_user_org
+      - sys_user_post
       - biz_tree

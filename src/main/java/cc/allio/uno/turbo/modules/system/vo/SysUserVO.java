@@ -1,8 +1,10 @@
 package cc.allio.uno.turbo.modules.system.vo;
 
 import cc.allio.uno.turbo.modules.system.entity.SysOrg;
+import cc.allio.uno.turbo.modules.system.entity.SysPost;
 import cc.allio.uno.turbo.modules.system.entity.SysRole;
 import cc.allio.uno.turbo.modules.system.entity.SysUser;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -22,10 +24,18 @@ public class SysUserVO extends SysUser {
     /**
      * 角色信息
      */
+    @Schema(description = "角色信息")
     private List<SysRole> roles;
 
     /**
      * 组织信息
      */
-    private List<SysOrg> orgs;
+    @Schema(description = "组织信息")
+    private SysOrg org;
+
+    /**
+     * 岗位信息
+     */
+    @Schema(description = "岗位信息")
+    private List<SysPost> posts;
 }

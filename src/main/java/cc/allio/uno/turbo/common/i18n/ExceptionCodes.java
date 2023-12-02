@@ -60,6 +60,11 @@ public final class ExceptionCodes {
      */
     public static final String USER_REPEAT = "error.user.repeat";
 
+    /**
+     * 用户原密码不一致
+     */
+    public static final String USER_RAW_PASSWORD_MISTAKE = "error.user.rawpassword.mistake";
+
     // ============================== menu ==============================
 
     /**
