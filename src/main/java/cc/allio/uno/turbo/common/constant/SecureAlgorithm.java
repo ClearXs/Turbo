@@ -5,7 +5,7 @@ package cc.allio.uno.turbo.common.constant;
  *
  * @author j.x
  * @date 2023/10/23 17:52
- * @since 1.0.0
+ * @since 0.1.0
  */
 public enum SecureAlgorithm {
 
@@ -13,6 +13,11 @@ public enum SecureAlgorithm {
     PBE;
 
     public static SecureAlgorithm getAlgorithm(String algorithm) {
-        return valueOf(algorithm);
+        for (SecureAlgorithm v : values()) {
+            if (v.name().equalsIgnoreCase(algorithm)) {
+                return v;
+            }
+        }
+        return null;
     }
 }

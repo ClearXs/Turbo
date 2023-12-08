@@ -14,7 +14,7 @@ import java.util.List;
  * @param <T> 树实体类型，子类必须要继承
  * @author j.x
  * @date 2023/11/27 18:29
- * @since 1.0.0
+ * @since 0.1.0
  */
 public interface TreeMapper<T extends TreeEntity> extends BaseMapper<T> {
 

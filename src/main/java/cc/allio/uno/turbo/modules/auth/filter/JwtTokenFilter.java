@@ -40,7 +40,7 @@ import java.time.Instant;
  * @author j.x
  * @date 2023/10/25 14:13
  * @see AuthenticationFilter
- * @since 1.0.0
+ * @since 0.1.0
  */
 public class JwtTokenFilter extends OncePerRequestFilter {
 

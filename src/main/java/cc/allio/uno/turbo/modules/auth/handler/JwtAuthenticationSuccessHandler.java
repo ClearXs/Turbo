@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
  *
  * @author j.x
  * @date 2023/10/26 17:46
- * @since 1.0.0
+ * @since 0.1.0
  */
 public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 

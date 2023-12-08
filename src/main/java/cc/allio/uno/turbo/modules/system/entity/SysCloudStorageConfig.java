@@ -15,7 +15,7 @@ import lombok.EqualsAndHashCode;
  *
  * @author j.x
  * @date 2023/11/18 10:24
- * @since 1.0.0
+ * @since 0.1.0
  */
 @TableName("sys_cloud_storage_config")
 @Schema(description = "系统附件")

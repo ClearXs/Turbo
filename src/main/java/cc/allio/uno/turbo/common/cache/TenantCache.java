@@ -7,7 +7,7 @@ import cc.allio.uno.turbo.common.util.WebUtil;
  *
  * @author j.x
  * @date 2023/10/27 14:49
- * @since 1.0.0
+ * @since 0.1.0
  */
 public interface TenantCache<T> extends TurboCache<T> {
 

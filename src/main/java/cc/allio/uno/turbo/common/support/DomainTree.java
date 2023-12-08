@@ -13,7 +13,7 @@ import java.util.Comparator;
  * @param <R> 平展结构类型
  * @author j.x
  * @date 2023/11/9 15:36
- * @since 1.0.0
+ * @since 0.1.0
  */
 public abstract class DomainTree<T extends DomainTree<T, R>, R extends Expand> extends ComparableElement<T> {
 

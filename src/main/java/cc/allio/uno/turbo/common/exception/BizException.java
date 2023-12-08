@@ -7,7 +7,7 @@ import lombok.Getter;
  *
  * @author j.x
  * @date 2023/10/23 12:52
- * @since 1.0.0
+ * @since 0.1.0
  */
 @Getter
 public class BizException extends Exception {

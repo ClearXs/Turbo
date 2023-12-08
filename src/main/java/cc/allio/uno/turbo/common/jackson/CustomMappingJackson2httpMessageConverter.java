@@ -8,7 +8,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
  *
  * @author j.x
  * @date 2023/11/14 22:18
- * @since 1.0.0
+ * @since 0.1.0
  */
 public class CustomMappingJackson2httpMessageConverter extends MappingJackson2HttpMessageConverter {
 

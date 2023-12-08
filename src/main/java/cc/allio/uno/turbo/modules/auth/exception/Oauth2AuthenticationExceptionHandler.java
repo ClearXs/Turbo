@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
  *
  * @author j.x
  * @date 2023/10/24 13:18
- * @since 1.0.0
+ * @since 0.1.0
  */
 public class Oauth2AuthenticationExceptionHandler implements AuthenticationFailureHandler {
     @Override

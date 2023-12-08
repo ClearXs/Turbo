@@ -7,7 +7,7 @@ import org.springframework.security.core.AuthenticationException;
  *
  * @author j.x
  * @date 2023/10/27 22:38
- * @since 1.0.0
+ * @since 0.1.0
  */
 public class CaptchaExpiredException extends AuthenticationException {
 

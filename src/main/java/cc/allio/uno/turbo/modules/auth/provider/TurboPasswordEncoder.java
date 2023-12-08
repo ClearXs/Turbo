@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  *
  * @author j.x
  * @date 2023/10/23 17:51
- * @since 1.0.0
+ * @since 0.1.0
  */
 @AllArgsConstructor
 public class TurboPasswordEncoder implements PasswordEncoder {

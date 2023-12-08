@@ -15,7 +15,7 @@ import lombok.EqualsAndHashCode;
  *
  * @author j.x
  * @date 2023/10/22 11:54
- * @since 1.0.0
+ * @since 0.1.0
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -44,7 +44,6 @@ public class SysUser extends TenantEntity {
      */
     @TableField("email")
     @Schema(description = "邮箱")
-    @NotNull
     private String email;
 
     /**

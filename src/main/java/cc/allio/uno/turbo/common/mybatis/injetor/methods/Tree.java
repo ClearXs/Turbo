@@ -15,7 +15,7 @@ import org.apache.ibatis.mapping.SqlSource;
  * @author j.x
  * @date 2023/11/27 18:34
  * @see cc.allio.uno.turbo.common.mybatis.entity.TreeEntity
- * @since 1.0.0
+ * @since 0.1.0
  */
 public class Tree extends AbstractMethod {
 
@@ -55,6 +55,5 @@ public class Tree extends AbstractMethod {
         } else {
             return StringPool.EMPTY;
         }
-
     }
 }

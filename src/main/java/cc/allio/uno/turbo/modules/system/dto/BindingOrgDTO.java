@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author j.x
  * @date 2023/11/30 11:28
- * @since 1.0.0
+ * @since 0.1.0
  */
 @Data
 @Schema(description = "绑定组织数据传输对象")

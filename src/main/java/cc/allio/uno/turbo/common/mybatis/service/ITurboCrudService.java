@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  *
  * @author j.x
  * @date 2023/11/22 16:05
- * @since 1.0.0
+ * @since 0.1.0
  */
 public interface ITurboCrudService<T extends IdEntity> extends IService<T> {
 

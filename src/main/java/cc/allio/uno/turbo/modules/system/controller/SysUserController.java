@@ -7,13 +7,13 @@ import cc.allio.uno.turbo.modules.system.constant.UserStatus;
 import cc.allio.uno.turbo.modules.system.dto.BindingOrgDTO;
 import cc.allio.uno.turbo.modules.system.dto.BindingPostDTO;
 import cc.allio.uno.turbo.modules.system.dto.BindingRoleDTO;
+import cc.allio.uno.turbo.modules.system.dto.ChangePasswordDTO;
 import cc.allio.uno.turbo.modules.system.entity.SysUser;
 import cc.allio.uno.turbo.modules.system.service.ISysUserService;
 import cc.allio.uno.turbo.modules.system.vo.SysUserVO;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -66,8 +66,8 @@ public class SysUserController extends TurboCrudController<SysUser, ISysUserServ
 
     @Operation(summary = "更改密码")
     @PostMapping("/change-password")
-    public R<Boolean> changePassword(@RequestBody Long id, @Validated @Min(6) String rawPassword, @Min(6) String newPassword) throws BizException {
-        Boolean changed = getService().changePassword(id, rawPassword, newPassword);
+    public R<Boolean> changePassword(@RequestBody @Validated ChangePasswordDTO changePassword) throws BizException {
+        Boolean changed = getService().changePassword(changePassword.getId(), changePassword.getNewPassword());
         return ok(changed);
     }
 }

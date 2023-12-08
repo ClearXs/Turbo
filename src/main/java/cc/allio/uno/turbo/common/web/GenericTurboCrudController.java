@@ -8,7 +8,7 @@ import cc.allio.uno.turbo.common.mybatis.service.ITurboCrudService;
  *
  * @author j.x
  * @date 2023/11/30 10:59
- * @since 1.0.0
+ * @since 0.1.0
  */
 public abstract class GenericTurboCrudController<T extends IdEntity>
         extends TurboCrudController<T, ITurboCrudService<T>, T> {

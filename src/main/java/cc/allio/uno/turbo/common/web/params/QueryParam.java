@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author j.x
  * @date 2023/11/22 15:37
- * @since 1.0.0
+ * @since 0.1.0
  */
 @Data
 public class QueryParam<T extends IdEntity> {

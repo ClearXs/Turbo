@@ -1,5 +1,6 @@
 package cc.allio.uno.turbo.modules.system.entity;
 
+import cc.allio.uno.turbo.common.mybatis.constraint.Sortable;
 import cc.allio.uno.turbo.common.mybatis.constraint.Unique;
 import cc.allio.uno.turbo.common.mybatis.entity.TreeEntity;
 import cc.allio.uno.turbo.modules.system.constant.MenuType;
@@ -46,6 +47,7 @@ public class SysMenu extends TreeEntity {
      */
     @TableField("sort")
     @Schema(description = "菜单序号")
+    @Sortable
     private Integer sort;
 
     /**

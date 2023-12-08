@@ -39,7 +39,7 @@ import java.io.IOException;
  *
  * @author j.x
  * @date 2023/10/25 14:01
- * @since 1.0.0
+ * @since 0.1.0
  */
 public class TurboJwtAuthenticationProvider extends DaoAuthenticationProvider {
 

@@ -18,7 +18,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  *
  * @author j.x
  * @date 2023/12/1 09:52
- * @since 1.0.0
+ * @since 0.1.0
  */
 public abstract class TurboCacheCrudServiceImpl<M extends BaseMapper<T>, T extends IdEntity>
         extends TurboCrudServiceImpl<M, T> implements ITurboCacheCrudService<T> {

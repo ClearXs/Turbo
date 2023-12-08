@@ -13,7 +13,7 @@ import java.net.UnknownHostException;
  *
  * @author j.x
  * @date 2023/11/18 12:56
- * @since 1.0.0
+ * @since 0.1.0
  */
 @Slf4j
 public final class InetUtil {

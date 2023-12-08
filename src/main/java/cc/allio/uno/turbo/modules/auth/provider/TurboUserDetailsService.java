@@ -15,7 +15,7 @@ import java.util.Collections;
  *
  * @author j.x
  * @date 2023/10/23 14:36
- * @since 1.0.0
+ * @since 0.1.0
  */
 @AllArgsConstructor
 public class TurboUserDetailsService implements UserDetailsService {

@@ -3,14 +3,12 @@ package cc.allio.uno.turbo.common.mybatis.help;
 import cc.allio.uno.core.type.TypeOperator;
 import cc.allio.uno.core.type.TypeOperatorFactory;
 import cc.allio.uno.core.util.CollectionUtils;
-import cc.allio.uno.core.util.StringUtils;
 import cc.allio.uno.turbo.common.constant.Direction;
 import cc.allio.uno.turbo.common.mybatis.entity.IdEntity;
 import cc.allio.uno.turbo.common.web.params.EntityTerm;
 import cc.allio.uno.turbo.common.web.params.QueryParam;
 import cc.allio.uno.turbo.common.web.params.Order;
 import cc.allio.uno.turbo.common.web.params.Term;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -28,7 +26,7 @@ import java.util.stream.Collectors;
  *
  * @author j.x
  * @date 2023/11/22 15:57
- * @since 1.0.0
+ * @since 0.1.0
  */
 @Slf4j
 public final class Conditions {
@@ -102,16 +100,6 @@ public final class Conditions {
          */
         <T extends IdEntity> void doCondition(EntityTerm term, QueryWrapper<T> queryWrapper);
 
-        /**
-         * 获取数据库表的字段名称
-         */
-        default String getTableColumn(Field field) {
-            TableField tableField = field.getAnnotation(TableField.class);
-            if (tableField != null) {
-                return tableField.value();
-            }
-            return StringUtils.camelToUnderline(field.getName());
-        }
     }
 
     // 时间处理
@@ -134,7 +122,7 @@ public final class Conditions {
                 try {
                     Date firstTime = (Date) translator.convert(timeArray.get(0).toString());
                     Date endTime = (Date) translator.convert(timeArray.get(1).toString());
-                    String tableColumn = getTableColumn(term.getEntityField());
+                    String tableColumn = MybatisKit.getTableColumn(term.getEntityField());
                     queryWrapper.le(tableColumn, firstTime);
                     queryWrapper.ge(tableColumn, endTime);
                 } catch (Throwable ex) {
@@ -163,7 +151,7 @@ public final class Conditions {
         public <T extends IdEntity> void doCondition(EntityTerm term, QueryWrapper<T> queryWrapper) {
             Object value = term.getValue();
             if (value != null) {
-                String tableColumn = getTableColumn(term.getEntityField());
+                String tableColumn = MybatisKit.getTableColumn(term.getEntityField());
                 queryWrapper.like(tableColumn, value);
             }
         }
@@ -176,7 +164,7 @@ public final class Conditions {
         public <T extends IdEntity> void doCondition(EntityTerm term, QueryWrapper<T> queryWrapper) {
             Object value = term.getValue();
             if (value != null) {
-                String tableColumn = getTableColumn(term.getEntityField());
+                String tableColumn = MybatisKit.getTableColumn(term.getEntityField());
                 TypeOperator operator = TypeOperatorFactory.translator(term.getEntityField().getType());
                 if (operator != null) {
                     try {

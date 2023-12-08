@@ -31,7 +31,7 @@ import java.util.Base64;
  *
  * @author j.x
  * @date 2023/10/23 11:40
- * @since 1.0.0
+ * @since 0.1.0
  */
 @Slf4j
 public class SecureUtil {

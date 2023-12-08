@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  * @author j.x
  * @date 2023/10/27 14:57
  * @see org.springframework.data.redis.cache.RedisCache
- * @since 1.0.0
+ * @since 0.1.0
  */
 public abstract class PrefixKeyRedisCache<T> implements TenantCache<T> {
 

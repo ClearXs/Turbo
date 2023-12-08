@@ -4,6 +4,7 @@ import cc.allio.uno.turbo.common.mybatis.handle.BaseChangeMetaObjectHandler;
 import cc.allio.uno.turbo.common.mybatis.id.SnowflakeIdentifierGenerator;
 import cc.allio.uno.turbo.common.mybatis.injetor.TurboSqlInjector;
 import cc.allio.uno.turbo.common.mybatis.plugins.inner.ConstraintInnerInterceptor;
+import cc.allio.uno.turbo.common.mybatis.plugins.inner.SortableInnerInterceptor;
 import cc.allio.uno.turbo.common.mybatis.plugins.inner.TurboTenantLineHandler;
 import cc.allio.uno.turbo.common.persistent.PersistentProperties;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
@@ -47,6 +48,8 @@ public class MybatisConfiguration {
         mybatisPlusInterceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
         // 数据约束插件
         mybatisPlusInterceptor.addInnerInterceptor(new ConstraintInnerInterceptor());
+        // 注解排序插件
+        mybatisPlusInterceptor.addInnerInterceptor(new SortableInnerInterceptor());
         return mybatisPlusInterceptor;
     }
 

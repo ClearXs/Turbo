@@ -13,7 +13,7 @@ import lombok.Data;
  *
  * @author j.x
  * @date 2023/11/29 15:56
- * @since 1.0.0
+ * @since 0.1.0
  */
 @Data
 @Schema(description = "查询条件")

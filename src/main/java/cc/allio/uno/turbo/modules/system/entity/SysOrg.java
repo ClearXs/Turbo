@@ -1,5 +1,6 @@
 package cc.allio.uno.turbo.modules.system.entity;
 
+import cc.allio.uno.turbo.common.mybatis.constraint.Sortable;
 import cc.allio.uno.turbo.common.mybatis.constraint.Unique;
 import cc.allio.uno.turbo.common.mybatis.entity.TreeEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -43,6 +44,7 @@ public class SysOrg extends TreeEntity {
      */
     @TableField("sort")
     @Schema(description = "排序")
+    @Sortable
     private Integer sort;
 
     /**

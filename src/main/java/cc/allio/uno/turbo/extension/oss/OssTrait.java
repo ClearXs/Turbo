@@ -7,7 +7,7 @@ import lombok.Data;
  *
  * @author j.x
  * @date 2023/11/17 15:42
- * @since 1.0.0
+ * @since 0.1.0
  */
 @Data
 public class OssTrait {

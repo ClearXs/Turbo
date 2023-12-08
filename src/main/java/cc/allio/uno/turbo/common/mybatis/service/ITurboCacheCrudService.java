@@ -12,7 +12,7 @@ import cc.allio.uno.turbo.common.mybatis.entity.IdEntity;
  *
  * @author j.x
  * @date 2023/11/23 11:19
- * @since 1.0.0
+ * @since 0.1.0
  */
 public interface ITurboCacheCrudService<T extends IdEntity> extends ITurboCrudService<T>, CacheName {
 

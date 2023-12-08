@@ -84,14 +84,8 @@ public class SysUserServiceImpl extends TurboCrudServiceImpl<SysUserMapper, SysU
     }
 
     @Override
-    public Boolean changePassword(Long userId, String rawPassword, String newPassword) throws BizException {
+    public Boolean changePassword(Long userId, String newPassword) throws BizException {
         SecureUtil.SecureCipher secureCipher = SecureUtil.getSystemSecureCipher();
-        // 1.查询旧密码是否与当前数据库存储一致
-        String rawEncryptPassword = secureCipher.encrypt(rawPassword, SecureUtil.getSystemSecretKey(), null);
-        SysUser currentUser = getOne(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getId, userId).eq(SysUser::getPassword, rawEncryptPassword));
-        if (currentUser == null) {
-            throw new BizException(ExceptionCodes.USER_RAW_PASSWORD_MISTAKE);
-        }
         String encryptPassword = secureCipher.encrypt(newPassword, SecureUtil.getSystemSecretKey(), null);
         return update(
                 Wrappers.<SysUser>lambdaUpdate()

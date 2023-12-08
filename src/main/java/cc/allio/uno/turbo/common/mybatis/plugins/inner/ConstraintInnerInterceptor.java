@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
@@ -19,7 +20,6 @@ import org.apache.ibatis.mapping.SqlCommandType;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  *
  * @author j.x
  * @date 2023/11/23 11:25
- * @since 1.0.0
+ * @since 0.1.0
  */
 public class ConstraintInnerInterceptor implements InnerInterceptor {
 
@@ -54,7 +54,8 @@ public class ConstraintInnerInterceptor implements InnerInterceptor {
 
         // 唯一性判断
         List<Field> constraints =
-                Arrays.stream(type.getDeclaredFields())
+                ReflectionKit.getFieldList(type)
+                        .stream()
                         .filter(field -> field.isAnnotationPresent(Unique.class))
                         .toList();
 

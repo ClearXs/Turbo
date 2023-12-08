@@ -30,8 +30,12 @@ public class SysCloudStorageConfigServiceImpl extends TurboCrudServiceImpl<SysCl
     public void afterSetup() {
         OssExecutorFactory.setLazyLoader(() -> {
             SysCloudStorageConfig enableConfig = getEnableConfig();
-            OssTrait ossTrait = CoreBeanUtil.copy(enableConfig, OssTrait.class);
-            return Tuples.of(enableConfig.getProvider().getValue(), ossTrait);
+            if (enableConfig != null) {
+                OssTrait ossTrait = CoreBeanUtil.copy(enableConfig, OssTrait.class);
+                return Tuples.of(enableConfig.getProvider().getValue(), ossTrait);
+            } else {
+                return null;
+            }
         });
     }
 
@@ -54,20 +58,31 @@ public class SysCloudStorageConfigServiceImpl extends TurboCrudServiceImpl<SysCl
     }
 
     @Override
-    public boolean enable(long id, Enable enable) {
+    public boolean enable(long id) {
         try {
-            LambdaUpdateWrapper<SysCloudStorageConfig> updateAllDisable =
+            var updateAllDisable =
                     Wrappers.<SysCloudStorageConfig>lambdaUpdate()
                             .set(SysCloudStorageConfig::getEnable, Enable.DISABLE)
                             .ne(SysCloudStorageConfig::getId, id);
-            LambdaUpdateWrapper<SysCloudStorageConfig> updateSpecific =
+            var updateSpecific =
                     Wrappers.<SysCloudStorageConfig>lambdaUpdate()
                             .set(SysCloudStorageConfig::getEnable, Enable.ENABLE)
                             .eq(SysCloudStorageConfig::getId, id);
-            return update(updateSpecific) && update(updateAllDisable);
+            // 更新所有为disable
+            update(updateAllDisable);
+            return update(updateSpecific);
         } finally {
             fireEnable();
         }
+    }
+
+    @Override
+    public boolean disable(long id) {
+        var updateDisable =
+                Wrappers.<SysCloudStorageConfig>lambdaUpdate()
+                        .set(SysCloudStorageConfig::getEnable, Enable.DISABLE)
+                        .eq(SysCloudStorageConfig::getId, id);
+        return update(updateDisable);
     }
 
     /**

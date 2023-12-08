@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @author j.x
  * @date 2023/11/16 18:10
- * @since 1.0.0
+ * @since 0.1.0
  * @param <T> 实体结构
  * @param <S> 实体对应service类型
  * @param <V> 复合类型（或者成为VO）

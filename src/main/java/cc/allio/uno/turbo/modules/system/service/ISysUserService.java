@@ -30,11 +30,10 @@ public interface ISysUserService extends ITurboCrudService<SysUser> {
      * 更改密码
      *
      * @param userId      用户id
-     * @param rawPassword
      * @param newPassword 新密码
      * @return
      */
-    Boolean changePassword(Long userId, String rawPassword, String newPassword) throws BizException;
+    Boolean changePassword(Long userId,  String newPassword) throws BizException;
 
     /**
      * 绑定组织

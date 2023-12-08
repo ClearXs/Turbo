@@ -1,7 +1,6 @@
 package cc.allio.uno.turbo.modules.system.controller;
 
 import cc.allio.uno.turbo.common.web.R;
-import cc.allio.uno.turbo.common.constant.Enable;
 import cc.allio.uno.turbo.common.web.TurboCrudController;
 import cc.allio.uno.turbo.modules.system.entity.SysCloudStorageConfig;
 import cc.allio.uno.turbo.modules.system.service.ISysCloudStorageConfigService;
@@ -17,11 +16,17 @@ import org.springframework.web.bind.annotation.*;
 public class SysCloudStorageConfigController
         extends TurboCrudController<SysCloudStorageConfig, ISysCloudStorageConfigService, SysCloudStorageConfig> {
 
-    @PutMapping("/enable")
-    @Operation(summary = "是否启用")
-    public R enable(@RequestBody Long id) {
-        return bool(getService().enable(id, Enable.ENABLE));
+    @PutMapping("/enable/{id}")
+    @Operation(summary = "启用")
+    public R enable(@PathVariable("id") Long id) {
+        return bool(getService().enable(id));
     }
 
+
+    @PutMapping("/disable/{id}")
+    @Operation(summary = "禁用")
+    public R disable(@PathVariable("id") Long id) {
+        return bool(getService().disable(id));
+    }
 }
 
