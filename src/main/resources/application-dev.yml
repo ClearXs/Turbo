@@ -11,10 +11,6 @@ spring:
       password: allio
       database: 1
 
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-
 logging:
   level:
-    cc.allio.uno: info
+    cc.allio.uno: debug

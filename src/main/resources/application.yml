@@ -5,7 +5,7 @@ spring:
   application:
     name: turbo
   profiles:
-    active: dev
+    active: dev,turbo
     # 开启虚拟线程
   threads:
     virtual:
@@ -44,6 +44,8 @@ mybatis-plus:
   configuration:
     # 是否开启自动驼峰命名规则（camel case）映射
     map-underscore-to-camel-case: true
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
 
 # swagger 配置
 springdoc:
@@ -58,55 +60,30 @@ knife4j:
   enable: true
   production: false
 
-# 安全配置
-secure:
-  # 系统加密密钥
-  secret-key: efogaWfblI3TK5u1
-  # 系统加密算法
-  secure-algorithm: aes
-  # 忽略认证的接口地址
-  skip-list:
-    - ${spring.security.oauth2.authorizationserver.endpoint.authorization-uri}
-    - ${spring.security.oauth2.authorizationserver.endpoint.token-uri}
-    - ${spring.security.oauth2.authorizationserver.endpoint.token-revocation-uri}
-    - ${spring.security.oauth2.authorizationserver.endpoint.oidc.client-registration-uri}
-    - ${spring.security.oauth2.authorizationserver.endpoint.oidc.user-info-uri}
-    - ${spring.security.oauth2.authorizationserver.endpoint.oidc.logout-uri}
-    - /login
-    - /auth/login # 登陆
-    - /doc.html
-    - /webjars/** # knife4j 静态资源
-    - /v3/api-docs/**
-    - /auth/captcha # 验证码
-    - /sys/tenant/** # 租户
-    - /auth/register # 注册
-    - /sys/attachment/download/** # 文件下载
-  jwt:
-    issuer: https://allio.cc
-    subject: token
-    # token过期时间
-    expire-at: d_1
-  captcha:
-    # 验证码宽度
-    width: 120
-    # 验证码高度
-    height: 30
-    # 验证码字符长度
-    length: 4
-    # 验证码过期时间
-    expire-at: M_5
-file:
-  upload:
-    path: http://localhost:8600
-    # 文件上传最大大小
-    max-size: 10485760
-persistent:
-  tenant:
-    field: tenant_id
-    ignore-list:
-      - sys_tenant
-      - sys_user_role
-      - sys_role_menu
-      - sys_cloud_storage_config
-      - sys_user_post
-      - biz_tree
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+      base-path: /actuator
+
+# 去除otel的生成的bean，而采取自定义实现
+otel:
+  instrumentation:
+    annotations:
+      enabled: false
+  exporter:
+    zipkin:
+      enabled: false
+    otlp:
+      enabled: false
+  sdk:
+    disabled: false
+excel:
+  enum:
+    scanner:
+      package: cc/allio/turbo/modules/system/constant/**/*
