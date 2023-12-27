@@ -18,6 +18,12 @@ public class SysMenuTree extends DomainTree<SysMenuTree, SysMenu> {
     }
 
     /**
+     * 菜单域
+     */
+    @Schema(description = "scope")
+    private String scope;
+
+    /**
      * 菜单编码
      */
     @Schema(description = "菜单编码")
@@ -65,4 +71,11 @@ public class SysMenuTree extends DomainTree<SysMenuTree, SysMenu> {
     @Schema(description = "icon")
     private String icon;
 
+    /**
+     * attrs
+     */
+    @Schema(description = "attrs")
+    private String[] attrs;
+
 }
+

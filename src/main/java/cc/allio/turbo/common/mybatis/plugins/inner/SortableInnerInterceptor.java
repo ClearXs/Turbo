@@ -33,6 +33,7 @@ public class SortableInnerInterceptor extends PaginationInnerInterceptor {
             return;
         }
 
+        // 获取查询实体
         Class<?> entityType = null;
         List<ResultMap> resultMaps = ms.getResultMaps();
         if (CollectionUtils.isNotEmpty(resultMaps)) {
@@ -40,18 +41,19 @@ public class SortableInnerInterceptor extends PaginationInnerInterceptor {
             entityType = resultMap.getType();
         }
         if (entityType != null) {
-            List<OrderItem> sortItems = ReflectionKit.getFieldList(entityType)
-                    .stream()
-                    .filter(field -> field.isAnnotationPresent(Sortable.class))
-                    .map(field -> {
-                        Sortable sortable = field.getAnnotation(Sortable.class);
-                        if (Direction.ASC == sortable.direction()) {
-                            return OrderItem.asc(MybatisKit.getTableColumn(field));
-                        } else {
-                            return OrderItem.desc(MybatisKit.getTableColumn(field));
-                        }
-                    })
-                    .toList();
+            List<OrderItem> sortItems =
+                    ReflectionKit.getFieldList(entityType)
+                            .stream()
+                            .filter(field -> field.isAnnotationPresent(Sortable.class))
+                            .map(field -> {
+                                Sortable sortable = field.getAnnotation(Sortable.class);
+                                if (Direction.ASC == sortable.direction()) {
+                                    return OrderItem.asc(MybatisKit.getTableColumn(field));
+                                } else {
+                                    return OrderItem.desc(MybatisKit.getTableColumn(field));
+                                }
+                            })
+                            .toList();
             String originalSql = boundSql.getSql();
             String buildSql = concatOrderBy(originalSql, sortItems);
             PluginUtils.mpBoundSql(boundSql).sql(buildSql);

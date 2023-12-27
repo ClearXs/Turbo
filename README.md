@@ -77,3 +77,8 @@ Turbo的定位是以最新技术来构建的一套快速开发框架，出发点
     </tr>
 </table>
 
+
+## 运行
+添加如下的jvm参数
+```bash
+--add-opens java.base/java.lang=ALL-UNNAMED
