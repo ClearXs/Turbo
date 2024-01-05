@@ -36,6 +36,7 @@
         <aliyunoss.version>3.15.1</aliyunoss.version>
         <minio.version>8.5.7</minio.version>
         <okhttp>4.12.0</okhttp>
+        <easyeexcel.version>3.3.2</easyeexcel.version>
         <opentelemetry.version>1.33.0</opentelemetry.version>
     </properties>
 
@@ -148,6 +149,12 @@
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
             <version>${knife4j.version}</version>
+        </dependency>
+        <!-- easyexcel -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>${easyeexcel.version}</version>
         </dependency>
         <!-- uno -->
         <dependency>

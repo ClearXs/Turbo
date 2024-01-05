@@ -1,5 +1,6 @@
 package cc.allio.turbo.modules.system.constant;
 
+import cc.allio.turbo.common.excel.annotaion.EnumExcelValue;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
@@ -21,5 +22,6 @@ public enum UserStatus {
     @JsonValue
     @EnumValue
     private final String value;
+    @EnumExcelValue
     private final String label;
 }

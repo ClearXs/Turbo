@@ -1,5 +1,6 @@
 package cc.allio.turbo.common.web;
 
+import cc.allio.turbo.common.excel.util.ExcelUtil;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.mybatis.entity.IdEntity;
 import cc.allio.turbo.common.mybatis.help.Conditions;
@@ -11,10 +12,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -114,6 +117,28 @@ public abstract class TurboCrudController<T extends IdEntity, S extends ITurboCr
         QueryWrapper<T> queryWrapper = Conditions.query(params, getEntityType());
         Page<T> entityPage = service.page(params.getPage(), queryWrapper);
         return ok(entityPage);
+    }
+
+    /**
+     * 导出
+     */
+    @Operation(summary = "导出")
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, @RequestBody QueryParam<T> params) {
+        Class<T> clazz = getEntityType();
+        QueryWrapper<T> queryWrapper = Conditions.query(params, clazz);
+        List<T> list = service.list(queryWrapper);
+        ExcelUtil.export(response, list, clazz);
+    }
+
+    /**
+     * 导入
+     */
+    @Operation(summary = "导入")
+    @PostMapping("/import")
+    public R<Boolean> importFile(MultipartFile file) {
+        ExcelUtil.save(file, service, getEntityType());
+        return ok(Boolean.TRUE);
     }
 
     /**
