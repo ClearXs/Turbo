@@ -1,6 +1,6 @@
 package cc.allio.turbo.common.web.params;
 
-import cc.allio.turbo.common.mybatis.entity.IdEntity;
+import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.uno.core.function.MethodReferenceColumn;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,7 +20,7 @@ import java.util.List;
  * @since 0.1.0
  */
 @Data
-public class QueryParam<T extends IdEntity> {
+public class QueryParam<T extends Entity> {
 
     /**
      * 分页

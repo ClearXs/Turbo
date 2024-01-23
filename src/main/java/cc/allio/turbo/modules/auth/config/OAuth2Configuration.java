@@ -3,7 +3,7 @@ package cc.allio.turbo.modules.auth.config;
 import cc.allio.turbo.modules.auth.exception.AccessDeniedExceptionHandler;
 import cc.allio.turbo.modules.auth.exception.AuthenticationExceptionHandler;
 import cc.allio.turbo.modules.auth.exception.Oauth2AuthenticationExceptionHandler;
-import cc.allio.uno.core.util.IoUtil;
+import cc.allio.uno.core.util.IoUtils;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.turbo.common.web.R;
 import org.springframework.context.annotation.Bean;
@@ -38,30 +38,29 @@ public class OAuth2Configuration {
     public SecurityFilterChain authFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 new OAuth2AuthorizationServerConfigurer();
-        http.apply(authorizationServerConfigurer);
-        authorizationServerConfigurer.oidc(Customizer.withDefaults());
-        authorizationServerConfigurer
-                // /oauth2/token 验证
-                .tokenEndpoint(token -> token.errorResponseHandler(new Oauth2AuthenticationExceptionHandler()))
-                // /oauth2/authorize 获取授权码
-                .authorizationEndpoint(authorization ->
-                        authorization.errorResponseHandler(new Oauth2AuthenticationExceptionHandler())
-                                .authorizationResponseHandler((request, response, authentication) -> {
-                                    R<Authentication> ok = R.ok(authentication);
-                                    response.setStatus(ok.getCode());
-                                    IoUtil.write(JsonUtils.toJson(ok), response.getOutputStream(), StandardCharsets.UTF_8);
-                                })
-                                .authenticationProvider(new AuthenticationProvider() {
-                                    @Override
-                                    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-                                        return authentication;
-                                    }
+        http.with(authorizationServerConfigurer, c ->
+                c.oidc(Customizer.withDefaults())
+                        // /oauth2/token 验证
+                        .tokenEndpoint(token -> token.errorResponseHandler(new Oauth2AuthenticationExceptionHandler()))
+                        // /oauth2/authorize 获取授权码
+                        .authorizationEndpoint(authorization ->
+                                authorization.errorResponseHandler(new Oauth2AuthenticationExceptionHandler())
+                                        .authorizationResponseHandler((request, response, authentication) -> {
+                                            R<Authentication> ok = R.ok(authentication);
+                                            response.setStatus(ok.getCode());
+                                            IoUtils.write(JsonUtils.toJson(ok), response.getOutputStream(), StandardCharsets.UTF_8);
+                                        })
+                                        .authenticationProvider(new AuthenticationProvider() {
+                                            @Override
+                                            public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+                                                return authentication;
+                                            }
 
-                                    @Override
-                                    public boolean supports(Class<?> authentication) {
-                                        return false;
-                                    }
-                                }));
+                                            @Override
+                                            public boolean supports(Class<?> authentication) {
+                                                return false;
+                                            }
+                                        })));
         RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
         return http.csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(ex ->

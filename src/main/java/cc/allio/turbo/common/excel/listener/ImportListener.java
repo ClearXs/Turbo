@@ -16,7 +16,7 @@
  */
 package cc.allio.turbo.common.excel.listener;
 
-import cc.allio.turbo.common.mybatis.service.ITurboCrudService;
+import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import lombok.Data;

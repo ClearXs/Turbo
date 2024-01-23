@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.system.service;
 
-import cc.allio.turbo.common.mybatis.service.ITurboCrudService;
+import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
 import cc.allio.turbo.modules.system.entity.SysPost;
 
 import java.util.List;

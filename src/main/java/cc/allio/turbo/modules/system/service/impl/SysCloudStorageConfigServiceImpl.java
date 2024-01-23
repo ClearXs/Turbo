@@ -2,14 +2,14 @@ package cc.allio.turbo.modules.system.service.impl;
 
 import cc.allio.turbo.modules.system.constant.CsType;
 import cc.allio.turbo.modules.system.service.ISysCloudStorageConfigService;
-import cc.allio.uno.core.util.CoreBeanUtil;
-import cc.allio.turbo.common.mybatis.service.impl.TurboCrudServiceImpl;
+import cc.allio.turbo.common.db.mybatis.service.impl.TurboCrudServiceImpl;
 import cc.allio.turbo.extension.oss.OssExecutorFactory;
 import cc.allio.turbo.extension.oss.OssTrait;
 import cc.allio.turbo.extension.oss.OssUpdateEvent;
 import cc.allio.turbo.common.constant.Enable;
 import cc.allio.turbo.modules.system.entity.SysCloudStorageConfig;
 import cc.allio.turbo.modules.system.mapper.SysCloudStorageConfigMapper;
+import cc.allio.uno.core.util.BeanUtils;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import jakarta.annotation.PostConstruct;
@@ -30,7 +30,7 @@ public class SysCloudStorageConfigServiceImpl extends TurboCrudServiceImpl<SysCl
         OssExecutorFactory.setLazyLoader(() -> {
             SysCloudStorageConfig enableConfig = getEnableConfig();
             if (enableConfig != null) {
-                OssTrait ossTrait = CoreBeanUtil.copy(enableConfig, OssTrait.class);
+                OssTrait ossTrait = BeanUtils.copy(enableConfig, OssTrait.class);
                 return Tuples.of(enableConfig.getProvider().getValue(), ossTrait);
             } else {
                 return null;
@@ -90,7 +90,7 @@ public class SysCloudStorageConfigServiceImpl extends TurboCrudServiceImpl<SysCl
     private void fireEnable() {
         SysCloudStorageConfig enableConfig = getEnableConfig();
         if (enableConfig != null && CsType.OSS == enableConfig.getCsType()) {
-            OssTrait ossTrait = CoreBeanUtil.copy(enableConfig, OssTrait.class);
+            OssTrait ossTrait = BeanUtils.copy(enableConfig, OssTrait.class);
             applicationContext.publishEvent(new OssUpdateEvent(this, enableConfig.getProvider().getValue(), ossTrait));
         }
     }

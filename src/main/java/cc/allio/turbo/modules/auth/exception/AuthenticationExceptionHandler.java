@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.auth.exception;
 
-import cc.allio.uno.core.util.IoUtil;
+import cc.allio.uno.core.util.IoUtils;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.turbo.common.web.R;
 import cc.allio.turbo.common.i18n.ExceptionCodes;
@@ -42,17 +42,17 @@ public class AuthenticationExceptionHandler implements AuthenticationEntryPoint,
         // 获取i18n错误信息
         String authenticationExceptionMessage = switch (authException) {
             case CredentialsExpiredException credentialsExpiredException ->
-                    LocaleFormatter.getMessage(ExceptionCodes.AUTHENTICATION_FAILED);
+                    LocaleFormatter.getMessage(ExceptionCodes.AUTHENTICATION_FAILED.getKey());
             case InsufficientAuthenticationException insufficientAuthenticationException ->
-                    LocaleFormatter.getMessage(ExceptionCodes.AUTHENTICATION_FAILED);
+                    LocaleFormatter.getMessage(ExceptionCodes.AUTHENTICATION_FAILED.getKey());
             case CaptchaExpiredException captchaExpiredException ->
-                    LocaleFormatter.getMessage(ExceptionCodes.CAPTCHA_EXPIRED);
-            case CaptchaError captchaError -> LocaleFormatter.getMessage(ExceptionCodes.CAPTCHA_ERROR);
+                    LocaleFormatter.getMessage(ExceptionCodes.CAPTCHA_EXPIRED.getKey());
+            case CaptchaError captchaError -> LocaleFormatter.getMessage(ExceptionCodes.CAPTCHA_ERROR.getKey());
             case null, default -> authException.getMessage();
         };
         R<Object> error = R.error(HttpStatus.UNAUTHORIZED.value(), authenticationExceptionMessage);
         response.setStatus(error.getCode());
         ServletOutputStream outputStream = response.getOutputStream();
-        IoUtil.write(JsonUtils.toJson(error), outputStream, StandardCharsets.UTF_8);
+        IoUtils.write(JsonUtils.toJson(error), outputStream, StandardCharsets.UTF_8);
     }
 }

@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.auth.handler;
 
 import cc.allio.turbo.modules.auth.authentication.TurboJwtAuthenticationToken;
-import cc.allio.uno.core.util.IoUtil;
+import cc.allio.uno.core.util.IoUtils;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.turbo.common.web.R;
 import jakarta.servlet.ServletException;
@@ -29,7 +29,7 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
             Jwt token = ((TurboJwtAuthenticationToken) authentication).getToken();
             R<Jwt> ok = R.ok(token);
             response.setStatus(ok.getCode());
-            IoUtil.write(JsonUtils.toJson(ok), response.getOutputStream(), StandardCharsets.UTF_8);
+            IoUtils.write(JsonUtils.toJson(ok), response.getOutputStream(), StandardCharsets.UTF_8);
         }
     }
 }

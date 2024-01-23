@@ -1,8 +1,8 @@
 package cc.allio.turbo.modules.system.entity;
 
-import cc.allio.turbo.common.mybatis.constraint.Sortable;
-import cc.allio.turbo.common.mybatis.constraint.Unique;
-import cc.allio.turbo.common.mybatis.entity.TenantEntity;
+import cc.allio.turbo.common.db.constraint.Sortable;
+import cc.allio.turbo.common.db.constraint.Unique;
+import cc.allio.turbo.common.db.entity.TenantEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;

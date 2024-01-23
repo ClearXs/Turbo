@@ -1,8 +1,10 @@
 package cc.allio.turbo.common.web;
 
 import cc.allio.turbo.common.exception.BizException;
+import cc.allio.turbo.common.i18n.I18nCode;
 import cc.allio.turbo.common.i18n.LocaleFormatter;
 import cc.allio.turbo.extension.ob.log.Printer;
+import cc.allio.uno.core.util.StringUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
@@ -28,8 +30,8 @@ public class ExceptionHandlerController {
     @ExceptionHandler(BizException.class)
     public R handleBizException(HttpServletResponse response, BizException ex) {
         printError(ex);
-        String i18nCode = ex.getI18nCode();
-        String errMsg = LocaleFormatter.getMessage(i18nCode);
+        I18nCode i18nCode = ex.getI18nCode();
+        String errMsg = i18nCode != null ? LocaleFormatter.getMessage(i18nCode.getKey()) : ex.getMessage();
         R<?> r = R.internalError(errMsg);
         response.setStatus(r.getCode());
         return r;

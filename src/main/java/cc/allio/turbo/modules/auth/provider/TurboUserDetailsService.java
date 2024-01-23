@@ -2,7 +2,7 @@ package cc.allio.turbo.modules.auth.provider;
 
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.modules.system.service.ISysUserService;
-import cc.allio.turbo.modules.system.vo.SysUserVO;
+import cc.allio.turbo.modules.system.domain.SysUserVO;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

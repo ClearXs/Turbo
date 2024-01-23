@@ -10,7 +10,7 @@ import cc.allio.turbo.modules.system.dto.BindingRoleDTO;
 import cc.allio.turbo.modules.system.dto.ChangePasswordDTO;
 import cc.allio.turbo.modules.system.entity.SysUser;
 import cc.allio.turbo.modules.system.service.ISysUserService;
-import cc.allio.turbo.modules.system.vo.SysUserVO;
+import cc.allio.turbo.modules.system.domain.SysUserVO;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/sys/user")
 @AllArgsConstructor
 @Tag(name = "用户")
-public class SysUserController extends TurboCrudController<SysUser, ISysUserService, SysUserVO> {
+public class SysUserController extends TurboCrudController<SysUser, SysUserVO, ISysUserService> {
 
 
     @Operation(summary = "锁定")

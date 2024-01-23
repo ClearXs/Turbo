@@ -51,14 +51,12 @@ public abstract class PrefixKeyRedisCache<T> implements TenantCache<T> {
     @Override
     public boolean hasKey(String key) {
         String cacheKey = createCacheKey(key);
-
         return RedisUtil.hasKey(cacheKey);
     }
 
     @Override
     public void setEx(String key, ValueWrapper value, long time, TimeUnit timeUnit) {
         String cacheKey = createCacheKey(key);
-
         RedisUtil.setEx(cacheKey, JsonUtils.toJson(value.get()), time, timeUnit);
     }
 
@@ -136,15 +134,11 @@ public abstract class PrefixKeyRedisCache<T> implements TenantCache<T> {
      * @throws IllegalStateException if {@code key} cannot be converted to {@link String}.
      */
     protected String convertKey(Object key) {
-
         if (key instanceof String) {
             return (String) key;
         }
-
         TypeDescriptor source = TypeDescriptor.forObject(key);
-
         ConversionService conversionService = getConversionService();
-
         if (conversionService.canConvert(source, TypeDescriptor.valueOf(String.class))) {
             try {
                 return conversionService.convert(key, String.class);
@@ -157,7 +151,6 @@ public abstract class PrefixKeyRedisCache<T> implements TenantCache<T> {
                 throw cause;
             }
         }
-
         if (hasToStringMethod(key)) {
             return key.toString();
         }
@@ -165,7 +158,6 @@ public abstract class PrefixKeyRedisCache<T> implements TenantCache<T> {
         String message = String.format("Cannot convert cache key %s to String; Please register a suitable Converter"
                         + " via 'RedisCacheConfiguration.configureKeyConverters(...)' or override '%s.toString()'",
                 source, key.getClass().getName());
-
         throw new IllegalStateException(message);
     }
 

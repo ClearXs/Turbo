@@ -2,14 +2,14 @@ package cc.allio.turbo.modules.system.service.impl;
 
 import cc.allio.turbo.extension.oss.*;
 import cc.allio.turbo.modules.system.properties.FileProperties;
-import cc.allio.uno.core.util.IoUtil;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.i18n.ExceptionCodes;
-import cc.allio.turbo.common.mybatis.service.impl.TurboCrudServiceImpl;
+import cc.allio.turbo.common.db.mybatis.service.impl.TurboCrudServiceImpl;
 import cc.allio.turbo.common.util.InetUtil;
 import cc.allio.turbo.modules.system.entity.SysAttachment;
 import cc.allio.turbo.modules.system.mapper.SysAttachmentMapper;
 import cc.allio.turbo.modules.system.service.ISysAttachmentService;
+import cc.allio.uno.core.util.IoUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -100,7 +100,7 @@ public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachment
         try {
             OssResponse ossResponse = ossExecutor.download(ossGetRequest);
             response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + convertToFileName(request, ossResponse.getObject()));
-            IoUtil.copy(ossResponse.getInputStream(), response.getOutputStream());
+            IoUtils.copy(ossResponse.getInputStream(), response.getOutputStream());
         } catch (Throwable ex) {
             throw new BizException(ExceptionCodes.ATTACHMENT_DOWNLOAD_ERROR);
         }

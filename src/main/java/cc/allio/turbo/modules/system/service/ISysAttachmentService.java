@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.system.service;
 
 import cc.allio.turbo.common.exception.BizException;
-import cc.allio.turbo.common.mybatis.service.ITurboCrudService;
+import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
 import cc.allio.turbo.modules.system.entity.SysAttachment;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
