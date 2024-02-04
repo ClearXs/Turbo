@@ -1,7 +1,7 @@
 package cc.allio.turbo.common.web.params;
 
 import cc.allio.turbo.common.db.entity.Entity;
-import cc.allio.uno.core.function.MethodReferenceColumn;
+import cc.allio.uno.core.function.lambda.MethodReferenceColumn;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

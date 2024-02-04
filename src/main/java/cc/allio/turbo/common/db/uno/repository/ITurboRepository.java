@@ -1,6 +1,7 @@
 package cc.allio.turbo.common.db.uno.repository;
 
 import cc.allio.uno.data.orm.executor.CommandExecutor;
+import cc.allio.uno.data.orm.executor.CommandExecutorFactory;
 
 /**
  * Repository marker interface，Anywhere domain object Operate Collection of base Interface in System. Base on <b>uno-data</b>
@@ -16,5 +17,7 @@ public interface ITurboRepository {
      *
      * @return CommandExecutor
      */
-    CommandExecutor getExecutor();
+    default CommandExecutor getExecutor() {
+        return CommandExecutorFactory.getDSLExecutor();
+    }
 }

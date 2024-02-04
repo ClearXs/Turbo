@@ -28,7 +28,7 @@ public class DevBoAttributeController extends TurboServiceTreeCrudController<Dev
     private static final BoAttributeTreeInterceptor ATTRIBUTE_TREE_INTERCEPTOR = new BoAttributeTreeInterceptor();
 
     @Override
-    protected WebTreeCrudInterceptor<DevBoAttribute, BoAttributeTree, IDevBoAttributeService> getInterceptor() {
+    public WebTreeCrudInterceptor<DevBoAttribute, BoAttributeTree, IDevBoAttributeService> getInterceptor() {
         return ATTRIBUTE_TREE_INTERCEPTOR;
     }
 

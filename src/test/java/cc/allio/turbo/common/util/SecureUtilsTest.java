@@ -1,4 +1,4 @@
-package cc.allio.turbo.common;
+package cc.allio.turbo.common.util;
 
 import cc.allio.uno.test.BaseTestCase;
 import cc.allio.turbo.common.constant.SecureAlgorithm;

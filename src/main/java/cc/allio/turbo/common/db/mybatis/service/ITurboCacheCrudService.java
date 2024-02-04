@@ -18,11 +18,11 @@ public interface ITurboCacheCrudService<T extends IdEntity> extends ITurboCrudSe
     /**
      * 获取缓存实例
      */
-    default TurboCache<T> getCache() {
+    default TurboCache getCache() {
         String cacheName = getCacheName();
         if (StringUtils.isBlank(cacheName)) {
             return null;
         }
-        return CacheHelper.getCache(cacheName);
+        return CacheHelper.getIfAbsent(cacheName);
     }
 }

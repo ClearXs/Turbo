@@ -1,11 +1,19 @@
 package cc.allio.turbo.modules.developer.service;
 
+import cc.allio.turbo.common.db.mybatis.service.ITurboCacheCrudService;
 import cc.allio.turbo.common.exception.BizException;
-import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
 import cc.allio.turbo.modules.developer.domain.BoSchema;
 import cc.allio.turbo.modules.developer.entity.DevBo;
 
-public interface IDevBoService extends ITurboCrudService<DevBo> {
+public interface IDevBoService extends ITurboCacheCrudService<DevBo> {
+
+    /**
+     * bo数据物化
+     *
+     * @param boId bo id
+     * @return if true success
+     */
+    Boolean materialize(Long boId);
 
     /**
      * 根据BoId获取BoSchema
@@ -13,5 +21,15 @@ public interface IDevBoService extends ITurboCrudService<DevBo> {
      * @param boId boId
      * @return BoSchema
      */
-    BoSchema toSchema(Long boId) throws BizException;
+    BoSchema cacheToSchema(Long boId) throws BizException;
+
+    /**
+     * 保存BoSchema至缓存中
+     * <p><b>增量式更新</b></p>
+     * <p>TODO：如果缓存中存在，则两者比较进行增量式更新</p>
+     *
+     * @param boSchema boSchema
+     * @return true if success
+     */
+    boolean saveBoSchema(BoSchema boSchema);
 }

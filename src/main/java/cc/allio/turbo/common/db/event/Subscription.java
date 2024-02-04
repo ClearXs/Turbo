@@ -1,0 +1,70 @@
+package cc.allio.turbo.common.db.event;
+
+import lombok.Getter;
+import org.apache.poi.ss.formula.functions.T;
+
+import java.lang.reflect.Method;
+import java.util.Optional;
+
+/**
+ * 行为订阅信息
+ *
+ * @author jiangwei
+ * @date 2024/1/26 19:04
+ * @since 0.1.0
+ */
+public class Subscription<D> {
+
+    @Getter
+    private final Subscriber<D> subscriber;
+
+    @Getter
+    private final String eventBehavior;
+    @Getter
+    private final Method behavior;
+    private final DomainEventContext eventContext;
+
+    public Subscription(Subscriber<D> subscriber, String eventBehavior, Method behavior, DomainEventContext eventContext) {
+        this.subscriber = subscriber;
+        this.eventBehavior = eventBehavior;
+        this.behavior = behavior;
+        this.eventContext = eventContext;
+    }
+
+    /**
+     * 获取领域对象
+     */
+    public Optional<D> getDomain() {
+        return eventContext.getDomain();
+    }
+
+    /**
+     * 获取领域行为结果
+     *
+     * @return optional
+     */
+    public Optional<Object> getBehaviorResult() {
+        return eventContext.getBehaviorResult();
+    }
+
+    /**
+     * 获取领域行为结果
+     *
+     * @param resultType resultType
+     * @param <T>        T
+     * @return optional
+     */
+    public <T> Optional<T> getBehaviorResult(Class<T> resultType) {
+        return eventContext.getBehaviorResult(resultType);
+    }
+
+    /**
+     * 根据指定的key获取
+     *
+     * @param key key
+     * @return optional
+     */
+    public Optional<Object> getParameter(String key) {
+        return eventContext.get(key);
+    }
+}

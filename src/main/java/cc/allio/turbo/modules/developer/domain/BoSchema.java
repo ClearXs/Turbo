@@ -1,7 +1,11 @@
 package cc.allio.turbo.modules.developer.domain;
 
+import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.modules.developer.entity.DevBo;
+import cc.allio.turbo.modules.developer.entity.DevDataSource;
 import cc.allio.uno.core.util.JsonUtils;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,24 +20,27 @@ import java.util.Map;
  * @since 0.1.0
  */
 @Data
-public class BoSchema implements Serializable {
+public class BoSchema implements Serializable, Entity {
 
     // bo id
-    private Long id;
+    private String id;
     // bo code
     private String code;
     // bo name
     private String name;
 
+    // 数据源信息
+    private Long dataSourceId;
+
     /**
      * props
      */
-    private Map<String, Object> props;
+    private Map<String, Object> props = Maps.newHashMap();
 
     /**
      * attr schema
      */
-    private List<BoAttrSchema> attrs;
+    private List<BoAttrSchema> attrs = Lists.newArrayList();
 
     /**
      * 根据Json文本信息转换为{@link BoSchema}
@@ -54,9 +61,10 @@ public class BoSchema implements Serializable {
      */
     public static BoSchema from(DevBo bo, List<BoAttributeTree> treeify) {
         BoSchema boSchema = new BoSchema();
-        boSchema.setId(bo.getId());
+        boSchema.setId(bo.getId().toString());
         boSchema.setCode(bo.getCode());
         boSchema.setName(bo.getName());
+        boSchema.setDataSourceId(bo.getDataSourceId());
         List<BoAttrSchema> attrSchemas = BoAttrSchema.from(treeify);
         boSchema.setAttrs(attrSchemas);
         return boSchema;

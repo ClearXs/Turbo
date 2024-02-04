@@ -2,6 +2,8 @@ package cc.allio.turbo.common.db.entity;
 
 import cc.allio.uno.core.datastructure.tree.Expand;
 
+import java.io.Serializable;
+
 /**
  * tree结点标识
  *
@@ -11,4 +13,8 @@ import cc.allio.uno.core.datastructure.tree.Expand;
  */
 public interface TreeNodeEntity extends Entity, Expand {
 
+    /**
+     * 获取Id
+     */
+    Serializable getParentId();
 }

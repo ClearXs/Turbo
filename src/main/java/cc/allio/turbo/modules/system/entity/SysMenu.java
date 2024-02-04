@@ -20,9 +20,12 @@ public class SysMenu extends TreeEntity {
 
     /**
      * 菜单域
+     *
+     * @deprecated 没有详细说明该字段是什么意思
      */
     @TableField("scope")
     @Schema(description = "scope")
+    @Deprecated
     private String scope;
 
     /**

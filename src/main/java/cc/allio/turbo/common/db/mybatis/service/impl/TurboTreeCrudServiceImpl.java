@@ -75,11 +75,14 @@ public abstract class TurboTreeCrudServiceImpl<M extends TreeMapper<T>, T extend
      * 移除前检查
      */
     private void preCheckRemove(Serializable id) {
-        QueryWrapper<T> queryWrapper = Wrappers.query();
-        queryWrapper.eq(id != null, "parent_id", id);
-        Long childrenCount = getBaseMapper().selectCount(queryWrapper);
-        if (childrenCount > 0) {
-            throw ExceptionUtils.mpe(String.format("parent_id %s has children", id));
+        if (id != null) {
+            QueryWrapper<T> queryWrapper = Wrappers.query();
+            queryWrapper.eq("parent_id", id);
+            queryWrapper.eq("id", id);
+            Long childrenCount = getBaseMapper().selectCount(queryWrapper);
+            if (childrenCount > 0) {
+                throw ExceptionUtils.mpe(String.format("parent_id %s has children", id));
+            }
         }
     }
 }

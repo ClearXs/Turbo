@@ -21,7 +21,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 抽象的redis缓存，实现基本的cache方法。
+ * 基于redis缓存
  * <p>key值将使用{@link ConversionService}转换为{@link String}类型，并且自动添加前缀的信息，如果存在租户则添加租户的信息</p>
  *
  * @author j.x
@@ -29,23 +29,25 @@ import java.util.concurrent.TimeUnit;
  * @see org.springframework.data.redis.cache.RedisCache
  * @since 0.1.0
  */
-public abstract class PrefixKeyRedisCache<T> implements TenantCache<T> {
+@Getter
+public class TurboRedisCacheImpl implements TenantCache {
 
     // 默认key前缀模版
     private static final String PREFIX_TEMPLATE = "turbo:#{name}:";
     // 带有租户的key前缀
     private static final String PREFIX_TENANT_TEMPLATE = "turbo:#{name}:#{tenant}:";
-    private final ExpressionTemplate expressionTemplate = ExpressionTemplate.createTemplate(Tokenizer.HASH_BRACE);
+    private static final ExpressionTemplate expressionTemplate = ExpressionTemplate.createTemplate(Tokenizer.HASH_BRACE);
 
-    @Getter
     private final ConversionService conversionService;
+    private final String name;
 
-    protected PrefixKeyRedisCache() {
-        this(new DefaultConversionService());
+    public TurboRedisCacheImpl(String name) {
+        this(name, new DefaultConversionService());
     }
 
-    protected PrefixKeyRedisCache(ConversionService conversionService) {
+    protected TurboRedisCacheImpl(String name, ConversionService conversionService) {
         this.conversionService = conversionService;
+        this.name = name;
     }
 
     @Override
@@ -67,6 +69,20 @@ public abstract class PrefixKeyRedisCache<T> implements TenantCache<T> {
     }
 
     @Override
+    public boolean remove(String key) {
+        String cacheKey = createCacheKey(key);
+        RedisUtil.delete(cacheKey);
+        return true;
+    }
+
+    @Override
+    public boolean remove(Collection<Object> keys) {
+        List<String> cacheKeys = keys.stream().map(this::createCacheKey).toList();
+        RedisUtil.delete(cacheKeys);
+        return true;
+    }
+
+    @Override
     public Object getNativeCache() {
         throw new UnsupportedOperationException();
     }
@@ -80,40 +96,43 @@ public abstract class PrefixKeyRedisCache<T> implements TenantCache<T> {
     @Override
     public <T> T get(Object key, Class<T> type) {
         String cacheKey = createCacheKey(key);
-
         return JsonUtils.parse(RedisUtil.get(cacheKey), type);
     }
 
+
     @Override
-    public <T> T get(Object key, Callable<T> valueLoader) {
+    public <T> T get(Object key, Class<T> classType, Callable<T> valueLoader) {
         String cacheKey = createCacheKey(key);
-        try {
-            T value = valueLoader.call();
+        String cacheValue = RedisUtil.get(cacheKey);
+        if (StringUtils.isBlank(cacheValue)) {
+            T value = null;
+            try {
+                value = valueLoader.call();
+            } catch (Exception ex) {
+                throw new ValueRetrievalException(key, valueLoader, ex);
+            }
             RedisUtil.setIfAbsent(cacheKey, JsonUtils.toJson(value));
             return value;
-        } catch (Exception ex) {
-            throw new ValueRetrievalException(key, valueLoader, ex);
+        } else {
+            return JsonUtils.parse(cacheValue, classType);
         }
     }
 
     @Override
     public void put(Object key, Object value) {
         String cacheKey = createCacheKey(key);
-
         RedisUtil.set(cacheKey, JsonUtils.toJson(value));
     }
 
     @Override
     public void evict(Object key) {
         String cacheKey = createCacheKey(key);
-
         RedisUtil.delete(cacheKey);
-
     }
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException("clear not support");
+        throw new UnsupportedOperationException("remove not support");
     }
 
     /**
@@ -134,8 +153,8 @@ public abstract class PrefixKeyRedisCache<T> implements TenantCache<T> {
      * @throws IllegalStateException if {@code key} cannot be converted to {@link String}.
      */
     protected String convertKey(Object key) {
-        if (key instanceof String) {
-            return (String) key;
+        if (key instanceof String keyString) {
+            return keyString;
         }
         TypeDescriptor source = TypeDescriptor.forObject(key);
         ConversionService conversionService = getConversionService();

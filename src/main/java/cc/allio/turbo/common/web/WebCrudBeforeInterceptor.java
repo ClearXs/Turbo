@@ -2,10 +2,12 @@ package cc.allio.turbo.common.web;
 
 import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
+import cc.allio.turbo.common.domain.Domains;
 import cc.allio.turbo.common.web.params.QueryParam;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -28,7 +30,7 @@ public interface WebCrudBeforeInterceptor<T extends Entity, D extends Entity, S 
      * @return 实体类型T
      */
     default T onEditBefore(S service, D domain) {
-        return (T) domain;
+        return Domains.toEntity(domain, service.getEntityClass());
     }
 
     /**
@@ -39,7 +41,7 @@ public interface WebCrudBeforeInterceptor<T extends Entity, D extends Entity, S 
      * @return 实体类型T
      */
     default T onSaveBefore(S service, D domain) {
-        return (T) domain;
+        return Domains.toEntity(domain, service.getEntityClass());
     }
 
     /**
@@ -48,7 +50,7 @@ public interface WebCrudBeforeInterceptor<T extends Entity, D extends Entity, S 
      * @param service service
      * @param ids     ids
      */
-    default void onDeleteBefore(S service, List<Long> ids) {
+    default void onDeleteBefore(S service, List<Serializable> ids) {
     }
 
     /**
@@ -59,7 +61,7 @@ public interface WebCrudBeforeInterceptor<T extends Entity, D extends Entity, S 
      * @return entity
      */
     default T onSaveOrUpdateBefore(S service, D domain) {
-        return (T) domain;
+        return Domains.toEntity(domain, service.getEntityClass());
     }
 
     /**
@@ -70,16 +72,16 @@ public interface WebCrudBeforeInterceptor<T extends Entity, D extends Entity, S 
      * @return entity for list
      */
     default List<T> onBatchSaveBefore(S service, List<D> domains) {
-        return (List<T>) domains;
+        return domains.stream().map(domain -> Domains.toEntity(domain, service.getEntityClass())).toList();
     }
 
     /**
-     * 在{@link TurboCrudController#details(long)}之前进行调用
+     * 在{@link TurboCrudController#details(Serializable)}之前进行调用
      *
      * @param service service
      * @param id      id
      */
-    default void onDetailsBefore(S service, long id) {
+    default void onDetailsBefore(S service, Serializable id) {
     }
 
     /**
@@ -101,7 +103,7 @@ public interface WebCrudBeforeInterceptor<T extends Entity, D extends Entity, S 
     }
 
     /**
-     * 在{@link TurboCrudController#export(HttpServletResponse, QueryParam)}之前进行调用
+     * 在{@link TurboCrudController#export(QueryParam, HttpServletResponse)}之前进行调用
      *
      * @param service service
      * @param entity  entity

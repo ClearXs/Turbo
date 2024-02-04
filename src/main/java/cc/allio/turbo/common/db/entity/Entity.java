@@ -5,7 +5,7 @@ import java.io.Serializable;
 public interface Entity {
 
     /**
-     * 获取父节点Id
+     * 获取Id
      */
     Serializable getId();
 }

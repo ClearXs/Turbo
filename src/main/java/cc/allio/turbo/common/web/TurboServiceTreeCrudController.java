@@ -35,19 +35,19 @@ public abstract class TurboServiceTreeCrudController<T extends TreeEntity, Z ext
     }
 
     @Override
-    protected Class<T> getEntityType() {
+    public Class<T> getEntityType() {
         return (Class<T>) ReflectTool.getGenericType(this, TurboServiceTreeCrudController.class, 0);
     }
 
     /**
      * 获取树类型
      */
-    protected Class<Z> getTreeType() {
+    public Class<Z> getTreeType() {
         return (Class<Z>) ReflectTool.getGenericType(this, TurboServiceTreeCrudController.class, 1);
     }
 
     @Override
-    protected WebTreeCrudInterceptor<T, Z, S> getInterceptor() {
+    public WebTreeCrudInterceptor<T, Z, S> getInterceptor() {
         return new WebTreeCrudInterceptor<>() {
         };
     }

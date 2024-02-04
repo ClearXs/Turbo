@@ -42,10 +42,10 @@ public class DevBoAttributeServiceImpl extends TurboTreeCrudServiceImpl<DevBoAtt
                         .setProps(
                                 new DevAttributeProps()
                                         .setType(FieldType.BIGINT)
-                                        .setIsPk(true)
-                                        .setIsNonNull(true)
+                                        .setPk(true)
+                                        .setNonNull(true)
                                         .setPrecision(64)
-                                        .setIsUnique(true)
+                                        .setUnique(true)
                                         .toJson()
                         );
         defaultBoAttributes.add(id);
@@ -74,7 +74,7 @@ public class DevBoAttributeServiceImpl extends TurboTreeCrudServiceImpl<DevBoAtt
                         .setAttrType(AttributeType.FIELD)
                         .setProps(
                                 new DevAttributeProps()
-                                        .setType(FieldType.DATE)
+                                        .setType(FieldType.TIMESTAMP)
                                         .toJson()
                         );
         defaultBoAttributes.add(createTime);
@@ -88,7 +88,7 @@ public class DevBoAttributeServiceImpl extends TurboTreeCrudServiceImpl<DevBoAtt
                         .setAttrType(AttributeType.FIELD)
                         .setProps(
                                 new DevAttributeProps()
-                                        .setType(FieldType.DATE)
+                                        .setType(FieldType.TIMESTAMP)
                                         .toJson()
                         );
         defaultBoAttributes.add(updateTime);
@@ -99,6 +99,7 @@ public class DevBoAttributeServiceImpl extends TurboTreeCrudServiceImpl<DevBoAtt
                         .setCode("updateBy")
                         .setName("更新人")
                         .setField("update_by")
+                        .setAttrType(AttributeType.FIELD)
                         .setProps(
                                 new DevAttributeProps()
                                         .setType(FieldType.BIGINT)

@@ -1,7 +1,6 @@
 package cc.allio.turbo.common.web;
 
 import cc.allio.turbo.common.excel.util.ExcelUtil;
-import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.mybatis.help.Conditions;
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
@@ -19,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -32,7 +32,7 @@ import java.util.List;
  * @since 0.1.0
  */
 @Getter
-public abstract class TurboCrudController<T extends Entity, D extends Entity, S extends ITurboCrudService<T>> extends TurboController {
+public abstract class TurboCrudController<T extends Entity, D extends Entity, S extends ITurboCrudService<T>> extends BaseTurboCrudController<T, D> {
 
     @Autowired
     protected S service;
@@ -40,6 +40,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     /**
      * 保存
      */
+    @Override
     @PostMapping("/save")
     @Operation(summary = "保存")
     public R<Boolean> save(@Validated @RequestBody D domain) {
@@ -53,6 +54,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     /**
      * 编辑
      */
+    @Override
     @Operation(summary = "修改")
     @PutMapping("/edit")
     public R<Boolean> edit(@Validated @RequestBody D domain) {
@@ -66,6 +68,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     /**
      * 保存或者更新
      */
+    @Override
     @Operation(summary = "保存或修改")
     @PostMapping("/save-or-update")
     public R<Boolean> saveOrUpdate(@Validated @RequestBody D domain) {
@@ -79,9 +82,10 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     /**
      * 批量保存
      */
+    @Override
     @PostMapping("/batch-save-or-update")
     @Operation(summary = "批量保存或更新")
-    public R<Boolean> batchSave(@Validated @RequestBody List<D> domain) throws BizException {
+    public R<Boolean> batchSave(@Validated @RequestBody List<D> domain) {
         WebCrudInterceptor<T, D, S> interceptor = getInterceptor();
         List<T> entity = interceptor.onBatchSaveBefore(service, domain);
         boolean saved = service.saveOrUpdateBatch(entity);
@@ -92,9 +96,10 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     /**
      * 批量删除
      */
+    @Override
     @Operation(summary = "删除")
     @DeleteMapping("/delete")
-    public R<Boolean> delete(@RequestBody List<Long> ids) {
+    public R<Boolean> delete(@RequestBody List<Serializable> ids) {
         WebCrudInterceptor<T, D, S> interceptor = getInterceptor();
         interceptor.onDeleteBefore(service, ids);
         boolean removed = service.removeByIds(ids);
@@ -105,9 +110,10 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     /**
      * 详情
      */
+    @Override
     @Operation(summary = "详情")
     @GetMapping("/details")
-    public R<D> details(long id) {
+    public R<D> details(Serializable id) {
         WebCrudInterceptor<T, D, S> interceptor = getInterceptor();
         interceptor.onDetailsBefore(service, id);
         T details = service.details(id);
@@ -118,9 +124,10 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     /**
      * 列表
      */
+    @Override
     @PostMapping("/list")
     @Operation(summary = "列表")
-    public R<List<D>> list(@RequestBody QueryParam<T> params) throws BizException {
+    public R<List<D>> list(@RequestBody QueryParam<T> params) {
         WebCrudInterceptor<T, D, S> interceptor = getInterceptor();
         interceptor.onListBefore(service, params);
         QueryWrapper<T> queryWrapper = Conditions.query(params, getEntityType());
@@ -132,6 +139,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     /**
      * 分页
      */
+    @Override
     @Operation(summary = "分页")
     @PostMapping("/page")
     public R<IPage<D>> page(@RequestBody QueryParam<T> params) {
@@ -146,9 +154,10 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     /**
      * 导出
      */
+    @Override
     @Operation(summary = "导出")
     @PostMapping("/export")
-    public void export(HttpServletResponse response, @RequestBody QueryParam<T> params) {
+    public void export(@RequestBody QueryParam<T> params, HttpServletResponse response) {
         WebCrudInterceptor<T, D, S> interceptor = getInterceptor();
         Class<T> clazz = getEntityType();
         QueryWrapper<T> queryWrapper = Conditions.query(params, clazz);
@@ -161,6 +170,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     /**
      * 导入
      */
+    @Override
     @Operation(summary = "导入")
     @PostMapping("/import")
     public R<Boolean> importFile(MultipartFile file) {
@@ -174,21 +184,21 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     /**
      * 获取实体类型
      */
-    protected Class<T> getEntityType() {
+    public Class<T> getEntityType() {
         return (Class<T>) ReflectTool.getGenericType(this, TurboCrudController.class);
     }
 
     /**
      * 获取领域类型
      */
-    protected Class<D> getDomainType() {
+    public Class<D> getDomainType() {
         return (Class<D>) ReflectTool.getGenericType(this, TurboCrudController.class, 1);
     }
 
     /**
      * 获取Interceptor
      */
-    protected <I extends WebCrudInterceptor<T, D, S>> I getInterceptor() {
+    public <I extends WebCrudInterceptor<T, D, S>> I getInterceptor() {
         return (I) new WebCrudInterceptor<T, D, S>() {
         };
     }

@@ -51,4 +51,11 @@ public class DevBo extends TenantEntity implements CategoryEntity {
     @TableField("category_id")
     @Schema(description = "分类id")
     private Long categoryId;
+
+    /**
+     * 是否物化
+     */
+    @TableField("is_materialize")
+    @Schema(description = "是否物化")
+    private boolean materialize;
 }

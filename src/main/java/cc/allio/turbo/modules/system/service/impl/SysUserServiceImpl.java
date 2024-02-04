@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Service
@@ -61,7 +62,7 @@ public class SysUserServiceImpl extends TurboCrudServiceImpl<SysUserMapper, SysU
     }
 
     @Override
-    public SysUserVO details(Long id) {
+    public SysUserVO details(Serializable id) {
         SysUser sysUser = super.details(id);
         return findUserDetails(sysUser);
     }

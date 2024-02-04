@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("dev_form")
-@Schema(description = "业务对象")
+@Schema(description = "表单")
 public class DevForm extends TenantEntity implements CategoryEntity {
 
     /**
@@ -41,17 +41,10 @@ public class DevForm extends TenantEntity implements CategoryEntity {
     private String schema;
 
     /**
-     * boSchema
-     */
-    @TableField("bo_schema")
-    @Schema(description = "boSchema")
-    private String boSchema;
-
-    /**
      * 所属于bo id
      */
     @TableField("bo_id")
-    @Schema(description = "所属于bo id")
+    @Schema(description = "所属的bo")
     private Long boId;
 
     /**

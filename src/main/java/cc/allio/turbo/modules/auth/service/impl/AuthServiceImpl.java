@@ -47,7 +47,7 @@ public class AuthServiceImpl implements IAuthService {
     public CaptchaDTO captcha() {
         SecureProperties.Captcha captchaSettings = secureProperties.getCaptcha();
         SpecCaptcha captcha = new SpecCaptcha(captchaSettings.getWidth(), captchaSettings.getHeight(), captchaSettings.getLength());
-        TurboCache<String> turboCache = CacheHelper.getIfAbsent(CacheHelper.CAPTCHA);
+        TurboCache turboCache = CacheHelper.getIfAbsent(CacheHelper.CAPTCHA);
         CaptchaDTO captchaDTO = new CaptchaDTO();
         captchaDTO.setCaptchaId(IdGenerator.defaultGenerator().toHex());
         captchaDTO.setBase64(captcha.toBase64());

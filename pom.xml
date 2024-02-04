@@ -25,7 +25,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <uno.version>1.1.6-beta.0</uno.version>
+        <uno.version>1.1.6-beta.1</uno.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <maven-plugin.version>3.11.0</maven-plugin.version>
         <knife4j.version>4.3.0</knife4j.version>
@@ -99,6 +99,10 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hibernate.validator</groupId>

@@ -20,26 +20,23 @@ import java.util.Date;
  * @date 2023/11/9 15:36
  * @since 0.1.0
  */
+@Getter
 public abstract class TreeDomain<T extends TreeNodeEntity, R extends TreeDomain<T, R> & TreeNodeEntity>
         extends ComparableElement<R>
         implements TreeNodeEntity {
 
     @JsonIgnore
-    @Getter
     protected final T entity;
 
     @Setter
-    @Getter
     @Schema(description = "id")
     private Long id;
 
     @Setter
-    @Getter
     @Schema(description = "父级Id")
     private Long parentId;
 
     @Setter
-    @Getter
     @Schema(description = "tenantId")
     private Long tenantId;
 
@@ -47,7 +44,6 @@ public abstract class TreeDomain<T extends TreeNodeEntity, R extends TreeDomain<
      * 创建时间
      */
     @Setter
-    @Getter
     @Schema(description = "创建时间")
     private Date createdTime;
 
@@ -55,7 +51,6 @@ public abstract class TreeDomain<T extends TreeNodeEntity, R extends TreeDomain<
      * 创建人
      */
     @Setter
-    @Getter
     @Schema(description = "创建人")
     private Long createdBy;
 
@@ -63,7 +58,6 @@ public abstract class TreeDomain<T extends TreeNodeEntity, R extends TreeDomain<
      * 更新时间
      */
     @Setter
-    @Getter
     @Schema(description = "更新时间")
     private Date updatedTime;
 
@@ -71,7 +65,6 @@ public abstract class TreeDomain<T extends TreeNodeEntity, R extends TreeDomain<
      * 更新人
      */
     @Setter
-    @Getter
     @Schema(description = "更新人")
     private Long updatedBy;
 
@@ -79,7 +72,6 @@ public abstract class TreeDomain<T extends TreeNodeEntity, R extends TreeDomain<
      * 逻辑删除
      */
     @Setter
-    @Getter
     @Schema(description = "逻辑删除")
     private Integer isDeleted;
 
@@ -87,7 +79,6 @@ public abstract class TreeDomain<T extends TreeNodeEntity, R extends TreeDomain<
      * 版本号
      */
     @Setter
-    @Getter
     @Schema(description = "版本号")
     private Integer version;
 

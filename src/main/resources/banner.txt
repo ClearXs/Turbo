@@ -1,5 +1,5 @@
 ${AnsiColor.BLUE}
-God’s Blessing on This Wonderful World!${AnsiStyle.BOLD}
+God's Blessing on This Wonderful World!${AnsiStyle.BOLD}
   _____                   _
  |_   _|  _  _      _ _  | |__     ___
    | |   | +| |    | '_| | '_ \   / _ \
