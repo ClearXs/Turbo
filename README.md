@@ -1,13 +1,10 @@
 [English](README.en-US.md) | 简体中文
 
-<img src="./docs/logo.png" >
+<img src="./docs/logo.png" style="zoom:15%;"  >
+
 <h2 align="center">简约 · 实用 · 前沿 · 创新</h2>
 
-<h4 align="center">基于Java体系，React体系最新技术适合于企业级与互联网营销的一站式解决方案</h4>
-
-## 背景
-
-Turbo的定位是以最新技术来构建的一套快速开发框架，出发点是区别于市面上通用的技术体系，打造一套适合于未来趋势的企业级以及互联网营销的一站式解决方案。
+<h4 align="center">基于Java体系，React体系最新技术致力于打造适合于未来趋势的企业级以及互联网营销的全端一站式解决方案</h4>
 
 ## 目标
 
@@ -16,11 +13,16 @@ Turbo的定位是以最新技术来构建的一套快速开发框架，出发点
 - 💪 全生态解决方案，App、IOS、小程序、鸿蒙、桌面应用。
 - ❤️ 对用户实用，简约风的设计、减少冗余操作，增加快捷操作，避免出现重复操作等带来用户差体验。
 
-## 技术架构（暂定）
+## 特性
 
-<img src="./docs/images/Turbo-Turbo-Architecture.png">
-
-## 技术体系（暂定）
+- 🚀**快：**Turbo以“快”为核心，通过低代码、代码生成等功能，可以大幅提升开发效率，帮助开发者快速构建应用系统。
+- 🤙**多数据类别、多数据源支持：**基于uno-data的数据抽象层可以帮助开发者**无感知地集成**多种数据类别与多数据源。
+- ⚽**数据源无关：**高度抽象的数据操作，使得开发人员**只关注业务逻辑**，无需在意底层数据源的差异。
+- 🎈**高度封装：**Turbo借鉴了Mybatis-Plus、JPA的设计思路，采用了高度封装的三层架构（Controller-Service-Repository）以及领域事件与领域行为的概念，实现了架构的统一性和拓展性。
+- 🌤**业务领域建模：**Turbo支持业务领域建模，可以帮助开发者更好地组织和管理业务逻辑。
+- 🍙**全端统一：**基于阿里Formily及自研Tableily 解决方案，Turbo实现了不同端**Form**和**Table**的统一，降低了开发人员的学习成本。
+- 🔒**RBAC权限体系：**Turbo提供完善的RBAC权限体系，可以帮助开发者轻松实现用户权限管理。
+- 🖲**支持OAuth2.1：**Turbo支持OAuth2.1 协议，可以方便地与其他系统进行对接。
 
 ### 后端技术体系
 
@@ -58,6 +60,8 @@ Turbo的定位是以最新技术来构建的一套快速开发框架，出发点
 
 ### 桌面端技术体系
 
+1. 框架：[tauri](https://tauri.app/)
+
 ## 界面预览
 
 <table>
@@ -74,8 +78,10 @@ Turbo的定位是以最新技术来构建的一套快速开发框架，出发点
     <tr>
         <td><img src="./docs/images/preview7.png" alt="preview7"/></td>
         <td><img src="./docs/images/preview8.png" alt="preview8"/></td>
+      	<td><img src="./docs/images/preview9.png" alt="preview9"/></td>
     </tr>
 </table>
+
 
 
 ## 运行
