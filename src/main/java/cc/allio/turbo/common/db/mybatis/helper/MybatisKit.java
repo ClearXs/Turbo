@@ -1,4 +1,4 @@
-package cc.allio.turbo.common.db.mybatis.help;
+package cc.allio.turbo.common.db.mybatis.helper;
 
 import cc.allio.uno.core.util.StringUtils;
 import com.baomidou.mybatisplus.annotation.TableField;

@@ -7,7 +7,7 @@ import lombok.Data;
 import static com.baomidou.mybatisplus.annotation.IdType.ASSIGN_ID;
 
 @Data
-public abstract class IdEntity implements Entity {
+public abstract class IdEntity implements Entity, EntityResolver {
 
     /**
      * 主键

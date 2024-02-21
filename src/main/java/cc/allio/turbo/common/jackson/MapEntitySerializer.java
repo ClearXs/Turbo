@@ -56,9 +56,10 @@ public class MapEntitySerializer extends StdSerializer<MapEntity> {
                         .block();
         for (String beanName : beanNames) {
             Object result = beanInfoWrapper.getForce(value, beanName);
-            if (ValueWrapper.EMPTY_VALUE == result) {
+            // 当map entity的实体字段为空并且作为map中的key获取value也为空时才设置为空
+            if (ValueWrapper.EMPTY_VALUE == result && value.get(beanName) == null) {
                 value.put(beanName, null);
-            } else {
+            } else if (ValueWrapper.EMPTY_VALUE != result) {
                 value.put(beanName, result);
             }
         }

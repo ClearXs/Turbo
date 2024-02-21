@@ -7,6 +7,8 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 /**
+ * 领域事件上下文
+ *
  * @author jiangwei
  * @date 2024/1/26 15:03
  * @since 0.1.0

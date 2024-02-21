@@ -78,7 +78,7 @@ public abstract class TurboTreeCrudServiceImpl<M extends TreeMapper<T>, T extend
         if (id != null) {
             QueryWrapper<T> queryWrapper = Wrappers.query();
             queryWrapper.eq("parent_id", id);
-            queryWrapper.eq("id", id);
+            queryWrapper.ne("id", id);
             Long childrenCount = getBaseMapper().selectCount(queryWrapper);
             if (childrenCount > 0) {
                 throw ExceptionUtils.mpe(String.format("parent_id %s has children", id));

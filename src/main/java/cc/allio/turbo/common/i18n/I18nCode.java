@@ -4,6 +4,7 @@ import lombok.Getter;
 
 /**
  * 描述i18n的code接口
+ * <b>描述信息可以使用%s进行占位处理</b>
  *
  * @author jiangwei
  * @date 2024/1/19 17:13
@@ -35,6 +36,13 @@ public interface I18nCode {
      */
     String getSubGroup();
 
+    /**
+     * 获取描述信息占位符替换的参数集
+     */
+    default Object[] getParams() {
+        return new Object[0];
+    }
+
     static I18nCode of(String key) {
         return new I18nCodeImpl(key);
     }
@@ -50,6 +58,11 @@ public interface I18nCode {
     static I18nCode of(String key, String description, String group, String subGroup) {
         return new I18nCodeImpl(key, description, group, subGroup);
     }
+
+    static I18nCode of(I18nCode i18nCode, Object[] params) {
+        return new I18nCodePramsImpl(i18nCode, params);
+    }
+
 
     @Getter
     class I18nCodeImpl implements I18nCode {
@@ -79,6 +92,33 @@ public interface I18nCode {
             this.description = description;
             this.group = group;
             this.subGroup = subGroup;
+        }
+    }
+
+    @Getter
+    class I18nCodePramsImpl extends I18nCodeImpl {
+
+        private Object[] params;
+
+        public I18nCodePramsImpl(String key) {
+            super(key);
+        }
+
+        public I18nCodePramsImpl(String key, String description) {
+            super(key, description);
+        }
+
+        public I18nCodePramsImpl(String key, String description, String group) {
+            super(key, description, group);
+        }
+
+        public I18nCodePramsImpl(String key, String description, String group, String subGroup) {
+            super(key, description, group, subGroup);
+        }
+
+        public I18nCodePramsImpl(I18nCode i18nCode, Object[] params) {
+            super(i18nCode.getKey(), i18nCode.getDescription(), i18nCode.getGroup(), i18nCode.getSubGroup());
+            this.params = params;
         }
     }
 }

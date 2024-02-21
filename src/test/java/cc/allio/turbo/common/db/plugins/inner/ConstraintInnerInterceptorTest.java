@@ -5,14 +5,14 @@ import cc.allio.turbo.common.db.mapper.StudentMapper;
 import cc.allio.uno.test.Inject;
 import cc.allio.uno.test.RunTest;
 import cc.allio.uno.test.env.annotation.MybatisPlusEnv;
-import cc.allio.turbo.common.db.TurboDbConfiguration;
+import cc.allio.turbo.common.db.mybatis.TurboMybatisConfiguration;
 import cc.allio.turbo.common.db.persistent.PersistentConfiguration;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.UncategorizedSQLException;
 
-@RunTest(components = {TurboDbConfiguration.class, PersistentConfiguration.class})
+@RunTest(components = {TurboMybatisConfiguration.class, PersistentConfiguration.class})
 @MybatisPlusEnv(basePackages = "cc.allio.uno.turbo.common.mybatis.**")
 public class ConstraintInnerInterceptorTest {
 

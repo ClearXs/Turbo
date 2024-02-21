@@ -31,7 +31,13 @@ public class ExceptionHandlerController {
     public R handleBizException(HttpServletResponse response, BizException ex) {
         printError(ex);
         I18nCode i18nCode = ex.getI18nCode();
-        String errMsg = i18nCode != null ? LocaleFormatter.getMessage(i18nCode.getKey()) : ex.getMessage();
+        String errMsg;
+        if (i18nCode != null) {
+            String message = LocaleFormatter.getMessage(i18nCode.getKey());
+            errMsg = String.format(message, i18nCode.getParams());
+        } else {
+            errMsg = ex.getMessage();
+        }
         R<?> r = R.internalError(errMsg);
         response.setStatus(r.getCode());
         return r;

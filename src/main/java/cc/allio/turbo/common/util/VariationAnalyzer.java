@@ -135,6 +135,7 @@ public class VariationAnalyzer<T, Key> {
 
     @Getter
     public static class AnalyzeResultSet<T, Key> {
+
         // 新增的
         private final List<Result<T, Key>> addition = Lists.newArrayList();
         // 减少的
@@ -152,6 +153,13 @@ public class VariationAnalyzer<T, Key> {
 
         void addMutable(Result<T, Key> mutable) {
             mutative.add(mutable);
+        }
+
+        /**
+         * 返回分析的结果是否有变化
+         */
+        public boolean changed() {
+            return CollectionUtils.isNotEmpty(addition) || CollectionUtils.isNotEmpty(reduction) || CollectionUtils.isNotEmpty(mutative);
         }
     }
 

@@ -7,6 +7,7 @@ import cc.allio.turbo.modules.developer.constant.FieldType;
 import cc.allio.uno.core.type.Types;
 import cc.allio.uno.core.util.BeanUtils;
 import cc.allio.uno.core.util.CollectionUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -37,19 +38,20 @@ public final class BoAttrSchema implements Serializable, Entity {
     // bo attr field type
     private FieldType type;
     // bo attr parentId
-    private long parentId;
+    private Long parentId;
     // bo attr depth
     private Integer depth;
     // bo attr icon
     private String icon;
     // bo attr precision
-    private int precision;
+    private Integer precision;
     // 预留属性，目前还未能赋值
-    private int span;
-    // attr声明周期，拥有temporary与persistent两种值
+    private Integer span;
+    // 生命周期，拥有temporary与persistent两种值
     private String lifecycle;
     // bo attr scala
-    private int scale;
+    private Integer scale;
+    private boolean defaulted;
     private boolean binding;
     private boolean pk;
     private boolean fk;
@@ -87,10 +89,7 @@ public final class BoAttrSchema implements Serializable, Entity {
     public static List<BoAttributeTree> to(List<BoAttrSchema> schemas) {
         return schemas.stream()
                 .map(schema -> {
-                    BoAttributeTree attrTree = Domains.toEntity(schema, BoAttributeTree.class, (o, tree) -> {
-                        tree.setId(Long.valueOf(o.id));
-                        return tree;
-                    });
+                    BoAttributeTree attrTree = to(schema);
                     if (CollectionUtils.isNotEmpty(schema.children)) {
                         List<BoAttributeTree> children = to(schema.children);
                         attrTree.setChildren(children);
@@ -98,6 +97,44 @@ public final class BoAttrSchema implements Serializable, Entity {
                     return attrTree;
                 })
                 .toList();
+    }
 
+    /**
+     * 创建{@link BoAttributeTree}
+     *
+     * @param schema schema
+     * @return BoAttributeTree
+     */
+    public static BoAttributeTree to(BoAttrSchema schema) {
+        return Domains
+                .toEntity(schema, BoAttributeTree.class, (o, tree) -> {
+                    tree.setId(Long.valueOf(o.id));
+                    return tree;
+                });
+    }
+
+    /**
+     * 获取secondary schema
+     * <p>在{@link #children}中寻找是{@link AttributeType#TABLE}的数据</p>
+     *
+     * @return list schema
+     */
+    @JsonIgnore
+    public List<BoAttrSchema> obtainSecondarySchema() {
+        return children.stream()
+                .filter(child -> AttributeType.TABLE == child.attrType)
+                .toList();
+    }
+
+    /**
+     * 在{@link #children}中寻找是{@link AttributeType#FIELD}的数据
+     *
+     * @return list schema
+     */
+    @JsonIgnore
+    public List<BoAttrSchema> obtainFieldSchema() {
+        return children.stream()
+                .filter(child -> AttributeType.FIELD == child.attrType)
+                .toList();
     }
 }

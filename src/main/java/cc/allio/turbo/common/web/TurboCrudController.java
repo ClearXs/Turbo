@@ -2,7 +2,7 @@ package cc.allio.turbo.common.web;
 
 import cc.allio.turbo.common.excel.util.ExcelUtil;
 import cc.allio.turbo.common.db.entity.Entity;
-import cc.allio.turbo.common.db.mybatis.help.Conditions;
+import cc.allio.turbo.common.db.mybatis.helper.Conditions;
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
 import cc.allio.turbo.common.web.params.QueryParam;
 import cc.allio.uno.core.util.ReflectTool;
@@ -18,7 +18,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -60,7 +59,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     public R<Boolean> edit(@Validated @RequestBody D domain) {
         WebCrudInterceptor<T, D, S> interceptor = getInterceptor();
         T entity = interceptor.onEditBefore(service, domain);
-        boolean edited = service.update(entity, Wrappers.<T>query().eq("id", entity.getId()));
+        boolean edited = service.update(entity, Wrappers.<T>update().eq("id", entity.getId()));
         interceptor.onEditAfter(service, entity, edited);
         return R.ok(edited);
     }
@@ -74,7 +73,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     public R<Boolean> saveOrUpdate(@Validated @RequestBody D domain) {
         WebCrudInterceptor<T, D, S> interceptor = getInterceptor();
         T entity = interceptor.onSaveOrUpdateBefore(service, domain);
-        boolean saved = service.saveOrUpdate(entity, Wrappers.<T>query().eq("id", entity.getId()));
+        boolean saved = service.saveOrUpdate(entity, Wrappers.<T>update().eq("id", entity.getId()));
         interceptor.onSaveOrUpdateAfter(service, entity, saved);
         return R.ok(saved);
     }
@@ -99,7 +98,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     @Override
     @Operation(summary = "删除")
     @DeleteMapping("/delete")
-    public R<Boolean> delete(@RequestBody List<Serializable> ids) {
+    public R<Boolean> delete(@RequestBody List<Long> ids) {
         WebCrudInterceptor<T, D, S> interceptor = getInterceptor();
         interceptor.onDeleteBefore(service, ids);
         boolean removed = service.removeByIds(ids);
@@ -113,7 +112,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     @Override
     @Operation(summary = "详情")
     @GetMapping("/details")
-    public R<D> details(Serializable id) {
+    public R<D> details(Long id) {
         WebCrudInterceptor<T, D, S> interceptor = getInterceptor();
         interceptor.onDetailsBefore(service, id);
         T details = service.details(id);
@@ -130,7 +129,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     public R<List<D>> list(@RequestBody QueryParam<T> params) {
         WebCrudInterceptor<T, D, S> interceptor = getInterceptor();
         interceptor.onListBefore(service, params);
-        QueryWrapper<T> queryWrapper = Conditions.query(params, getEntityType());
+        QueryWrapper<T> queryWrapper = Conditions.entityQuery(params, getEntityType());
         List<T> list = service.list(queryWrapper);
         List<D> ds = interceptor.onListAfter(service, list, params);
         return R.ok(ds);
@@ -145,7 +144,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     public R<IPage<D>> page(@RequestBody QueryParam<T> params) {
         WebCrudInterceptor<T, D, S> interceptor = getInterceptor();
         interceptor.onPageBefore(service, params);
-        QueryWrapper<T> queryWrapper = Conditions.query(params, getEntityType());
+        QueryWrapper<T> queryWrapper = Conditions.entityQuery(params, getEntityType());
         Page<T> entityPage = service.page(params.getPage(), queryWrapper);
         IPage<D> diPage = interceptor.onPageAfter(service, entityPage, params);
         return R.ok(diPage);
@@ -160,7 +159,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     public void export(@RequestBody QueryParam<T> params, HttpServletResponse response) {
         WebCrudInterceptor<T, D, S> interceptor = getInterceptor();
         Class<T> clazz = getEntityType();
-        QueryWrapper<T> queryWrapper = Conditions.query(params, clazz);
+        QueryWrapper<T> queryWrapper = Conditions.entityQuery(params, clazz);
         List<T> list = service.list(queryWrapper);
         List<D> ds = interceptor.onExportBefore(service, list);
         ExcelUtil.export(response, ds, getDomainType());

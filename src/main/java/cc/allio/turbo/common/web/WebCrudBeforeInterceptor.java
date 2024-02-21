@@ -45,12 +45,12 @@ public interface WebCrudBeforeInterceptor<T extends Entity, D extends Entity, S 
     }
 
     /**
-     * 在{@link TurboCrudController#delete(List)} }之前进行调用
+     * 在{@link BaseTurboCrudController#delete(List)} }之前进行调用
      *
      * @param service service
      * @param ids     ids
      */
-    default void onDeleteBefore(S service, List<Serializable> ids) {
+    default <ID extends Serializable> void onDeleteBefore(S service, List<ID> ids) {
     }
 
     /**
@@ -76,7 +76,7 @@ public interface WebCrudBeforeInterceptor<T extends Entity, D extends Entity, S 
     }
 
     /**
-     * 在{@link TurboCrudController#details(Serializable)}之前进行调用
+     * 在{@link BaseTurboCrudController#details(Serializable)}之前进行调用
      *
      * @param service service
      * @param id      id

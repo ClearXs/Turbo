@@ -42,7 +42,7 @@ public interface WebCrudAfterInterceptor<T extends Entity, D extends Entity, S e
     }
 
     /**
-     * * 在{@link TurboCrudController#delete(List)} }之前进行调用
+     * * 在{@link BaseTurboCrudController#delete(List)} }之前进行调用
      *
      * @param service service
      * @param deleted 是否删除成功

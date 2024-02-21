@@ -1,6 +1,6 @@
 package cc.allio.turbo.common.web;
 
-import cc.allio.turbo.common.db.mybatis.help.Conditions;
+import cc.allio.turbo.common.db.mybatis.helper.Conditions;
 import cc.allio.turbo.common.domain.TreeDomain;
 import cc.allio.turbo.common.db.entity.TreeEntity;
 import cc.allio.turbo.common.db.mybatis.service.ITurboTreeCrudService;
@@ -28,7 +28,7 @@ public abstract class TurboServiceTreeCrudController<T extends TreeEntity, Z ext
             throw new BizException(ExceptionCodes.OPERATE_ERROR);
         }
         ITurboTreeCrudService<T> service = getService();
-        QueryWrapper<T> queryWrapper = Conditions.query(params, getEntityType());
+        QueryWrapper<T> queryWrapper = Conditions.entityQuery(params, getEntityType());
         List<Z> treeify = service.tree(queryWrapper, treeType);
         List<Z> zs = interceptor.onTreeAfter(getService(), treeify);
         return ok(zs);

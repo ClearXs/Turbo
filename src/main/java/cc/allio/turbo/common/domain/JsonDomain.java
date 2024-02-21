@@ -9,7 +9,7 @@ import cc.allio.uno.core.util.JsonUtils;
  * @date 2024/1/18 17:25
  * @since 0.1.0
  */
-public abstract class JsonDomain {
+public abstract class JsonDomain  {
 
     /**
      * 返回json数据

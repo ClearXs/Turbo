@@ -1,4 +1,4 @@
-package cc.allio.turbo.common.db.mybatis.help;
+package cc.allio.turbo.common.db.mybatis.helper;
 
 import cc.allio.turbo.common.constant.Direction;
 import cc.allio.turbo.common.db.entity.Entity;
@@ -19,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -29,13 +31,13 @@ import java.util.stream.Collectors;
  * @since 0.1.0
  */
 @Slf4j
-public final class Conditions {
+public class Conditions {
 
-    private Conditions() {
-    }
 
     static Map<Class<?>, TermCondition> specialConds = Maps.newHashMap();
     static TermCondition generalCond = new TermConditionImpl();
+    // 以实体为key，value存储{key=field name, value=field}
+    static Map<Class<?>, Map<String, Field>> entityFields = Maps.newHashMap();
 
     static {
         specialConds.put(Date.class, new DateTermCondition());
@@ -49,43 +51,92 @@ public final class Conditions {
      * @param <T>        某个实体类型
      * @return QueryWrapper instance
      */
-    public static <T extends Entity> QueryWrapper<T> query(@NonNull QueryParam<T> queryParam, @NonNull Class<T> entityType) {
-        QueryWrapper<T> queryWrapper = Wrappers.query();
-        // 查询条件
-        List<Term> terms = queryParam.getTerms();
-        if (CollectionUtils.isNotEmpty(terms)) {
-            List<Field> fields = ReflectionKit.getFieldList(entityType);
-            Map<String, Field> nameFields = fields.stream().collect(Collectors.toMap(Field::getName, f -> f));
-            for (Term term : terms) {
-                // 条件必须存在于实体字段之中
-                if (!nameFields.containsKey(term.getField())) {
-                    continue;
-                }
-                Field field = nameFields.get(term.getField());
-                TermCondition termCondition = getCondByField(field);
-                termCondition.doCondition(new EntityTerm(term, entityType, field), queryWrapper);
-            }
-        }
+    public static <T extends Entity> QueryWrapper<T> entityQuery(QueryParam<T> queryParam, Class<T> entityType) {
+        return entityQuery(Wrappers.query(), queryParam, entityType);
+    }
 
-        List<Order> orders = queryParam.getOrders();
-        if (CollectionUtils.isNotEmpty(orders)) {
-            for (Order order : orders) {
-                queryWrapper.orderBy(true, Direction.ASC == order.getDirection(), order.getProperty());
-            }
-        }
+    /**
+     * 通用参数构建{@link QueryWrapper}
+     *
+     * @param queryParam queryParam
+     * @param <T>        某个实体类型
+     * @return QueryWrapper instance
+     */
+    public static <T extends Entity> QueryWrapper<T> entityQuery(QueryWrapper<T> queryWrapper, QueryParam<T> queryParam, @NonNull Class<T> entityType) {
+        Map<String, Field> nameFields =
+                entityFields.computeIfAbsent(
+                        entityType,
+                        k -> {
+                            List<Field> fields = ReflectionKit.getFieldList(entityType);
+                            return fields.stream().collect(Collectors.toMap(Field::getName, f -> f));
+                        });
+        // 查询条件
+        onQueryTerm(
+                queryParam,
+                nameFields::containsKey,
+                term -> {
+                    Field field = nameFields.get(term.getField());
+                    EntityTerm entityTerm = new EntityTerm(term, entityType, field);
+                    TermCondition termCondition = getCondByFieldType(entityTerm.getColumnType());
+                    termCondition.doCondition(entityTerm, queryWrapper);
+                });
+        // order
+        onOrderTerm(
+                queryParam,
+                nameFields::containsKey,
+                term -> queryWrapper.orderBy(true, Direction.ASC == term.getDirection(), term.getProperty()));
         return queryWrapper;
     }
 
     /**
-     * 根据field获取condition实例
+     * query term condition
+     * <p>遍历{@link QueryParam#getTerms()}，选择满足参数contains满足的term，并回调</p>
      *
-     * @param field field实例
+     * @param queryParam queryParam
+     * @param contains   contains
+     * @param acceptor   acceptor
+     * @param <T>        实体类型
      */
-    public static TermCondition getCondByField(Field field) {
-        Class<?> type = field.getType();
-        if (Date.class.isAssignableFrom(type)) {
+    protected static <T extends Entity> void onQueryTerm(QueryParam<T> queryParam, Predicate<String> contains, Consumer<Term> acceptor) {
+        List<Term> terms = queryParam.getTerms();
+        if (CollectionUtils.isNotEmpty(terms)) {
+            for (Term term : terms) {
+                if (contains.test(term.getField())) {
+                    acceptor.accept(term);
+                }
+            }
+        }
+    }
+
+    /**
+     * order term condition
+     * <p>遍历{@link QueryParam#getOrders()}，选择满足参数contains满足的term，并回调</p>
+     *
+     * @param queryParam queryParam
+     * @param contains   contains
+     * @param acceptor   acceptor
+     * @param <T>        实体类型
+     */
+    protected static <T extends Entity> void onOrderTerm(QueryParam<T> queryParam, Predicate<String> contains, Consumer<Order> acceptor) {
+        List<Order> orders = queryParam.getOrders();
+        if (CollectionUtils.isNotEmpty(orders)) {
+            for (Order order : orders) {
+                if (contains.test(order.getProperty())) {
+                    acceptor.accept(order);
+                }
+            }
+        }
+    }
+
+    /**
+     * 根据fieldType获取condition实例
+     *
+     * @param fieldType fieldType
+     */
+    public static TermCondition getCondByFieldType(Class<?> fieldType) {
+        if (Date.class.isAssignableFrom(fieldType)) {
             return specialConds.get(Date.class);
-        } else if (String.class.isAssignableFrom(type)) {
+        } else if (String.class.isAssignableFrom(fieldType)) {
             return specialConds.get(String.class);
         } else {
             return generalCond;
@@ -121,11 +172,11 @@ public final class Conditions {
                 try {
                     Date firstTime = translator.convert(timeArray.get(0).toString());
                     Date endTime = translator.convert(timeArray.get(1).toString());
-                    String tableColumn = MybatisKit.getTableColumn(term.getEntityField());
+                    String tableColumn = term.getTableColumn();
                     queryWrapper.le(tableColumn, firstTime);
                     queryWrapper.ge(tableColumn, endTime);
                 } catch (Throwable ex) {
-                    log.error("build term {} between time query has error", term, ex);
+                    log.error("build term {} between time entityQuery has error", term, ex);
                 }
             }
         }
@@ -150,7 +201,7 @@ public final class Conditions {
         public <T extends Entity> void doCondition(EntityTerm term, QueryWrapper<T> queryWrapper) {
             Object value = term.getValue();
             if (value != null) {
-                String tableColumn = MybatisKit.getTableColumn(term.getEntityField());
+                String tableColumn = term.getTableColumn();
                 queryWrapper.like(tableColumn, value);
             }
         }
@@ -163,13 +214,13 @@ public final class Conditions {
         public <T extends Entity> void doCondition(EntityTerm term, QueryWrapper<T> queryWrapper) {
             Object value = term.getValue();
             if (value != null) {
-                String tableColumn = MybatisKit.getTableColumn(term.getEntityField());
-                TypeOperator<?> operator = TypeOperatorFactory.translator(term.getEntityField().getType());
+                String tableColumn = term.getTableColumn();
+                TypeOperator<?> operator = TypeOperatorFactory.translator(term.getColumnType());
                 if (operator != null) {
                     try {
                         queryWrapper.eq(tableColumn, operator.convert(value));
                     } catch (Throwable ex) {
-                        log.error("build query term {} value {} has error", term, value, ex);
+                        log.error("build entityQuery term {} value {} has error", term, value, ex);
                     }
                 } else {
                     queryWrapper.eq(tableColumn, value);

@@ -2,6 +2,8 @@ package cc.allio.turbo.modules.developer.service.impl;
 
 import cc.allio.turbo.common.db.event.Subscription;
 import cc.allio.turbo.common.db.mybatis.service.impl.TurboCacheCrudServiceImpl;
+import cc.allio.turbo.common.exception.BizException;
+import cc.allio.turbo.common.i18n.DevCodes;
 import cc.allio.turbo.common.util.VariationAnalyzer;
 import cc.allio.turbo.modules.developer.constant.AttributeType;
 import cc.allio.turbo.modules.developer.constant.DatasetSource;
@@ -18,14 +20,16 @@ import cc.allio.turbo.modules.developer.service.IDevBoService;
 import cc.allio.turbo.modules.developer.service.IDevDataSourceService;
 import cc.allio.turbo.modules.developer.service.IDevDatasetService;
 import cc.allio.uno.core.datastructure.tree.TreeSupport;
+import cc.allio.uno.core.function.lambda.MethodBiFunction;
 import cc.allio.uno.core.util.CollectionUtils;
 import cc.allio.uno.core.util.StringUtils;
+import cc.allio.uno.core.util.comparator.Comparators;
 import cc.allio.uno.core.util.id.IdGenerator;
 import cc.allio.uno.data.orm.dsl.ColumnDef;
 import cc.allio.uno.data.orm.dsl.DSLName;
 import cc.allio.uno.data.orm.dsl.Table;
-import cc.allio.uno.data.orm.dsl.type.DataType;
 import cc.allio.uno.data.tx.TransactionContext;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -33,11 +37,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -68,12 +68,18 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
     }
 
     @Override
-    public Boolean materialize(Long boId) {
+    public Boolean check(Long boId) {
+        return getOptById(boId).isPresent();
+    }
+
+    @Override
+    public Boolean materialize(Long boId) throws BizException {
         BoSchema schema = cacheToSchema(boId);
         List<BoAttributeTree> attrTree = BoAttrSchema.to(schema.getAttrs());
         Map<Long, TableColumns> idMaterializeTables = Maps.newHashMap();
         // 遍历属性树，构建当前bo的物化视图
         attrTree.stream()
+                // table优先级大于field
                 .sorted(Comparator.comparing(BoAttributeTree::getAttrType))
                 .forEach(tree ->
                         tree.accept(element -> {
@@ -83,52 +89,129 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
                                 idMaterializeTables.put(element.getId(), new TableColumns(table));
                             } else {
                                 TableColumns tableColumns = idMaterializeTables.get(element.getParentId());
-                                // 赋了一个默认的precision域scale
-                                DataType dataType = DataType.create(element.getType().getDslType());
-                                if (element.getPrecision() != null) {
-                                    dataType.setPrecision(element.getPrecision());
+                                if (tableColumns != null) {
+                                    ColumnDef columnDef = element.toColumnDef();
+                                    if (columnDef != null) {
+                                        tableColumns.addColumn(columnDef);
+                                    }
                                 }
-                                if (element.getScale() != null) {
-                                    dataType.setScale(element.getScale());
-                                }
-                                ColumnDef columnDef = ColumnDef.builder()
-                                        .dslName(DSLName.of(element.getField()))
-                                        .isFk(element.isFk())
-                                        .isPk(element.isPk())
-                                        .isUnique(element.isUnique())
-                                        .isNonNull(element.isNonNull())
-                                        .dataType(dataType)
-                                        .build();
-                                tableColumns.addColumn(columnDef);
                             }
                         }));
+        if (CollectionUtils.isEmpty(idMaterializeTables)) {
+            throw new BizException(DevCodes.BO_NONE_TABLES, schema.getName());
+        }
         // 可进行物化的表
         Collection<TableColumns> materializableTables = idMaterializeTables.values();
-        // 基于物化表查询数据库中存在的表
-        List<TableColumns> databaseTables = dataSourceService.showTables(schema.getDataSourceId(), materializableTables.stream().map(TableColumns::getTable).toArray(Table[]::new));
-        // 差异分析，只比较新增、修改，删除在#remove中进行
-        VariationAnalyzer<TableColumns, DSLName> analyzer =
+        tableColumnsMaterialize(schema.getDataSourceId(), materializableTables);
+        return update(Wrappers.<DevBo>lambdaUpdate().set(DevBo::isMaterialize, true).eq(DevBo::getId, boId));
+    }
+
+    /**
+     * 基于对{@link TableColumns}进行物化处理
+     * <p>该方法基于{@link VariationAnalyzer}进行差异分析，根据结果</p>
+     * <ol>
+     *     <li>新增，包含表名称的变化</li>
+     *     <li><del>删除：</del>该操作放在{@link #remove(Wrapper)}中</li>
+     *     <li>变化：在基于{@link VariationAnalyzer}进行{@link ColumnDef}进行差异分析</li>
+     * </ol>
+     *
+     * @param dataSourceId         dataSourceId
+     * @param materializableTables 可物化表集合
+     * @return true if materialized success
+     */
+    private boolean tableColumnsMaterialize(Long dataSourceId, Collection<TableColumns> materializableTables) {
+        Table[] tables = materializableTables.stream().map(TableColumns::getTable).toArray(Table[]::new);
+        List<TableColumns> databaseTables = dataSourceService.showTables(dataSourceId, tables);
+        // 差异分析，只比较新增、修改。删除在#remove中进行
+        VariationAnalyzer<TableColumns, DSLName> tableAnalyzer =
                 new VariationAnalyzer<>(
                         materializableTables,
                         databaseTables,
                         TableColumns::getTableName,
-                        (o1, o2) -> !o1.getTableName().equals(o2.getTableName()));
-        VariationAnalyzer.AnalyzeResultSet<TableColumns, DSLName> resultSet = analyzer.analyze();
-        List<VariationAnalyzer.Result<TableColumns, DSLName>> addition = resultSet.getAddition();
-        if (CollectionUtils.isNotEmpty(addition)) {
-            dataSourceService.createTables(schema.getDataSourceId(), addition.stream().map(VariationAnalyzer.Result::getSource).toArray(TableColumns[]::new));
-        }
-        return update(Wrappers.<DevBo>lambdaUpdate().set(DevBo::isMaterialize, true).eq(DevBo::getId, boId));
+                        (o1, o2) -> {
+                            // 比较表名
+                            boolean nameChanged = !o1.getTableName().equals(o2.getTableName());
+                            if (nameChanged) {
+                                return true;
+                            }
+                            // 表名一致，比较每一个列
+                            MethodBiFunction<ColumnDef, Collection<ColumnDef>, ColumnDef> finder =
+                                    (bench, target) ->
+                                            target.stream()
+                                                    .filter(t -> bench.getDslName().equals(t.getDslName()))
+                                                    .findFirst()
+                                                    .orElse(null);
+                            int compare = Comparators.collections(finder).compare(o1.getColumnDefs(), o2.getColumnDefs());
+                            return compare < 0;
+                        });
+        VariationAnalyzer.AnalyzeResultSet<TableColumns, DSLName> resultSet = tableAnalyzer.analyze();
+        return TransactionContext.anyMatchOpen()
+                .then(() -> {
+                    List<VariationAnalyzer.Result<TableColumns, DSLName>> tableAddition = resultSet.getAddition();
+                    // 新增的表结构
+                    if (CollectionUtils.isNotEmpty(tableAddition)) {
+                        TableColumns[] addiableTableColumns = tableAddition.stream().map(VariationAnalyzer.Result::getSource).toArray(TableColumns[]::new);
+                        return dataSourceService.createTables(dataSourceId, addiableTableColumns);
+                    }
+                    return false;
+                })
+                .then(() -> {
+                    // 修改的表结构
+                    List<VariationAnalyzer.Result<TableColumns, DSLName>> tableMutative = resultSet.getMutative();
+                    return tableMutative.stream()
+                            .allMatch(result -> {
+                                TableColumns source = result.getSource();
+                                TableColumns bench = result.getBench();
+                                // 如果表名称存在变化，则会放在新增处，故该地方判断column变化结果集，根据差异分析作出变化的差集
+                                VariationAnalyzer<ColumnDef, DSLName> columnAnalyzer =
+                                        new VariationAnalyzer<>(
+                                                source.getColumnDefs(),
+                                                bench.getColumnDefs(),
+                                                ColumnDef::getDslName,
+                                                // 1.比较名称
+                                                // 2.比较类型
+                                                // 3.比较precision scale
+                                                (o1, o2) -> !o1.equalsTo(o2));
+                                VariationAnalyzer.AnalyzeResultSet<ColumnDef, DSLName> columnResultSet = columnAnalyzer.analyze();
+                                if (columnResultSet.changed()) {
+                                    return dataSourceService.alertTable(
+                                            dataSourceId,
+                                            f -> {
+                                                // 新增的
+                                                List<VariationAnalyzer.Result<ColumnDef, DSLName>> addition = columnResultSet.getAddition();
+                                                ColumnDef[] addiableColumns = addition.stream().map(VariationAnalyzer.Result::getSource).toArray(ColumnDef[]::new);
+                                                if (addiableColumns.length > 0) {
+                                                    f.addColumns(addiableColumns);
+                                                }
+                                                // 改变的
+                                                List<VariationAnalyzer.Result<ColumnDef, DSLName>> mutative = columnResultSet.getMutative();
+                                                ColumnDef[] alterativeColumns = mutative.stream().map(VariationAnalyzer.Result::getSource).toArray(ColumnDef[]::new);
+                                                if (alterativeColumns.length > 0) {
+                                                    f.alertColumns(alterativeColumns);
+                                                }
+                                                // 减少的
+                                                List<VariationAnalyzer.Result<ColumnDef, DSLName>> reduction = columnResultSet.getReduction();
+                                                DSLName[] reductiveColumns = reduction.stream().map(VariationAnalyzer.Result::getBench).map(ColumnDef::getDslName).toArray(DSLName[]::new);
+                                                if (reductiveColumns.length > 0) {
+                                                    f.deleteColumns(reductiveColumns);
+                                                }
+                                                return f.from(source.getTable());
+                                            }
+                                    );
+                                }
+                                return false;
+                            });
+                })
+                .commit();
     }
 
     @Override
     public BoSchema cacheToSchema(Long boId) {
-        return getCache()
-                .get(boId, BoSchema.class, () -> this.toBoSchema(boId));
+        return getCache().get(boId, BoSchema.class, () -> this.toBoSchema(boId));
     }
 
     @Override
-    public boolean saveBoSchema(BoSchema boSchema) {
+    public Boolean saveBoSchema(BoSchema boSchema) {
         String id = boSchema.getId();
         if (StringUtils.isBlank(id)) {
             return false;
@@ -144,69 +227,93 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
 
     @Override
     public void doOnSubscribe() {
-        Consumer<Subscription<DevBoAttribute>> postToSchema =
-                subscription -> {
-                    // save or updateById or saveOrUpdate
-                    subscription.getDomain()
-                            .ifPresent(boAttribute -> {
-                                Long boId = boAttribute.getBoId();
-                                BoSchema boSchema = toBoSchema(boId);
-                                if (boSchema != null) {
-                                    saveBoSchema(boSchema);
-                                }
-                            });
-                    // saveBatch
-                    subscription.getParameter("entityList")
-                            .ifPresent(list -> {
-                                if (list instanceof List<?> attributes && !attributes.isEmpty()) {
-                                    Object obj = attributes.get(0);
-                                    if (obj instanceof DevBoAttribute attr) {
-                                        BoSchema boSchema = toBoSchema(attr.getBoId());
-                                        if (boSchema != null) {
-                                            saveBoSchema(boSchema);
-                                        }
-                                    }
-                                }
-                            });
-                };
-        boAttributeService.subscribeOn("saveOrUpdate").observe(postToSchema);
-        boAttributeService.subscribeOn(boAttributeService::save).observe(postToSchema);
-        boAttributeService.subscribeOn("saveBatch").observe(postToSchema);
-        boAttributeService.subscribeOn(boAttributeService::updateById).observe(postToSchema);
-        boAttributeService.subscribeOn("removeByIds").observe(postToSchema);
+        boAttributeService.subscribeOn("saveOrUpdate").observe(this::onPushToSchema);
+        boAttributeService.subscribeOn(boAttributeService::save).observe(this::onPushToSchema);
+        boAttributeService.subscribeOn("saveBatch").observe(this::onPushToSchema);
+        boAttributeService.subscribeOn(boAttributeService::updateById).observe(this::onPushToSchema);
 
-        // 移除缓存信息
-        getProxy().subscribeOn("removeByIds")
-                .observe(subscription ->
-                        subscription.getParameter("list").ifPresent(list -> {
-                            if (list instanceof List<?> ids) {
-                                TransactionContext.open()
-                                        // 根据缓存信息移除创建表信息
-                                        .then(() -> {
-                                            for (Object id : ids) {
-                                                if (id instanceof Long boId) {
-                                                    BoSchema schema = cacheToSchema(boId);
-                                                    List<String> tableNames = Lists.newArrayList();
-                                                    List<BoAttributeTree> attrTree = BoAttrSchema.to(schema.getAttrs());
-                                                    attrTree.forEach(tree ->
-                                                            tree.accept(element -> {
-                                                                if (AttributeType.TABLE == element.getAttrType()) {
-                                                                    tableNames.add(element.getField());
-                                                                }
-                                                            }));
-                                                    dataSourceService.dropTables(schema.getDataSourceId(), tableNames.toArray(new String[0]));
-                                                }
+        getProxy().subscribeOn("removeByIds").observe(this::onRemove);
+        getProxy().subscribeOn(IDevBoService::materialize)
+                .observe(
+                        subscription ->
+                                subscription.getParameter("boId", Long.class)
+                                        .ifPresent(boId -> {
+                                            BoSchema boSchema = toBoSchema(boId);
+                                            if (boSchema != null) {
+                                                saveBoSchema(boSchema);
                                             }
-                                        })
-                                        // 移除BoSchema的缓存
-                                        .then(() -> getCache().remove((Collection<Object>) ids))
-                                        // 删除由bo创建导致的dataset同步创建
-                                        .then(() -> datasetService.remove(Wrappers.<DevDataset>lambdaQuery().in(DevDataset::getSourceId, ((List<?>) list).toArray())))
-                                        // 删除由bo创建导致的boAttribute同步创建
-                                        .then(() -> boAttributeService.remove(Wrappers.<DevBoAttribute>lambdaQuery().in(DevBoAttribute::getBoId, ((List<?>) list).toArray())))
-                                        .commit();
+                                        }));
+    }
+
+    /**
+     * 当{@link DevBoAttribute}变化时的操作
+     *
+     * @param subscription subscription
+     */
+    public void onPushToSchema(Subscription<DevBoAttribute> subscription) {
+        // save or updateById or saveOrUpdate
+        subscription.getDomain()
+                .ifPresent(boAttribute -> {
+                    Long boId = boAttribute.getBoId();
+                    BoSchema boSchema = toBoSchema(boId);
+                    if (boSchema != null) {
+                        saveBoSchema(boSchema);
+                    }
+                });
+        // saveBatch
+        subscription.getParameter("entityList")
+                .ifPresent(list -> {
+                    if (list instanceof List<?> attributes && !attributes.isEmpty()) {
+                        Object obj = attributes.get(0);
+                        if (obj instanceof DevBoAttribute attr) {
+                            BoSchema boSchema = toBoSchema(attr.getBoId());
+                            if (boSchema != null) {
+                                saveBoSchema(boSchema);
                             }
-                        }));
+                        }
+                    }
+                });
+    }
+
+    /**
+     * 当bo数据被删除时的操作
+     * <p>该操作将会在同一个事物进行</p>
+     * <ul>
+     *     <li>移除数据表信息</li>
+     *     <li>移除缓存信息</li>
+     *     <li>移除{@link DevDataset}信息</li>
+     *     <li>移除{@link DevBoAttribute}信息</li>
+     * </ul>
+     *
+     * @param subscription subscription
+     */
+    private void onRemove(Subscription<DevBo> subscription) {
+        List<?> ids = subscription.getParameter("list").map(List.class::cast).orElse(Collections.emptyList());
+        TransactionContext.open()
+                // 根据缓存信息移除创建表信息
+                .then(() -> {
+                    for (Object id : ids) {
+                        if (id instanceof Long boId) {
+                            BoSchema schema = cacheToSchema(boId);
+                            List<String> tableNames = Lists.newArrayList();
+                            List<BoAttributeTree> attrTree = BoAttrSchema.to(schema.getAttrs());
+                            attrTree.forEach(tree ->
+                                    tree.accept(element -> {
+                                        if (AttributeType.TABLE == element.getAttrType()) {
+                                            tableNames.add(element.getField());
+                                        }
+                                    }));
+                            dataSourceService.dropTables(schema.getDataSourceId(), tableNames.toArray(String[]::new));
+                        }
+                    }
+                })
+                // 移除BoSchema的缓存
+                .then(() -> getCache().remove(ids))
+                // 删除由bo创建导致的dataset同步创建
+                .then(() -> datasetService.remove(Wrappers.<DevDataset>lambdaQuery().in(DevDataset::getSourceId, ids)))
+                // 删除由bo创建导致的boAttribute同步创建
+                .then(() -> boAttributeService.remove(Wrappers.<DevBoAttribute>lambdaQuery().in(DevBoAttribute::getBoId, ids)))
+                .commit();
     }
 
     /**

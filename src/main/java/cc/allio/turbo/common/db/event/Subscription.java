@@ -67,4 +67,16 @@ public class Subscription<D> {
     public Optional<Object> getParameter(String key) {
         return eventContext.get(key);
     }
+
+    /**
+     * 根据指定的key获取
+     *
+     * @param key key
+     * @param classType parameter class
+     * @return optional
+     * @param <T> parameter type
+     */
+    public <T> Optional<T> getParameter(String key, Class<T> classType) {
+        return eventContext.get(key, classType);
+    }
 }

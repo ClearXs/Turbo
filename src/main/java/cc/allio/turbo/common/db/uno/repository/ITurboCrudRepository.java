@@ -20,7 +20,7 @@ import java.util.Optional;
  * @date 2024/1/23 23:47
  * @since 0.1.0
  */
-public interface ITurboCrudRepository<T extends Entity, ID extends Serializable> extends ITurboRepository, ListCrudRepository<T, ID>, Subscriber<T> {
+public interface ITurboCrudRepository<T extends Entity> extends ITurboRepository, ListCrudRepository<T, Serializable>, Subscriber<T> {
 
     @NotNull
     @Override
@@ -45,12 +45,12 @@ public interface ITurboCrudRepository<T extends Entity, ID extends Serializable>
 
     @NotNull
     @Override
-    default Optional<T> findById(@NotNull ID id) {
+    default Optional<T> findById(@NotNull Serializable id) {
         return Optional.ofNullable(getExecutor().queryOneById(getEntityType(), id));
     }
 
     @Override
-    default boolean existsById(@NotNull ID id) {
+    default boolean existsById(@NotNull Serializable id) {
         return findById(id).isPresent();
     }
 
@@ -62,7 +62,7 @@ public interface ITurboCrudRepository<T extends Entity, ID extends Serializable>
 
     @NotNull
     @Override
-    default List<T> findAllById(@NotNull Iterable<ID> ids) {
+    default List<T> findAllById(@NotNull Iterable<Serializable> ids) {
         return getExecutor().queryListByIds(getEntityType(), ids);
     }
 
@@ -72,7 +72,7 @@ public interface ITurboCrudRepository<T extends Entity, ID extends Serializable>
     }
 
     @Override
-    default void deleteById(@NotNull ID id) {
+    default void deleteById(@NotNull Serializable id) {
         getExecutor().deleteById(getEntityType(), id);
     }
 
@@ -82,7 +82,7 @@ public interface ITurboCrudRepository<T extends Entity, ID extends Serializable>
     }
 
     @Override
-    default void deleteAllById(@NotNull Iterable<? extends ID> ids) {
+    default void deleteAllById(@NotNull Iterable<? extends Serializable> ids) {
         getExecutor().deleteAllById(getEntityType(), ids);
     }
 

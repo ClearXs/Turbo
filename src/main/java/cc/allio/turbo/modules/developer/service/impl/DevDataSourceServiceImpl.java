@@ -10,14 +10,18 @@ import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.uno.data.orm.dsl.ColumnDef;
 import cc.allio.uno.data.orm.dsl.OperatorKey;
 import cc.allio.uno.data.orm.dsl.Table;
+import cc.allio.uno.data.orm.dsl.ddl.AlterTableOperator;
 import cc.allio.uno.data.orm.dsl.type.DBType;
 import cc.allio.uno.data.orm.executor.*;
 import cc.allio.uno.data.orm.executor.interceptor.Interceptor;
+import cc.allio.uno.data.orm.executor.options.ExecutorKey;
+import cc.allio.uno.data.orm.executor.options.ExecutorOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.UnaryOperator;
 
 @Slf4j
 @Service
@@ -77,7 +81,8 @@ public class DevDataSourceServiceImpl
             CommandExecutor commandExecutor = getCommandExecutor(dataSourceId);
             if (commandExecutor != null) {
                 return Arrays.stream(tableColumns)
-                        .allMatch(tableColumn -> commandExecutor.createTable(o -> o.from(tableColumn.getTable()).columns(tableColumn.getColumnDefs().toArray(ColumnDef[]::new))));
+                        .allMatch(tableColumn -> commandExecutor.createTable(
+                                o -> o.from(tableColumn.getTable()).columns(tableColumn.getColumnDefs().toArray(ColumnDef[]::new))));
             }
         }
         return false;
@@ -87,17 +92,28 @@ public class DevDataSourceServiceImpl
     public boolean dropTables(Long dataSourceId, String... tableNames) {
         if (tableNames != null && tableNames.length > 0) {
             CommandExecutor commandExecutor = getCommandExecutor(dataSourceId);
-            if (commandExecutor != null) {
-                return Arrays.stream(tableNames)
-                        .allMatch(commandExecutor::dropTable);
+            if (commandExecutor == null) {
+                return false;
             }
+            return Arrays.stream(tableNames).allMatch(commandExecutor::dropTable);
         }
-
         return false;
     }
 
     @Override
+    public boolean alertTable(Long dataSourceId, UnaryOperator<AlterTableOperator> func) {
+        CommandExecutor commandExecutor = getCommandExecutor(dataSourceId);
+        if (commandExecutor == null) {
+            return false;
+        }
+        return commandExecutor.alertTable(func);
+    }
+
+    @Override
     public CommandExecutor getCommandExecutor(Long dataSourceId) {
+        if (dataSourceId == null) {
+            return null;
+        }
         String key = commandExecutorContext.lockGet(dataSourceId);
         return commandExecutorContext.getCommandExecutor(key);
     }

@@ -1,6 +1,5 @@
 package cc.allio.turbo.common.db.mybatis;
 
-import cc.allio.turbo.common.db.TurboDbConfiguration;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -10,7 +9,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@AutoConfigureAfter(TurboDbConfiguration.class)
+@AutoConfigureAfter(TurboMybatisConfiguration.class)
 @AllArgsConstructor
 public class AppendArrayTypeHandlerConfiguration {
 

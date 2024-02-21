@@ -103,5 +103,5 @@ public interface TurboCache extends Cache {
      * @param keys key
      * @return true if remove else not
      */
-    boolean remove(Collection<Object> keys);
+    boolean remove(Collection<?> keys);
 }

@@ -61,7 +61,7 @@ public abstract class BaseTurboCrudController<T extends Entity, D extends Entity
      * @param ids 对象ids
      * @return if true success
      */
-    public abstract R<Boolean> delete(@RequestBody List<Serializable> ids);
+    public abstract R<Boolean> delete(@RequestBody List<Long> ids);
 
     /**
      * 详情
@@ -69,7 +69,7 @@ public abstract class BaseTurboCrudController<T extends Entity, D extends Entity
      * @param id id
      * @return 领域对象实例
      */
-    public abstract R<D> details(Serializable id);
+    public abstract R<D> details(Long id);
 
     /**
      * 列表

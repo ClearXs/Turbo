@@ -1,5 +1,6 @@
 package cc.allio.turbo.common.db.event;
 
+import cc.allio.turbo.common.aop.TurboAdvisorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,7 +13,7 @@ public class DomainEventConfiguration {
     }
 
     @Bean
-    public BehaviorProcessor behaviorProcessor(DomainEventBus domainEventBus) {
-        return new BehaviorProcessor(domainEventBus);
+    public TurboAdvisorBuilder<BehaviorAdvisor> behaviorAdvisorTurboAdvisorBuilder(DomainEventBus eventBus) {
+        return BehaviorAdvisor.BehaviorAdvisorBuilder.builder(eventBus);
     }
 }

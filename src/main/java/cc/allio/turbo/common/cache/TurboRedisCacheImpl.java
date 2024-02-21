@@ -76,7 +76,7 @@ public class TurboRedisCacheImpl implements TenantCache {
     }
 
     @Override
-    public boolean remove(Collection<Object> keys) {
+    public boolean remove(Collection<?> keys) {
         List<String> cacheKeys = keys.stream().map(this::createCacheKey).toList();
         RedisUtil.delete(cacheKeys);
         return true;
@@ -111,7 +111,9 @@ public class TurboRedisCacheImpl implements TenantCache {
             } catch (Exception ex) {
                 throw new ValueRetrievalException(key, valueLoader, ex);
             }
-            RedisUtil.setIfAbsent(cacheKey, JsonUtils.toJson(value));
+            if (value != null) {
+                RedisUtil.setIfAbsent(cacheKey, JsonUtils.toJson(value));
+            }
             return value;
         } else {
             return JsonUtils.parse(cacheValue, classType);

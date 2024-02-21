@@ -46,21 +46,27 @@ public class DevAttributeProps extends JsonDomain implements Serializable {
     private boolean pk;
 
     /**
-     * 业务对象属性小数位
+     * 是否外键
      */
     @Schema(description = "是否外键")
     private boolean fk;
 
     /**
-     * 业务对象属性小数位
+     * 是否非空
      */
     @Schema(description = "是否非空")
     private boolean nonNull;
 
     /**
-     * 业务对象属性小数位
+     * 是否唯一
      */
     @Schema(description = "是否唯一")
     private boolean unique;
+
+    /**
+     * 是否为默认属性
+     */
+    @Schema(description = "是否为默认属性")
+    private boolean defaulted;
 
 }

@@ -1,4 +1,4 @@
-package cc.allio.turbo.common.db;
+package cc.allio.turbo.common.db.mybatis;
 
 import cc.allio.turbo.common.db.mybatis.handle.BaseChangeMetaObjectHandler;
 import cc.allio.turbo.common.db.mybatis.injetor.TurboSqlInjector;
@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @AutoConfigureAfter(MybatisPlusAutoConfiguration.class)
-public class TurboDbConfiguration {
+public class TurboMybatisConfiguration {
 
     @Bean
     public BaseChangeMetaObjectHandler baseChangeMetaObjectHandler() {

@@ -4,6 +4,9 @@ import cc.allio.turbo.common.domain.TreeDomain;
 import cc.allio.turbo.modules.developer.constant.AttributeType;
 import cc.allio.turbo.modules.developer.constant.FieldType;
 import cc.allio.turbo.modules.developer.entity.DevBoAttribute;
+import cc.allio.uno.data.orm.dsl.ColumnDef;
+import cc.allio.uno.data.orm.dsl.DSLName;
+import cc.allio.uno.data.orm.dsl.type.DataType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -103,11 +106,45 @@ public class BoAttributeTree extends TreeDomain<DevBoAttribute, BoAttributeTree>
     @Schema(description = "是否唯一")
     private boolean unique;
 
+    /**
+     * 是否为默认属性
+     */
+    @Schema(description = "是否为默认属性")
+    private boolean defaulted;
+
     public BoAttributeTree() {
         super(new DevBoAttribute(), null);
     }
 
     public BoAttributeTree(DevBoAttribute expand) {
         super(expand, Comparator.comparing(BoAttributeTree::getName));
+    }
+
+    /**
+     * 当类型是{@link AttributeType#FIELD}基于当前对象数据返回{@link ColumnDef}
+     *
+     * @return ColumnDef or null
+     */
+    public ColumnDef toColumnDef() {
+        if (attrType != AttributeType.FIELD) {
+            return null;
+        }
+        // 赋了一个默认的precision域scale
+        DataType dataType = DataType.create(type.getDslType());
+        if (precision != null) {
+            dataType.setPrecision(precision);
+        }
+        if (scale != null) {
+            dataType.setScale(scale);
+        }
+        return ColumnDef.builder()
+                .dslName(DSLName.of(field))
+                .isPk(pk)
+                .isFk(fk)
+                .isUnique(unique)
+                .isNonNull(nonNull)
+                .dataType(dataType)
+                .build();
+
     }
 }

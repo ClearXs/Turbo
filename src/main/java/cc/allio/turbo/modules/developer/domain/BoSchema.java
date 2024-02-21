@@ -1,9 +1,11 @@
 package cc.allio.turbo.modules.developer.domain;
 
 import cc.allio.turbo.common.db.entity.Entity;
+import cc.allio.turbo.modules.developer.constant.AttributeType;
 import cc.allio.turbo.modules.developer.entity.DevBo;
 import cc.allio.turbo.modules.developer.entity.DevDataSource;
 import cc.allio.uno.core.util.JsonUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Data;
@@ -29,6 +31,9 @@ public class BoSchema implements Serializable, Entity {
     // bo name
     private String name;
 
+    // 物化
+    private Boolean materialize;
+
     // 数据源信息
     private Long dataSourceId;
 
@@ -43,7 +48,7 @@ public class BoSchema implements Serializable, Entity {
     private List<BoAttrSchema> attrs = Lists.newArrayList();
 
     /**
-     * 根据Json文本信息转换为{@link BoSchema}
+     * 根据Json bo schema转换为{@link BoSchema}
      *
      * @param text json
      * @return BoSchema
@@ -65,9 +70,25 @@ public class BoSchema implements Serializable, Entity {
         boSchema.setCode(bo.getCode());
         boSchema.setName(bo.getName());
         boSchema.setDataSourceId(bo.getDataSourceId());
+        boSchema.setMaterialize(bo.isMaterialize());
         List<BoAttrSchema> attrSchemas = BoAttrSchema.from(treeify);
         boSchema.setAttrs(attrSchemas);
         return boSchema;
     }
 
+    /**
+     * 获取primary bo attr schema
+     * <p>{@link #attrs}中第一个是{@link cc.allio.turbo.modules.developer.constant.AttributeType#TABLE}的数据</p>
+     *
+     * @return BoAttrSchema or null
+     */
+    @JsonIgnore
+    public BoAttrSchema primarySchema() {
+        for (BoAttrSchema attr : attrs) {
+            if (AttributeType.TABLE == attr.getAttrType()) {
+                return attr;
+            }
+        }
+        return null;
+    }
 }

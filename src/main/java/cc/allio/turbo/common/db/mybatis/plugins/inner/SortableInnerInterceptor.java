@@ -3,7 +3,7 @@ package cc.allio.turbo.common.db.mybatis.plugins.inner;
 import cc.allio.turbo.common.constant.Direction;
 import cc.allio.uno.core.util.CollectionUtils;
 import cc.allio.turbo.common.db.constraint.Sortable;
-import cc.allio.turbo.common.db.mybatis.help.MybatisKit;
+import cc.allio.turbo.common.db.mybatis.helper.MybatisKit;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.PluginUtils;
 import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
