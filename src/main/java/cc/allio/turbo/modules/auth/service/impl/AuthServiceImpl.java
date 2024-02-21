@@ -7,10 +7,10 @@ import cc.allio.turbo.modules.auth.provider.TurboUser;
 import cc.allio.turbo.modules.system.dto.ChangePasswordDTO;
 import cc.allio.turbo.modules.system.entity.*;
 import cc.allio.turbo.modules.system.service.*;
-import cc.allio.turbo.modules.system.vo.SysMenuTree;
-import cc.allio.turbo.modules.system.vo.SysUserVO;
+import cc.allio.turbo.modules.system.domain.SysMenuTree;
+import cc.allio.turbo.modules.system.domain.SysUserVO;
+import cc.allio.uno.core.util.BeanUtils;
 import cc.allio.uno.core.util.CollectionUtils;
-import cc.allio.uno.core.util.CoreBeanUtil;
 import cc.allio.uno.core.util.id.IdGenerator;
 import cc.allio.turbo.modules.auth.dto.CaptchaDTO;
 import cc.allio.turbo.modules.auth.service.IAuthService;
@@ -38,6 +38,7 @@ public class AuthServiceImpl implements IAuthService {
     private final ISysUserService userService;
     private final SecureProperties secureProperties;
     private final ISysRoleService roleService;
+    private final ISysRoleMenuService roleMenuService;
     private final ISysMenuService menuService;
     private final ISysOrgService orgService;
     private final ISysPostService postService;
@@ -46,7 +47,7 @@ public class AuthServiceImpl implements IAuthService {
     public CaptchaDTO captcha() {
         SecureProperties.Captcha captchaSettings = secureProperties.getCaptcha();
         SpecCaptcha captcha = new SpecCaptcha(captchaSettings.getWidth(), captchaSettings.getHeight(), captchaSettings.getLength());
-        TurboCache<String> turboCache = CacheHelper.getIfAbsent(CacheHelper.CAPTCHA);
+        TurboCache turboCache = CacheHelper.getIfAbsent(CacheHelper.CAPTCHA);
         CaptchaDTO captchaDTO = new CaptchaDTO();
         captchaDTO.setCaptchaId(IdGenerator.defaultGenerator().toHex());
         captchaDTO.setBase64(captcha.toBase64());
@@ -81,7 +82,9 @@ public class AuthServiceImpl implements IAuthService {
         if (CollectionUtils.isEmpty(roles)) {
             return Collections.emptyList();
         }
-        List<Long> menuIds = roleService.getRoleMenuIdByIds(roles.stream().map(SysRole::getId).toList());
+        List<Long> roleIds = roles.stream().map(SysRole::getId).toList();
+        List<SysRoleMenu> sysRoleMenus = roleMenuService.list(Wrappers.<SysRoleMenu>lambdaQuery().in(SysRoleMenu::getRoleId, roleIds));
+        List<Long> menuIds = sysRoleMenus.stream().map(SysRoleMenu::getMenuId).toList();
         // 获取菜单树
         return menuService.tree(Wrappers.<SysMenu>lambdaQuery().in(SysMenu::getId, menuIds), SysMenuTree.class);
     }
@@ -112,7 +115,7 @@ public class AuthServiceImpl implements IAuthService {
     @Override
     @Transactional
     public TurboJwtAuthenticationToken modify(TurboUser user) throws BizException {
-        SysUser sysUser = CoreBeanUtil.copy(user, SysUser.class);
+        SysUser sysUser = BeanUtils.copy(user, SysUser.class);
         if (sysUser == null) {
             throw new BizException(ExceptionCodes.OPERATE_ERROR);
         }

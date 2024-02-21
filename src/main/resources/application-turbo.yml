@@ -53,6 +53,7 @@ turbo:
         - sys_cloud_storage_config
         - sys_user_post
         - biz_tree
+        - dev_datasource
   ob:
     log:
       exporter:

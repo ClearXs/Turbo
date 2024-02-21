@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @Tag(name = "云存储配置")
 public class SysCloudStorageConfigController
-        extends TurboCrudController<SysCloudStorageConfig, ISysCloudStorageConfigService, SysCloudStorageConfig> {
+        extends TurboCrudController<SysCloudStorageConfig, SysCloudStorageConfig, ISysCloudStorageConfigService> {
 
     @PutMapping("/enable/{id}")
     @Operation(summary = "启用")

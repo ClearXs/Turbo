@@ -9,8 +9,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Direction {
 
-    ASC("ASC", "降序"),
-    DESC("DESC", "升序");
+    ASC("ASC", "升序"),
+    DESC("DESC", "降序");
 
     @JsonValue
     @EnumValue

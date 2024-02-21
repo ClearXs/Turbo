@@ -29,8 +29,8 @@ public class CacheHelper implements ApplicationContextAware {
      * @param cacheName cacheName
      * @return TurboCache instance
      */
-    public static <T> TurboCache<T> getCache(String cacheName) {
-        return (TurboCache<T>) cacheManager.getCache(cacheName);
+    public static TurboCache getCache(String cacheName) {
+        return (TurboCache) cacheManager.getCache(cacheName);
     }
 
     /**
@@ -39,7 +39,7 @@ public class CacheHelper implements ApplicationContextAware {
      * @param cacheName cacheName must be unique
      * @return TurboCache
      */
-    public static <T> TurboCache<T> getIfAbsent(String cacheName) {
+    public static TurboCache getIfAbsent(String cacheName) {
         return cacheManager.getIfAbsent(cacheName);
     }
 }

@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.system.entity;
 
-import cc.allio.turbo.common.mybatis.entity.BaseEntity;
+import cc.allio.turbo.common.db.entity.BaseEntity;
 import cc.allio.turbo.modules.system.constant.CsType;
 import cc.allio.turbo.extension.oss.Provider;
 import cc.allio.turbo.common.constant.Enable;

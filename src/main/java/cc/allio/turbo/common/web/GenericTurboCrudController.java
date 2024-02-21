@@ -1,7 +1,7 @@
 package cc.allio.turbo.common.web;
 
-import cc.allio.turbo.common.mybatis.entity.IdEntity;
-import cc.allio.turbo.common.mybatis.service.ITurboCrudService;
+import cc.allio.turbo.common.db.entity.IdEntity;
+import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
 
 /**
  * 通用crud接口
@@ -11,6 +11,6 @@ import cc.allio.turbo.common.mybatis.service.ITurboCrudService;
  * @since 0.1.0
  */
 public abstract class GenericTurboCrudController<T extends IdEntity>
-        extends TurboCrudController<T, ITurboCrudService<T>, T> {
+        extends TurboCrudController<T, T, ITurboCrudService<T>> {
 
 }

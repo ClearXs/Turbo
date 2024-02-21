@@ -10,7 +10,7 @@ import java.util.List;
 public class CacheConfiguration {
 
     @Bean
-    public TurboCacheManager cacheRegistration(List<TurboCache<?>> caches) {
+    public TurboCacheManager cacheRegistration(List<TurboCache> caches) {
         return new TurboCacheManager(caches);
     }
 

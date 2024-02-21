@@ -1,17 +1,10 @@
 English | [简体中文](./README.md)
 
-<img src="./docs/logo.png" >
+<img src="./docs/logo.png" style="zoom:15%;"  >
 
 <h2 align="center">Simple · Practical · Leading Edge · Innovation</h2>
 
-<h4 align="center">The latest technologies within the Java and React ecosystems are well-suited for an all-encompassing
-solution catering to enterprise-level needs and internet marketing."</h4>
-
-## Background
-
-Turbo is positioned as a rapid development framework built on cutting-edge technologies. Its core aim is to
-differentiate itself from commonly used technological frameworks in the market, creating a one-stop solution tailored
-for enterprise-level and internet marketing needs, aligning with future trends.
+<h4 align="center">Based on the Java ecosystem, the latest technologies in the React ecosystem are dedicated to creating comprehensive, one-stop solutions suitable for enterprise-level and internet marketing needs, tailored for future trends.</h4>
 
 ## Target
 
@@ -23,11 +16,16 @@ for enterprise-level and internet marketing needs, aligning with future trends.
 - ❤️User-oriented, featuring minimalist design to reduce redundant actions, increase efficiency, and prevent repetitive
   user experiences for enhanced usability.
 
-## Proposed technical architecture (temporary)
+## Feature
 
-<img src="./docs/images/Turbo-Turbo-Architecture.png">
-
-## Technological framework (temporary)
+- 🚀**Fast:** Turbo places "fast" at its core, significantly enhancing development efficiency through features such as low-code and code generation, enabling developers to rapidly construct application systems.
+- 🤙**Support for Multiple Data Categories and Sources:** The data abstraction layer based on uno-data enables developers to seamlessly integrate various data categories and multiple data sources without being aware of the integration process.
+- ⚽**Data Source Agnostic:** Highly abstracted data operations allow developers to focus solely on business logic without needing to concern themselves with the differences in underlying data sources.
+- 🎈**High Encapsulation:** Turbo draws inspiration from the design principles of Mybatis-Plus and JPA, adopting a highly encapsulated three-tier architecture (Controller-Service-Repository) along with concepts of domain events and behaviors. This approach achieves architectural uniformity and extensibility.
+- 🌤**Business Domain Modeling:** Turbo supports business domain modeling, aiding developers in better organizing and managing business logic.
+- 🍙**Unified Frontend:** Leveraging Alibaba's Formily and internally developed Tableily solutions, Turbo achieves uniformity across different ends, reducing the learning curve for developers by unifying **Form** and **Table** components.
+- 🔒**RBAC Permission System:** Turbo offers a comprehensive RBAC (Role-Based Access Control) permission system, enabling developers to easily implement user permission management.
+- 🖲**Supports the OAuth2.1:** Turbo supports the OAuth2.1 protocol, facilitating seamless integration with other systems.
 
 ### Back-end
 
@@ -65,6 +63,8 @@ for enterprise-level and internet marketing needs, aligning with future trends.
 
 ### Desktop-end
 
+1. [tauri](https://tauri.app/)
+
 ## preview
 
 <table>
@@ -81,6 +81,7 @@ for enterprise-level and internet marketing needs, aligning with future trends.
     <tr>
         <td><img src="./docs/images/preview7.png" alt="preview7"/></td>
         <td><img src="./docs/images/preview8.png" alt="preview8"/></td>
+        <td><img src="./docs/images/preview9.png" alt="preview9"/></td>
     </tr>
 </table>
 

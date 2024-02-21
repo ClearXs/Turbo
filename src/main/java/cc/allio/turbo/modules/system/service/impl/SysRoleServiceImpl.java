@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.system.service.impl;
 
-import cc.allio.turbo.common.mybatis.service.impl.TurboCrudServiceImpl;
+import cc.allio.turbo.common.db.mybatis.service.impl.TurboCrudServiceImpl;
 import cc.allio.turbo.modules.system.service.ISysRoleService;
 import cc.allio.turbo.modules.system.dto.GrantPermissionDTO;
 import cc.allio.turbo.modules.system.entity.SysRole;

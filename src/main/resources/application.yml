@@ -5,7 +5,7 @@ spring:
   application:
     name: turbo
   profiles:
-    active: dev,turbo
+    active: dev,turbo,reactor
     # 开启虚拟线程
   threads:
     virtual:
@@ -44,7 +44,7 @@ mybatis-plus:
   configuration:
     # 是否开启自动驼峰命名规则（camel case）映射
     map-underscore-to-camel-case: true
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
 
 # swagger 配置
@@ -83,6 +83,7 @@ otel:
       enabled: false
   sdk:
     disabled: false
+# easyexcel枚举扫描路径
 excel:
   enum:
     scanner:

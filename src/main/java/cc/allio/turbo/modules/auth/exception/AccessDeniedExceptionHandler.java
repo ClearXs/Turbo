@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.auth.exception;
 
-import cc.allio.uno.core.util.IoUtil;
+import cc.allio.uno.core.util.IoUtils;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.turbo.common.web.R;
 import jakarta.servlet.ServletException;
@@ -19,6 +19,6 @@ public class AccessDeniedExceptionHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         R<?> error = R.error(HttpStatus.FORBIDDEN.value(), "用户没有权限");
         ServletOutputStream outputStream = response.getOutputStream();
-        IoUtil.write(JsonUtils.toJson(error), outputStream, StandardCharsets.UTF_8);
+        IoUtils.write(JsonUtils.toJson(error), outputStream, StandardCharsets.UTF_8);
     }
 }

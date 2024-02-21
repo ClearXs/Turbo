@@ -3,7 +3,7 @@ package cc.allio.turbo.modules.auth.provider;
 import cc.allio.turbo.modules.auth.authentication.TurboJwtAuthenticationToken;
 import cc.allio.turbo.modules.auth.exception.CaptchaError;
 import cc.allio.turbo.modules.auth.exception.CaptchaExpiredException;
-import cc.allio.uno.core.util.IoUtil;
+import cc.allio.uno.core.util.IoUtils;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.uno.core.util.StringUtils;
 import cc.allio.turbo.modules.auth.params.LoginParams;
@@ -116,7 +116,7 @@ public class TurboJwtAuthenticationProvider extends DaoAuthenticationProvider {
      */
     private LoginParams getLoginParams(HttpServletRequest request) {
         try {
-            byte[] bytes = IoUtil.readToByteArray(request.getInputStream());
+            byte[] bytes = IoUtils.readToByteArray(request.getInputStream());
             return JsonUtils.parse(bytes, LoginParams.class);
         } catch (IOException e) {
             throw new AuthenticationServiceException("request login form inputStream empty");

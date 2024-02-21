@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.system.entity;
 
-import cc.allio.turbo.common.mybatis.entity.TenantEntity;
+import cc.allio.turbo.common.db.entity.TenantEntity;
 import cc.allio.turbo.extension.oss.Provider;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;

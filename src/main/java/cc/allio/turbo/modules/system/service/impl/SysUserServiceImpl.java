@@ -2,10 +2,10 @@ package cc.allio.turbo.modules.system.service.impl;
 
 import cc.allio.turbo.modules.system.entity.*;
 import cc.allio.turbo.modules.system.service.*;
-import cc.allio.uno.core.util.CoreBeanUtil;
+import cc.allio.uno.core.util.BeanUtils;
 import cc.allio.uno.core.util.ObjectUtils;
 import cc.allio.turbo.common.i18n.LocaleFormatter;
-import cc.allio.turbo.common.mybatis.service.impl.TurboCrudServiceImpl;
+import cc.allio.turbo.common.db.mybatis.service.impl.TurboCrudServiceImpl;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.i18n.ExceptionCodes;
 import cc.allio.turbo.common.util.SecureUtil;
@@ -14,12 +14,13 @@ import cc.allio.turbo.modules.system.dto.BindingOrgDTO;
 import cc.allio.turbo.modules.system.dto.BindingPostDTO;
 import cc.allio.turbo.modules.system.dto.BindingRoleDTO;
 import cc.allio.turbo.modules.system.mapper.SysUserMapper;
-import cc.allio.turbo.modules.system.vo.SysUserVO;
+import cc.allio.turbo.modules.system.domain.SysUserVO;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Service
@@ -37,7 +38,7 @@ public class SysUserServiceImpl extends TurboCrudServiceImpl<SysUserMapper, SysU
     public boolean saveOrUpdate(SysUser sysUser) {
         long count = count(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getUsername, sysUser.getUsername()));
         if (count > 0) {
-            throw new RuntimeException(LocaleFormatter.getMessage(ExceptionCodes.USER_REPEAT));
+            throw new RuntimeException(LocaleFormatter.getMessage(ExceptionCodes.USER_REPEAT.getKey()));
         }
         // 新增
         if (sysUser.getId() == null) {
@@ -61,7 +62,7 @@ public class SysUserServiceImpl extends TurboCrudServiceImpl<SysUserMapper, SysU
     }
 
     @Override
-    public SysUserVO details(Long id) {
+    public SysUserVO details(Serializable id) {
         SysUser sysUser = super.details(id);
         return findUserDetails(sysUser);
     }
@@ -125,7 +126,7 @@ public class SysUserServiceImpl extends TurboCrudServiceImpl<SysUserMapper, SysU
      * @return SysUserVO
      */
     private SysUserVO findUserDetails(SysUser sysUser) {
-        SysUserVO userVO = CoreBeanUtil.copy(sysUser, SysUserVO.class);
+        SysUserVO userVO = BeanUtils.copy(sysUser, SysUserVO.class);
         // 1.查找组织信息
         if (sysUser.getOrgId() != null) {
             SysOrg org = orgService.getById(sysUser.getOrgId());

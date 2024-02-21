@@ -3,7 +3,7 @@ package cc.allio.turbo.common.util;
 import cc.allio.turbo.common.constant.SecureAlgorithm;
 import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.env.Envs;
-import cc.allio.uno.core.util.IoUtil;
+import cc.allio.uno.core.util.IoUtils;
 import cc.allio.uno.core.util.StringUtils;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -266,7 +266,7 @@ public class SecureUtil {
             if (resource == null) {
                 throw new NullPointerException("rsa/private.pem file not find");
             }
-            String privateKeyString = IoUtil.readToString(new FileInputStream(resource.getFile()));
+            String privateKeyString = IoUtils.readToString(new FileInputStream(resource.getFile()));
             RSAKey rsaKey = (RSAKey) JWK.parseFromPEMEncodedObjects(privateKeyString);
             privateKey = rsaKey.toRSAPrivateKey();
 
@@ -275,7 +275,7 @@ public class SecureUtil {
             if (resource == null) {
                 throw new NullPointerException("rsa/public.pem file not find");
             }
-            String publicKeyString = IoUtil.readToString(new FileInputStream(resource.getFile()));
+            String publicKeyString = IoUtils.readToString(new FileInputStream(resource.getFile()));
             rsaKey = (RSAKey) JWK.parseFromPEMEncodedObjects(publicKeyString);
             publicKey = rsaKey.toRSAPublicKey();
         } catch (Throwable ex) {

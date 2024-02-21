@@ -7,7 +7,7 @@ import cc.allio.turbo.modules.system.entity.SysOrg;
 import cc.allio.turbo.modules.system.entity.SysPost;
 import cc.allio.turbo.modules.system.entity.SysRole;
 import cc.allio.turbo.modules.system.entity.SysUser;
-import cc.allio.turbo.modules.system.vo.SysMenuTree;
+import cc.allio.turbo.modules.system.domain.SysMenuTree;
 import cc.allio.turbo.modules.auth.dto.CaptchaDTO;
 import cc.allio.turbo.modules.auth.service.IAuthService;
 import cc.allio.turbo.common.exception.BizException;

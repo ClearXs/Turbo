@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.system.service.impl;
 
-import cc.allio.turbo.common.mybatis.service.impl.TurboCrudServiceImpl;
+import cc.allio.turbo.common.db.mybatis.service.impl.TurboCrudServiceImpl;
 import cc.allio.turbo.modules.system.entity.SysPost;
 import cc.allio.turbo.modules.system.mapper.SysPostMapper;
 import cc.allio.turbo.modules.system.service.ISysPostService;

@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.system.entity;
 
-import cc.allio.turbo.common.mybatis.entity.TenantEntity;
+import cc.allio.turbo.common.db.entity.TenantEntity;
 import cc.allio.turbo.modules.system.constant.UserStatus;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
@@ -58,6 +58,7 @@ public class SysUser extends TenantEntity {
      */
     @TableField("phone")
     @Schema(description = "电话号码")
+    @ColumnWidth(25)
     @ExcelProperty(value = "电话号码", index = 3)
     private String phone;
 
@@ -66,6 +67,7 @@ public class SysUser extends TenantEntity {
      */
     @TableField("status")
     @Schema(description = "用户状态")
+    @ColumnWidth(25)
     @ExcelProperty(value = "用户状态",index = 4)
     private UserStatus status;
 
@@ -74,6 +76,7 @@ public class SysUser extends TenantEntity {
      */
     @TableField("avatar")
     @Schema(description = "头像")
+    @ColumnWidth(25)
     @ExcelProperty(value = "头像", index = 5)
     private String avatar;
 
@@ -82,6 +85,7 @@ public class SysUser extends TenantEntity {
      */
     @TableField("nickname")
     @Schema(description = "昵称")
+    @ColumnWidth(25)
     @ExcelProperty(value = "昵称", index = 6)
     private String nickname;
 
@@ -90,6 +94,7 @@ public class SysUser extends TenantEntity {
      */
     @TableField("org_id")
     @Schema(description = "所属组织")
+    @ColumnWidth(25)
     @ExcelProperty(value = "所属组织", index = 7)
     private Long orgId;
 }

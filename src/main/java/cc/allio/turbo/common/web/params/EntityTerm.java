@@ -1,7 +1,9 @@
 package cc.allio.turbo.common.web.params;
 
+import cc.allio.turbo.common.db.mybatis.helper.MybatisKit;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.lang.reflect.Field;
 
@@ -15,14 +17,34 @@ public class EntityTerm extends Term {
     private final Class<?> entityType;
 
     /**
-     * 对应term条件下对应实体的{@link Field}实例
+     * 数据库表column
      */
-    private final Field entityField;
+    @Getter
+    private final String tableColumn;
+
+    /**
+     * table column type
+     */
+    private final Class<?> columnType;
+
+    public EntityTerm(Term term, Class<?> entityType, String tableColumn, Class<?> columnType) {
+        setField(term.getField());
+        setValue(term.getValue());
+        this.entityType = entityType;
+        this.tableColumn = tableColumn;
+        this.columnType = columnType;
+    }
 
     public EntityTerm(Term term, Class<?> entityType, Field entityField) {
         setField(term.getField());
         setValue(term.getValue());
         this.entityType = entityType;
-        this.entityField = entityField;
+        if (entityField != null) {
+            this.tableColumn = MybatisKit.getTableColumn(entityField);
+            this.columnType = entityField.getType();
+        } else {
+            this.tableColumn = null;
+            this.columnType = null;
+        }
     }
 }

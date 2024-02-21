@@ -1,12 +1,12 @@
 package cc.allio.turbo.modules.system.service;
 
 import cc.allio.turbo.common.exception.BizException;
-import cc.allio.turbo.common.mybatis.service.ITurboCrudService;
+import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
 import cc.allio.turbo.modules.system.dto.BindingOrgDTO;
 import cc.allio.turbo.modules.system.dto.BindingPostDTO;
 import cc.allio.turbo.modules.system.dto.BindingRoleDTO;
 import cc.allio.turbo.modules.system.entity.SysUser;
-import cc.allio.turbo.modules.system.vo.SysUserVO;
+import cc.allio.turbo.modules.system.domain.SysUserVO;
 
 public interface ISysUserService extends ITurboCrudService<SysUser> {
 

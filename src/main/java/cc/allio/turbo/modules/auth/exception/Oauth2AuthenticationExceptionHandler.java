@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.auth.exception;
 
-import cc.allio.uno.core.util.IoUtil;
+import cc.allio.uno.core.util.IoUtils;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.turbo.common.web.R;
 import jakarta.servlet.ServletException;
@@ -27,6 +27,6 @@ public class Oauth2AuthenticationExceptionHandler implements AuthenticationFailu
         R<Object> error = R.error(HttpStatus.UNAUTHORIZED.value(), "验证失败");
         response.setStatus(error.getCode());
         ServletOutputStream outputStream = response.getOutputStream();
-        IoUtil.write(JsonUtils.toJson(error), outputStream, StandardCharsets.UTF_8);
+        IoUtils.write(JsonUtils.toJson(error), outputStream, StandardCharsets.UTF_8);
     }
 }

@@ -17,5 +17,4 @@ public class DateModule extends SimpleModule {
         addSerializer(Date.class, new DateSerializer());
         addDeserializer(Date.class, new DateDeserializer());
     }
-
 }

@@ -10,7 +10,8 @@ import lombok.Getter;
 public enum MenuType {
 
     MENU("MENU", "菜单"),
-    BUTTON("BUTTON", "按钮");
+    BUTTON("BUTTON", "按钮"),
+    PAGE("PAGE", "菜单");
 
     @JsonValue
     @EnumValue

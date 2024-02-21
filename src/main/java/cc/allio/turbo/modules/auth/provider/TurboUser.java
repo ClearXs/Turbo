@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.auth.provider;
 
 import cc.allio.turbo.modules.system.constant.UserStatus;
-import cc.allio.turbo.modules.system.vo.SysUserVO;
+import cc.allio.turbo.modules.system.domain.SysUserVO;
 import cc.allio.uno.core.bean.MapWrapper;
 import cc.allio.turbo.modules.auth.authority.TurboGrantedAuthority;
 import lombok.AllArgsConstructor;
