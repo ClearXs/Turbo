@@ -4,6 +4,10 @@ import cc.allio.turbo.common.excel.util.ExcelUtil;
 import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.mybatis.helper.Conditions;
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
+import cc.allio.turbo.common.exception.BizException;
+import cc.allio.turbo.common.mybatis.entity.IdEntity;
+import cc.allio.turbo.common.mybatis.help.Conditions;
+import cc.allio.turbo.common.mybatis.service.ITurboCrudService;
 import cc.allio.turbo.common.web.params.QueryParam;
 import cc.allio.uno.core.util.ReflectTool;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -179,6 +183,29 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
         interceptor.onImportAfter(service);
         return ok(Boolean.TRUE);
     }
+
+    /**
+     * 导出
+     */
+    @Operation(summary = "导出")
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, @RequestBody QueryParam<T> params) {
+        Class<T> clazz = getEntityType();
+        QueryWrapper<T> queryWrapper = Conditions.query(params, clazz);
+        List<T> list = service.list(queryWrapper);
+        ExcelUtil.export(response, list, clazz);
+    }
+
+    /**
+     * 导入
+     */
+    @Operation(summary = "导入")
+    @PostMapping("/import")
+    public R importFile(MultipartFile file) {
+        ExcelUtil.save(file, service, getEntityType());
+        return ok(Boolean.TRUE);
+    }
+
 
     /**
      * 获取实体类型
