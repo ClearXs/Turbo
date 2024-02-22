@@ -26,6 +26,30 @@ English | [简体中文](./README.md)
 - **Unified Frontend:** Leveraging Alibaba's Formily and internally developed Tableily solutions, Turbo achieves uniformity across different ends, reducing the learning curve for developers by unifying **Form** and **Table** components.
 - **RBAC Permission System:** Turbo offers a comprehensive RBAC (Role-Based Access Control) permission system, enabling developers to easily implement user permission management.
 - **Supports the OAuth2.1:** Turbo supports the OAuth2.1 protocol, facilitating seamless integration with other systems.
+- **Internationalization**: Turbo supports internationalization, making it convenient to implement multi-language support.
+- **Multi-tenancy**: Supports multi-tenancy.
+- **Visual, Configurable**: Provides visual form and table editors, configurable rules, and workflows.
+
+## Built-in Features
+
+- **Job Management**: Managing internal job positions within the organization.
+- **Attachment Management**: Managing information regarding attachments within the system.
+- **Tenant Management**: Managing under a multi-user system.
+- **Dictionary Management**: Managing dictionary information within the system.
+- **Role Management**: Managing role permissions, supporting multiple roles.
+- **Menu Management**: Configuring system menus, displayed in a tree structure.
+- **Organization Management**: Managing affiliated organizations.
+- **User Management**: Managing system user data.
+- **Message Management**: Configuring system message templates, setting up messaging, capable of receiving data from any messaging endpoint, and supporting message record queries.
+- **System Parameters**: Managing system parameters.
+- **Business Object**: Supports modeling of business objects and manages business objects.
+- **Data Source Management**: Supports managing different types of data sources, various data sources, real-time effective changes, and provides visual data table operations.
+- **Dataset Management**: Abstraction of data operations, providing management of business objects, external APIs, and SQL datasets.
+- **Form Management**: Based on Alibaba's Designable, it supports form management and provides a visual form designer.
+- **Page Management**: Quickly generate pages, supporting visual form design, table design, and page settings.
+- **Icon Management**: Supports quick viewing of system icons.
+- **Cloud Storage Configuration**: Supports OSS cloud storage provided by different cloud vendors.
+- **Rule Engine**: Provides a visual, programmable rule engine.
 
 ### Back-end
 
