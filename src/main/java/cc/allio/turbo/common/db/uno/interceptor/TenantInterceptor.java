@@ -3,6 +3,7 @@ package cc.allio.turbo.common.db.uno.interceptor;
 import cc.allio.uno.core.function.lambda.MethodBiConsumer;
 import cc.allio.uno.data.orm.dsl.Operator;
 import cc.allio.uno.data.orm.dsl.Table;
+import cc.allio.uno.data.orm.dsl.dml.InsertOperator;
 import cc.allio.uno.data.orm.dsl.dml.QueryOperator;
 import cc.allio.uno.data.orm.dsl.dml.UpdateOperator;
 import cc.allio.uno.data.orm.executor.CommandExecutor;
@@ -32,6 +33,19 @@ public class TenantInterceptor implements Interceptor {
     public void onQueryBefore(CommandExecutor commandExecutor, Operator<?> operator) {
         if (operator instanceof QueryOperator queryOperator) {
             Table table = queryOperator.getTable();
+            allowTenant(table, queryOperator::eq);
+        }
+    }
+
+    /**
+     * @param commandExecutor commandExecutor
+     * @param operator        operator
+     */
+    @Override
+    public void onSaveBefore(CommandExecutor commandExecutor, Operator<?> operator) {
+        if (operator instanceof InsertOperator insertOperator) {
+            Table table = insertOperator.getTable();
+            allowTenant(table, insertOperator::strictFill);
         }
     }
 
@@ -43,7 +57,7 @@ public class TenantInterceptor implements Interceptor {
     public void onUpdateBefore(CommandExecutor commandExecutor, Operator<?> operator) {
         if (operator instanceof UpdateOperator updateOperator) {
             Table table = updateOperator.getTable();
-            allowTenant(table, updateOperator::eq);
+            allowTenant(table, updateOperator::strictFill);
         }
     }
 

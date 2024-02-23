@@ -84,7 +84,7 @@ public class BoDomainController {
     public R<List<DomainEntity>> list(@PathVariable("boId") Long boId, @RequestBody QueryParam<DomainEntity> params) throws BizException {
         QueryWrapper<DomainEntity> wrapper = Wrappers.query();
         domainService.getBoRepositoryOrThrow(boId)
-                .inspectOn("list", context ->
+                .aspectOn("list", context ->
                         Optionals.withBoth(context.getTypeFirst(QueryWrapper.class), context.getTypeFirst(BoSchema.class))
                                 .ifPresent(pair -> {
                                     QueryWrapper<DomainEntity> queryWrapper = pair.getFirst();
@@ -101,7 +101,7 @@ public class BoDomainController {
     public R<IPage<DomainEntity>> page(@PathVariable("boId") Long boId, @RequestBody QueryParam<DomainEntity> params) throws BizException {
         QueryWrapper<DomainEntity> wrapper = Wrappers.query();
         domainService.getBoRepositoryOrThrow(boId)
-                .inspectOn("page", context ->
+                .aspectOn("page", context ->
                         Optionals.withBoth(context.getTypeFirst(QueryWrapper.class), context.getTypeFirst(BoSchema.class))
                                 .ifPresent(pair -> {
                                     QueryWrapper<DomainEntity> queryWrapper = pair.getFirst();

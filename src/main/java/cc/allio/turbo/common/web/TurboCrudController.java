@@ -167,18 +167,6 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     }
 
     /**
-     * 导出
-     */
-    @Operation(summary = "导出")
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, @RequestBody QueryParam<T> params) {
-        Class<T> clazz = getEntityType();
-        QueryWrapper<T> queryWrapper = Conditions.entityQuery(params, clazz);
-        List<T> list = service.list(queryWrapper);
-        ExcelUtil.export(response, list, clazz);
-    }
-
-    /**
      * 导入
      */
     @Operation(summary = "导入")

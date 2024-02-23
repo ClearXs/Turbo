@@ -580,75 +580,75 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
     interface IDomainCrudTreeRepositoryService extends ITurboCrudTreeRepositoryService<DomainEntity> {
 
         /**
-         * @see #inspectOn(String, ThrowingMethodConsumer)
+         * @see #aspectOn(String, ThrowingMethodConsumer)
          */
-        default <T> void inspectOn(ThrowingMethodConsumer<T> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
+        default <T> void aspectOn(ThrowingMethodConsumer<T> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
             String domainMethodName = domainMethod.getMethodName();
-            inspectOn(domainMethodName, callback);
+            aspectOn(domainMethodName, callback);
         }
 
         /**
-         * @see #inspectOn(String, ThrowingMethodConsumer)
+         * @see #aspectOn(String, ThrowingMethodConsumer)
          */
-        default <T> void inspectOn(ThrowingMethodSupplier<T> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
+        default <T> void aspectOn(ThrowingMethodSupplier<T> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
             String domainMethodName = domainMethod.getMethodName();
-            inspectOn(domainMethodName, callback);
+            aspectOn(domainMethodName, callback);
         }
 
         /**
-         * @see #inspectOn(String, ThrowingMethodConsumer)
+         * @see #aspectOn(String, ThrowingMethodConsumer)
          */
-        default <T, R> void inspectOn(ThrowingMethodFunction<T, R> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
+        default <T, R> void aspectOn(ThrowingMethodFunction<T, R> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
             String domainMethodName = domainMethod.getMethodName();
-            inspectOn(domainMethodName, callback);
+            aspectOn(domainMethodName, callback);
         }
 
         /**
-         * @see #inspectOn(String, ThrowingMethodConsumer)
+         * @see #aspectOn(String, ThrowingMethodConsumer)
          */
-        default <T1, T2> void inspectOn(ThrowingMethodBiConsumer<T1, T2> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
+        default <T1, T2> void aspectOn(ThrowingMethodBiConsumer<T1, T2> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
             String domainMethodName = domainMethod.getMethodName();
-            inspectOn(domainMethodName, callback);
+            aspectOn(domainMethodName, callback);
         }
 
         /**
-         * @see #inspectOn(String, ThrowingMethodConsumer)
+         * @see #aspectOn(String, ThrowingMethodConsumer)
          */
-        default <T1, T2, R> void inspectOn(ThrowingMethodBiFunction<T1, T2, R> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
+        default <T1, T2, R> void aspectOn(ThrowingMethodBiFunction<T1, T2, R> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
             String domainMethodName = domainMethod.getMethodName();
-            inspectOn(domainMethodName, callback);
+            aspectOn(domainMethodName, callback);
         }
 
         /**
-         * @see #inspectOn(String, ThrowingMethodConsumer)
+         * @see #aspectOn(String, ThrowingMethodConsumer)
          */
-        default <T1, T2, T3> void inspectOn(ThrowingMethodTerConsumer<T1, T2, T3> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
+        default <T1, T2, T3> void aspectOn(ThrowingMethodTerConsumer<T1, T2, T3> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
             String domainMethodName = domainMethod.getMethodName();
-            inspectOn(domainMethodName, callback);
+            aspectOn(domainMethodName, callback);
         }
 
         /**
-         * @see #inspectOn(String, ThrowingMethodConsumer)
+         * @see #aspectOn(String, ThrowingMethodConsumer)
          */
-        default <T1, T2, T3, R> void inspectOn(ThrowingMethodTerFunction<T1, T2, T3, R> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
+        default <T1, T2, T3, R> void aspectOn(ThrowingMethodTerFunction<T1, T2, T3, R> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
             String domainMethodName = domainMethod.getMethodName();
-            inspectOn(domainMethodName, callback);
+            aspectOn(domainMethodName, callback);
         }
 
         /**
-         * @see #inspectOn(String, ThrowingMethodConsumer)
+         * @see #aspectOn(String, ThrowingMethodConsumer)
          */
-        default <T1, T2, T3, T4> void inspectOn(ThrowingMethodQueConsumer<T1, T2, T3, T4> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
+        default <T1, T2, T3, T4> void aspectOn(ThrowingMethodQueConsumer<T1, T2, T3, T4> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
             String domainMethodName = domainMethod.getMethodName();
-            inspectOn(domainMethodName, callback);
+            aspectOn(domainMethodName, callback);
         }
 
         /**
-         * @see #inspectOn(String, ThrowingMethodConsumer)
+         * @see #aspectOn(String, ThrowingMethodConsumer)
          */
-        default <T1, T2, T3, T4, R> void inspectOn(ThrowingMethodQueFunction<T1, T2, T3, T4, R> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
+        default <T1, T2, T3, T4, R> void aspectOn(ThrowingMethodQueFunction<T1, T2, T3, T4, R> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
             String domainMethodName = domainMethod.getMethodName();
-            inspectOn(domainMethodName, callback);
+            aspectOn(domainMethodName, callback);
         }
 
         /**
@@ -663,18 +663,18 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
          * @param domainMethod 领域行为
          * @param callback     当给定领域行为发生时的回调
          */
-        void inspectOn(String domainMethod, ThrowingMethodConsumer<OptionalContext> callback);
+        void aspectOn(String domainMethod, ThrowingMethodConsumer<OptionalContext> callback);
 
         /**
          * 获取领域切面的队列
          */
-        Queue<DomainInspect> getDomainInspects();
+        Queue<DomainAspect> getDomainAspects();
     }
 
     /**
      * 领域对象切面
      */
-    interface DomainInspect {
+    interface DomainAspect {
 
         /**
          * 获取领域行为

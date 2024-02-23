@@ -11,7 +11,7 @@
 
     <groupId>cc.allio</groupId>
     <artifactId>Turbo</artifactId>
-    <version>0.1.0-beta.1.RELEASE</version>
+    <version>0.1.0</version>
     <name>Turbo</name>
     <description>Turbo快速开发平台</description>
     <url>https://github.com/ClearXs/Turbo.git</url>
@@ -25,7 +25,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <uno.version>1.1.6-beta.1</uno.version>
+        <uno.version>1.1.6</uno.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <maven-plugin.version>3.11.0</maven-plugin.version>
         <knife4j.version>4.3.0</knife4j.version>

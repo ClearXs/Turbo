@@ -1,5 +1,9 @@
 server:
   port: 8600
+  undertow:
+    threads:
+      io: 100
+      worker: 10
 
 spring:
   application:

@@ -133,27 +133,27 @@ public class BoDomainServiceImpl implements IBoDomainService {
 
     public static class BoDomainCrudTreeRepositoryServiceImpl extends SimpleTurboCrudTreeRepositoryServiceImpl<DomainEntity> implements IDomainCrudTreeRepositoryService {
 
-        private final Queue<DomainInspect> domainInspects;
+        private final Queue<DomainAspect> domainAspects;
 
         public BoDomainCrudTreeRepositoryServiceImpl(CommandExecutor commandExecutor) {
             super(commandExecutor, DomainEntity.class);
-            this.domainInspects = Queues.newConcurrentLinkedQueue();
+            this.domainAspects = Queues.newConcurrentLinkedQueue();
         }
 
         @Override
-        public void inspectOn(String domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
-            this.domainInspects.offer(new DomainInspectImpl(domainMethod, callback));
+        public void aspectOn(String domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
+            this.domainAspects.offer(new DomainInspectImpl(domainMethod, callback));
         }
 
         @Override
-        public Queue<DomainInspect> getDomainInspects() {
-            return domainInspects;
+        public Queue<DomainAspect> getDomainAspects() {
+            return domainAspects;
         }
     }
 
     @AllArgsConstructor
     @Getter
-    public static class DomainInspectImpl implements DomainInspect {
+    public static class DomainInspectImpl implements DomainAspect {
 
         private final String domainMethod;
         private final ThrowingMethodConsumer<OptionalContext> callback;
@@ -164,8 +164,8 @@ public class BoDomainServiceImpl implements IBoDomainService {
 
         public BoDomainLockRepositoryMethodInterceptor(BoSchema schema) {
             this.schema = schema;
-            addIgnoreMethod("inspectOn");
-            addIgnoreMethod("getDomainInspects");
+            addIgnoreMethod("aspectOn");
+            addIgnoreMethod("getDomainAspects");
         }
 
         @Override
@@ -175,11 +175,11 @@ public class BoDomainServiceImpl implements IBoDomainService {
             Object theThis = invocation.getThis();
             Method method = invocation.getMethod();
             if (theThis instanceof IDomainCrudTreeRepositoryService domainCrudTreeRepositoryService) {
-                Queue<DomainInspect> domainInspects = domainCrudTreeRepositoryService.getDomainInspects();
-                DomainInspect domainInspect = domainInspects.poll();
+                Queue<DomainAspect> domainAspects = domainCrudTreeRepositoryService.getDomainAspects();
+                DomainAspect domainInspect = domainAspects.poll();
                 if (domainInspect != null && isMatch(domainInspect.getDomainMethod(), method)) {
                     if (log.isDebugEnabled()) {
-                        log.debug("domain object [{}] inspect domain method [{}]", schema.getName(), domainInspect.getDomainMethod());
+                        log.debug("domain object [{}] aspect domain method [{}]", schema.getName(), domainInspect.getDomainMethod());
                     }
                     // 存入参数
                     Object[] arguments = invocation.getArguments();
@@ -189,7 +189,7 @@ public class BoDomainServiceImpl implements IBoDomainService {
                         callback.accept(immutableContext);
                     } catch (Throwable ex) {
                         // ignore
-                        log.warn("domain object [{}] inspect domain method {} encounter error, now just log error and ignore", schema.getName(), domainInspect.getDomainMethod(), ex);
+                        log.warn("domain object [{}] aspect domain method {} encounter error, now just log error and ignore", schema.getName(), domainInspect.getDomainMethod(), ex);
                     }
                 }
             }
