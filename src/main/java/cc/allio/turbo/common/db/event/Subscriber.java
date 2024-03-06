@@ -2,7 +2,7 @@ package cc.allio.turbo.common.db.event;
 
 import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.function.lambda.*;
-import cc.allio.uno.core.util.ReflectTool;
+import cc.allio.uno.core.util.ReflectTools;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -203,7 +203,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
      * 获取领域类型
      */
     default Class<D> getDomainType() {
-        Class<?> domainType = ReflectTool.getGenericType(this, Subscriber.class);
+        Class<?> domainType = ReflectTools.getGenericType(this, Subscriber.class);
         if (domainType == null) {
             return null;
         } else {

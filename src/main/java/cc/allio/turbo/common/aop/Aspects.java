@@ -59,6 +59,7 @@ public final class Aspects {
 
         private Object target;
         private final List<TurboAdvisor> advisors = Lists.newArrayList();
+        private final List<Class<?>> interfaces = Lists.newArrayList();
 
         /**
          * 设置目标对象
@@ -97,6 +98,14 @@ public final class Aspects {
         }
 
         /**
+         * 添加 interface
+         */
+        public AspectJProxyBuilder addInterface(Class<?> itf) {
+            this.interfaces.add(itf);
+            return self();
+        }
+
+        /**
          * 生成代理对象。
          * <p>如果经过{@link #addAdvisors(Collection)}存在{@link #advisors}则会创建代理对象，否则返回原始对象</p>
          *
@@ -109,6 +118,9 @@ public final class Aspects {
             for (TurboAdvisor advisor : advisors) {
                 advisor.preProxyProcess(target);
                 proxyFactory.addAdvisor(advisor);
+            }
+            for (Class<?> itf : interfaces) {
+                proxyFactory.addInterface(itf);
             }
             T proxy = proxyFactory.getProxy(getClass().getClassLoader());
             for (TurboAdvisor advisor : advisors) {

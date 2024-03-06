@@ -2,7 +2,10 @@ package cc.allio.turbo.common.db.uno.repository;
 
 import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
+import cc.allio.turbo.common.db.uno.repository.impl.SimpleTurboCrudRepositoryServiceImpl;
 import cc.allio.uno.core.exception.Exceptions;
+import cc.allio.uno.data.orm.executor.CommandExecutor;
+import cc.allio.uno.data.orm.executor.CommandExecutorFactory;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -21,7 +24,18 @@ import java.util.function.Function;
  * @date 2024/2/3 00:18
  * @since 0.1.0
  */
-public interface ITurboCrudRepositoryService<T extends Entity> extends ITurboCrudService<T> {
+public interface ITurboCrudRepositoryService<T extends Entity> extends ITurboCrudService<T>, ITurboRepository<T> {
+
+    /**
+     * 获取{@link ITurboCrudRepository}的实例
+     *
+     * @return {@link ITurboCrudRepository}
+     */
+    default ITurboCrudRepository<T> getRepository() {
+      return null;
+    }
+
+    // ============================== default method ==============================
 
     @Override
     default boolean save(T entity) {
@@ -148,6 +162,11 @@ public interface ITurboCrudRepositoryService<T extends Entity> extends ITurboCru
     @Override
     default boolean saveOrUpdate(T entity) {
         return getRepository().saveOrUpdate(entity) != null;
+    }
+
+    @Override
+    default <V extends T> V details(Serializable id) {
+        return (V) getById(id);
     }
 
     @Override
@@ -369,10 +388,30 @@ public interface ITurboCrudRepositoryService<T extends Entity> extends ITurboCru
         return mybatisPage;
     }
 
+    // ============================== static method ==============================
+
     /**
-     * 获取{@link ITurboCrudRepository}的实例
+     * 根据传递的实体类型，快速获取{@link ITurboCrudRepositoryService}实例，其根据{@link CommandExecutorFactory#getDSLExecutor()}来构建执行器部分
      *
-     * @return {@link ITurboCrudRepository}
+     * @param entityClass entityClass
+     * @param <T>         实体类型
+     * @return SimpleTurboCrudRepositoryServiceImpl
+     * @see cc.allio.turbo.common.db.uno.repository.impl.SimpleTurboCrudRepositoryServiceImpl
      */
-    ITurboCrudRepository<T> getRepository();
+    static <T extends Entity> ITurboCrudRepositoryService<T> simply(Class<T> entityClass) {
+        return new SimpleTurboCrudRepositoryServiceImpl<>(entityClass);
+    }
+
+    /**
+     * 根据传递的实体类型，快速获取{@link ITurboCrudRepositoryService}实例
+     *
+     * @param commandExecutor commandExecutor
+     * @param entityClass     entityClass
+     * @param <T>             实体类型
+     * @return SimpleTurboCrudRepositoryServiceImpl
+     * @see cc.allio.turbo.common.db.uno.repository.impl.SimpleTurboCrudRepositoryServiceImpl
+     */
+    static <T extends Entity> ITurboCrudRepositoryService<T> simply(CommandExecutor commandExecutor, Class<T> entityClass) {
+        return new SimpleTurboCrudRepositoryServiceImpl<>(commandExecutor, entityClass);
+    }
 }

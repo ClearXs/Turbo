@@ -18,8 +18,8 @@ import java.util.function.Supplier;
 public class SimpleTurboCurdRepositoryImpl<T extends Entity> extends TurboCrudRepositoryImpl<T> implements ITurboCrudRepository<T> {
 
     private final CommandExecutor commandExecutor;
-    private final Class<T> entityType;
     private final Supplier<Class<T>> entityClassGetter;
+    private Class<T> entityType;
 
     public SimpleTurboCurdRepositoryImpl() {
         this(CommandExecutorFactory.getDSLExecutor());
@@ -58,5 +58,13 @@ public class SimpleTurboCurdRepositoryImpl<T extends Entity> extends TurboCrudRe
                 .then(entityClassGetter)
                 .then(super::getEntityType)
                 .stop();
+    }
+
+    /**
+     * @param entityType entityType
+     */
+    @Override
+    public void setEntityType(Class<T> entityType) {
+        this.entityType = entityType;
     }
 }

@@ -4,15 +4,20 @@ import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.event.Subscriber;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepository;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepositoryService;
-import cc.allio.uno.core.util.ReflectTool;
+import cc.allio.uno.core.util.ReflectTools;
 import cc.allio.uno.data.orm.executor.CommandExecutor;
 
-import java.io.Serializable;
-
+/**
+ * base on abstract class {@link ITurboCrudRepositoryService}
+ *
+ * @author jiangwei
+ * @date 2024/2/29 23:29
+ * @since 0.1.1
+ */
 public abstract class TurboCrudRepositoryServiceImpl<T extends Entity> implements ITurboCrudRepositoryService<T> {
 
     private final ITurboCrudRepository<T> repository;
-    private final Class<T> entityClass;
+    private Class<T> entityClass;
     private Subscriber<T> proxySubscriber;
 
     protected TurboCrudRepositoryServiceImpl(CommandExecutor commandExecutor) {
@@ -34,11 +39,6 @@ public abstract class TurboCrudRepositoryServiceImpl<T extends Entity> implement
     }
 
     @Override
-    public <V extends T> V details(Serializable id) {
-        return (V) getById(id);
-    }
-
-    @Override
     public void setProxy(Subscriber<T> subscriber) {
         this.proxySubscriber = subscriber;
     }
@@ -51,8 +51,13 @@ public abstract class TurboCrudRepositoryServiceImpl<T extends Entity> implement
     @Override
     public Class<T> getEntityClass() {
         if (entityClass == null) {
-            return (Class<T>) ReflectTool.getGenericType(this, TurboCrudRepositoryServiceImpl.class, 0);
+            return (Class<T>) ReflectTools.getGenericType(this, TurboCrudRepositoryServiceImpl.class, 0);
         }
         return entityClass;
+    }
+
+    @Override
+    public void setEntityType(Class<T> entityType) {
+        this.entityClass = entityType;
     }
 }

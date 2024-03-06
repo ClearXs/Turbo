@@ -40,10 +40,9 @@ public class LockRepositoryMethodInterceptor implements MethodInterceptor {
     /**
      * 添加忽略的方法
      */
-    protected void addIgnoreMethod(String... ignoreMethod) {
+    public void addIgnoreMethod(String... ignoreMethod) {
         ignoreMethods.addAll(Lists.newArrayList(ignoreMethod));
     }
-
 
     @Nullable
     @Override
@@ -53,9 +52,12 @@ public class LockRepositoryMethodInterceptor implements MethodInterceptor {
         if (ignoreMethods.contains(name)) {
             return invocation.proceed();
         }
+        // 基于ReentrantLock，实现对Repository方法，进行加锁执行。
         return LockContext.lock(Entity::putThreadLockContext)
+                .thenApply(optionContext -> this.doInvoke(invocation, optionContext))
                 .lockEnd(lockContext -> Entity.clearThreadLockContext())
-                .lockReturn(optionalContext -> doInvoke(invocation, optionalContext));
+                .release()
+                .unwrap(Throwable.class);
     }
 
     /**

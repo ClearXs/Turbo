@@ -6,7 +6,6 @@ import cc.allio.uno.core.concurrent.LockContext;
 
 import java.util.Objects;
 
-
 /**
  * 基于{@link LockContext}实现的切面。
  * <p>其作用是：在Repository层，对每个方法进行加锁处理。并把{@link LockContext}放入{@link ThreadLocal}中</p>
@@ -37,9 +36,9 @@ public class LockRepositoryAdvisor extends TurboAdvisor {
     public static class LockRepositoryAdvisorBuilder extends TurboAdvisorBuilder<LockRepositoryAdvisor> {
 
         protected LockRepositoryAdvisorBuilder() {
-            super(LockRepositoryAdvisor.class, beanClass ->
-                    ITurboCrudRepository.class.isAssignableFrom(beanClass)
-                            || ITurboCrudRepositoryService.class.isAssignableFrom(beanClass));
+            super(LockRepositoryAdvisor.class, target ->
+                    ITurboCrudRepository.class.isAssignableFrom(target.getClass())
+                            || ITurboCrudRepositoryService.class.isAssignableFrom(target.getClass()));
         }
 
         /**

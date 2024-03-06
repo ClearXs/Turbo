@@ -1,10 +1,12 @@
 package cc.allio.turbo.common.cache;
 
+import cc.allio.uno.core.function.lambda.MethodConsumer;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.AbstractCacheManager;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -28,6 +30,42 @@ public class TurboCacheManager extends AbstractCacheManager {
     }
 
     /**
+     * @param cacheName lambda supplier cache name
+     * @return TurboCache instance
+     * @see #getCache(String)
+     */
+    public TurboCache getCache(Supplier<String> cacheName) {
+        return (TurboCache) getCache(cacheName.get());
+    }
+
+    /**
+     * @param cacheName CacheName interface for cache name
+     * @return TurboCache instance
+     * @see #getCache(String)
+     */
+    public TurboCache getCache(CacheName cacheName) {
+        return (TurboCache) getCache(cacheName.getCacheName());
+    }
+
+    /**
+     * @param cacheName lambda supplier cache name
+     * @return TurboCache
+     * @see #getIfAbsent(String)
+     */
+    public TurboCache getIfAbsent(Supplier<String> cacheName) {
+        return getIfAbsent(cacheName.get());
+    }
+
+    /**
+     * @param cacheName CacheName interface for cache name
+     * @return TurboCache
+     * @see #getIfAbsent(String)
+     */
+    public TurboCache getIfAbsent(CacheName cacheName) {
+        return getIfAbsent(cacheName.getCacheName());
+    }
+
+    /**
      * 如果没有就创建默认的cache
      *
      * @param cacheName cacheName must be unique
@@ -42,9 +80,21 @@ public class TurboCacheManager extends AbstractCacheManager {
     }
 
     /**
+     * @param cacheName CacheName interface for cache name
+     * @param supplier  laze supply to cache instance
+     * @return TurboCache
+     * @see #computeIfAbsent(String, Supplier)
+     */
+    public TurboCache computeIfAbsent(CacheName cacheName, Supplier<? extends TurboCache> supplier) {
+        return computeIfAbsent(cacheName.getCacheName(), supplier);
+    }
+
+
+    /**
      * 如果没有就根据supplier获取实例
      *
      * @param cacheName cacheName must be unique
+     * @param supplier  laze supply to cache instance
      * @return TurboCache
      */
     public TurboCache computeIfAbsent(String cacheName, Supplier<? extends TurboCache> supplier) {

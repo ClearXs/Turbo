@@ -3,7 +3,7 @@ package cc.allio.turbo.common.db.mybatis.service.impl;
 import cc.allio.turbo.common.db.entity.IdEntity;
 import cc.allio.turbo.common.db.event.Subscriber;
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
-import cc.allio.uno.core.util.ReflectTool;
+import cc.allio.uno.core.util.ReflectTools;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
@@ -22,7 +22,7 @@ public abstract class TurboCrudServiceImpl<M extends BaseMapper<T>, T extends Id
 
     @Override
     public Class<T> getDomainType() {
-        Class<?> domainType = ReflectTool.getGenericType(this, ServiceImpl.class, 1);
+        Class<?> domainType = ReflectTools.getGenericType(this, ServiceImpl.class, 1);
         if (domainType == null) {
             return null;
         } else {

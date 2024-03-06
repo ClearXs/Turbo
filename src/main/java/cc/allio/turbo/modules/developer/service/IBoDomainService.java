@@ -1,13 +1,12 @@
 package cc.allio.turbo.modules.developer.service;
 
 import cc.allio.turbo.common.db.event.Subscriber;
-import cc.allio.turbo.common.db.uno.repository.ITurboCrudTreeRepositoryService;
 import cc.allio.turbo.common.db.uno.repository.LockRepositoryMethodInterceptor;
 import cc.allio.turbo.common.domain.TreeDomain;
 import cc.allio.turbo.common.exception.BizException;
-import cc.allio.turbo.modules.developer.entity.DomainEntity;
-import cc.allio.uno.core.api.OptionalContext;
-import cc.allio.uno.core.function.lambda.*;
+import cc.allio.turbo.modules.developer.api.DomainObject;
+import cc.allio.turbo.modules.developer.api.GeneralDomainObject;
+import cc.allio.turbo.modules.developer.api.service.IDomainService;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -28,7 +27,7 @@ import java.util.function.Function;
  * @date 2024/2/6 15:42
  * @since 0.1.0
  */
-public interface IBoDomainService extends Subscriber<DomainEntity> {
+public interface IBoDomainService extends Subscriber<GeneralDomainObject> {
 
     /**
      * 保存实体
@@ -36,15 +35,15 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param entity 实体对象
      * @return true if success
      */
-    default boolean save(Long boId, DomainEntity entity) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default boolean save(Long boId, GeneralDomainObject entity) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.save(entity);
     }
 
     /**
      * @see #saveBatch(Long, Collection, int)
      */
-    default boolean saveBatch(Long boId, Collection<DomainEntity> entityList) throws BizException {
+    default boolean saveBatch(Long boId, Collection<GeneralDomainObject> entityList) throws BizException {
         return saveBatch(boId, entityList, -1);
     }
 
@@ -55,15 +54,15 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param batchSize  插入批次数量
      * @return true if success
      */
-    default boolean saveBatch(Long boId, Collection<DomainEntity> entityList, int batchSize) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default boolean saveBatch(Long boId, Collection<GeneralDomainObject> entityList, int batchSize) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.saveBatch(entityList, batchSize);
     }
 
     /**
      * @see #saveOrUpdateBatch(Long, Collection, int)
      */
-    default boolean saveOrUpdateBatch(Long boId, Collection<DomainEntity> entityList) throws BizException {
+    default boolean saveOrUpdateBatch(Long boId, Collection<GeneralDomainObject> entityList) throws BizException {
         return saveOrUpdateBatch(boId, entityList, -1);
     }
 
@@ -74,8 +73,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param batchSize  每次的数量
      * @return true if success
      */
-    default boolean saveOrUpdateBatch(Long boId, Collection<DomainEntity> entityList, int batchSize) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default boolean saveOrUpdateBatch(Long boId, Collection<GeneralDomainObject> entityList, int batchSize) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.saveOrUpdateBatch(entityList, batchSize);
     }
 
@@ -94,7 +93,7 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @return true if success
      */
     default boolean removeById(Long boId, Serializable id, boolean useFill) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.removeById(id, useFill);
     }
 
@@ -104,8 +103,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param entity 实体
      * @return true if success
      */
-    default boolean removeById(Long boId, DomainEntity entity) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default boolean removeById(Long boId, GeneralDomainObject entity) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.removeById(entity);
     }
 
@@ -116,7 +115,7 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @return true if success
      */
     default boolean removeByMap(Long boId, Map<String, Object> columnMap) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.removeByMap(columnMap);
     }
 
@@ -126,8 +125,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param queryWrapper 实体包装类 {@link com.baomidou.mybatisplus.core.conditions.query.QueryWrapper}
      * @return true if success
      */
-    default boolean remove(Long boId, Wrapper<DomainEntity> queryWrapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default boolean remove(Long boId, Wrapper<GeneralDomainObject> queryWrapper) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.remove(queryWrapper);
     }
 
@@ -146,7 +145,7 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @return true if success
      */
     default boolean removeByIds(Long boId, Collection<?> list, boolean useFill) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.removeByIds(list, useFill);
     }
 
@@ -180,7 +179,7 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @return true if success
      */
     default boolean removeBatchByIds(Long boId, Collection<?> list, int batchSize, boolean useFill) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.removeBatchByIds(list, batchSize, useFill);
     }
 
@@ -190,8 +189,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param entity 实体对象
      * @return true if success
      */
-    default boolean updateById(Long boId, DomainEntity entity) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default boolean updateById(Long boId, GeneralDomainObject entity) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.updateById(entity);
     }
 
@@ -201,8 +200,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param updateWrapper 实体对象封装操作类 {@link com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper}
      * @return true if success
      */
-    default boolean update(Long boId, Wrapper<DomainEntity> updateWrapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default boolean update(Long boId, Wrapper<GeneralDomainObject> updateWrapper) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.update(updateWrapper);
     }
 
@@ -213,15 +212,15 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param updateWrapper 实体对象封装操作类 {@link com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper}
      * @return true if success
      */
-    default boolean update(Long boId, DomainEntity entity, Wrapper<DomainEntity> updateWrapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default boolean update(Long boId, GeneralDomainObject entity, Wrapper<GeneralDomainObject> updateWrapper) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.update(entity, updateWrapper);
     }
 
     /**
      * @see #updateBatchById(Long, Collection, int)
      */
-    default boolean updateBatchById(Long boId, Collection<DomainEntity> entityList) throws BizException {
+    default boolean updateBatchById(Long boId, Collection<GeneralDomainObject> entityList) throws BizException {
         return updateBatchById(boId, entityList, -1);
     }
 
@@ -232,8 +231,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param batchSize  更新批次数量
      * @return true if success
      */
-    default boolean updateBatchById(Long boId, Collection<DomainEntity> entityList, int batchSize) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default boolean updateBatchById(Long boId, Collection<GeneralDomainObject> entityList, int batchSize) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.updateBatchById(entityList, batchSize);
     }
 
@@ -243,8 +242,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param entity 实体对象
      * @return true if success
      */
-    default boolean saveOrUpdate(Long boId, DomainEntity entity) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default boolean saveOrUpdate(Long boId, GeneralDomainObject entity) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.saveOrUpdate(entity);
     }
 
@@ -254,8 +253,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param id 主键ID
      * @return entity
      */
-    default DomainEntity getById(Long boId, Serializable id) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default GeneralDomainObject getById(Long boId, Serializable id) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.getById(id);
     }
 
@@ -265,8 +264,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param id 主键ID
      * @return entity
      */
-    default Optional<DomainEntity> getOptById(Long boId, Serializable id) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default Optional<GeneralDomainObject> getOptById(Long boId, Serializable id) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.getOptById(id);
     }
 
@@ -276,8 +275,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param idList 主键ID列表
      * @return entity list
      */
-    default List<DomainEntity> listByIds(Long boId, Collection<? extends Serializable> idList) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default List<GeneralDomainObject> listByIds(Long boId, Collection<? extends Serializable> idList) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.listByIds(idList);
     }
 
@@ -287,15 +286,15 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param columnMap 表字段 map 对象
      * @return list entity
      */
-    default List<DomainEntity> listByMap(Long boId, Map<String, Object> columnMap) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default List<GeneralDomainObject> listByMap(Long boId, Map<String, Object> columnMap) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.listByMap(columnMap);
     }
 
     /**
      * @see #getOne(Long, Wrapper, boolean)
      */
-    default DomainEntity getOne(Long boId, Wrapper<DomainEntity> queryWrapper) throws BizException {
+    default GeneralDomainObject getOne(Long boId, Wrapper<GeneralDomainObject> queryWrapper) throws BizException {
         return getOne(boId, queryWrapper, false);
     }
 
@@ -306,15 +305,15 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param throwEx      有多个 result 是否抛出异常
      * @return entity or throw
      */
-    default DomainEntity getOne(Long boId, Wrapper<DomainEntity> queryWrapper, boolean throwEx) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default GeneralDomainObject getOne(Long boId, Wrapper<GeneralDomainObject> queryWrapper, boolean throwEx) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.getOne(queryWrapper, throwEx);
     }
 
     /**
      * @see #getOneOpt(Long, Wrapper, boolean)
      */
-    default Optional<DomainEntity> getOneOpt(Long boId, Wrapper<DomainEntity> queryWrapper) throws BizException {
+    default Optional<GeneralDomainObject> getOneOpt(Long boId, Wrapper<GeneralDomainObject> queryWrapper) throws BizException {
         return getOneOpt(boId, queryWrapper, false);
     }
 
@@ -325,8 +324,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param throwEx      有多个 result 是否抛出异常
      * @return entity or throw
      */
-    default Optional<DomainEntity> getOneOpt(Long boId, Wrapper<DomainEntity> queryWrapper, boolean throwEx) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default Optional<GeneralDomainObject> getOneOpt(Long boId, Wrapper<GeneralDomainObject> queryWrapper, boolean throwEx) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.getOneOpt(queryWrapper, throwEx);
     }
 
@@ -336,8 +335,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param queryWrapper 实体对象封装操作类 {@link com.baomidou.mybatisplus.core.conditions.query.QueryWrapper}
      * @return map entity
      */
-    default Map<String, Object> getMap(Long boId, Wrapper<DomainEntity> queryWrapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default Map<String, Object> getMap(Long boId, Wrapper<GeneralDomainObject> queryWrapper) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.getMap(queryWrapper);
     }
 
@@ -349,8 +348,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param <V>          v
      * @return v
      */
-    default <V> V getObj(Long boId, Wrapper<DomainEntity> queryWrapper, Function<? super Object, V> mapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default <V> V getObj(Long boId, Wrapper<GeneralDomainObject> queryWrapper, Function<? super Object, V> mapper) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.getObj(queryWrapper, mapper);
     }
 
@@ -360,8 +359,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param queryWrapper queryWrapper
      * @return true if success
      */
-    default boolean exists(Long boId, Wrapper<DomainEntity> queryWrapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default boolean exists(Long boId, Wrapper<GeneralDomainObject> queryWrapper) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.exists(queryWrapper);
     }
 
@@ -380,29 +379,29 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param queryWrapper 实体对象封装操作类 {@link com.baomidou.mybatisplus.core.conditions.query.QueryWrapper}
      * @return count
      */
-    default long count(Long boId, Wrapper<DomainEntity> queryWrapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default long count(Long boId, Wrapper<GeneralDomainObject> queryWrapper) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.count(queryWrapper);
     }
 
     /**
      * @see #list(Long, IPage, Wrapper)
      */
-    default List<DomainEntity> list(Long boId) throws BizException {
+    default List<GeneralDomainObject> list(Long boId) throws BizException {
         return list(boId, Wrappers.emptyWrapper());
     }
 
     /**
      * @see #list(Long, IPage, Wrapper)
      */
-    default List<DomainEntity> list(Long boId, IPage<DomainEntity> page) throws BizException {
+    default List<GeneralDomainObject> list(Long boId, IPage<GeneralDomainObject> page) throws BizException {
         return list(boId, page, Wrappers.emptyWrapper());
     }
 
     /**
      * @see #list(Long, IPage, Wrapper)
      */
-    default List<DomainEntity> list(Long boId, Wrapper<DomainEntity> queryWrapper) throws BizException {
+    default List<GeneralDomainObject> list(Long boId, Wrapper<GeneralDomainObject> queryWrapper) throws BizException {
         return list(boId, null, queryWrapper);
     }
 
@@ -413,8 +412,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param queryWrapper queryWrapper 实体对象封装操作类 {@link com.baomidou.mybatisplus.core.conditions.query.QueryWrapper}
      * @return list entity
      */
-    default List<DomainEntity> list(Long boId, IPage<DomainEntity> page, Wrapper<DomainEntity> queryWrapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default List<GeneralDomainObject> list(Long boId, IPage<GeneralDomainObject> page, Wrapper<GeneralDomainObject> queryWrapper) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.list(page, queryWrapper);
     }
 
@@ -424,7 +423,7 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param page 翻页对象
      * @return page entity
      */
-    default <E extends IPage<DomainEntity>> E page(Long boId, E page) throws BizException {
+    default <E extends IPage<GeneralDomainObject>> E page(Long boId, E page) throws BizException {
         return page(boId, page, Wrappers.emptyWrapper());
     }
 
@@ -435,8 +434,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param queryWrapper 实体对象封装操作类 {@link com.baomidou.mybatisplus.core.conditions.query.QueryWrapper}
      * @return page entity
      */
-    default <E extends IPage<DomainEntity>> E page(Long boId, E page, Wrapper<DomainEntity> queryWrapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default <E extends IPage<GeneralDomainObject>> E page(Long boId, E page, Wrapper<GeneralDomainObject> queryWrapper) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.page(page, queryWrapper);
     }
 
@@ -457,7 +456,7 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
     /**
      * @see #listMaps(Long, IPage, Wrapper)
      */
-    default List<Map<String, Object>> listMaps(Long boId, Wrapper<DomainEntity> queryWrapper) throws BizException {
+    default List<Map<String, Object>> listMaps(Long boId, Wrapper<GeneralDomainObject> queryWrapper) throws BizException {
         return listMaps(boId, null, queryWrapper);
     }
 
@@ -468,8 +467,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param queryWrapper 实体对象封装操作类 {@link com.baomidou.mybatisplus.core.conditions.query.QueryWrapper}
      * @return list map
      */
-    default List<Map<String, Object>> listMaps(Long boId, IPage<? extends Map<String, Object>> page, Wrapper<DomainEntity> queryWrapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default List<Map<String, Object>> listMaps(Long boId, IPage<? extends Map<String, Object>> page, Wrapper<GeneralDomainObject> queryWrapper) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.listMaps(page, queryWrapper);
     }
 
@@ -479,7 +478,7 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @return list obj
      */
     default <E> List<E> listObjs(Long boId) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.listObjs();
     }
 
@@ -491,7 +490,7 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @return list obj
      */
     default <V> List<V> listObjs(Long boId, Function<? super Object, V> mapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.listObjs(mapper);
     }
 
@@ -502,8 +501,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param <E>
      * @return list obj
      */
-    default <E> List<E> listObjs(Long boId, Wrapper<DomainEntity> queryWrapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default <E> List<E> listObjs(Long boId, Wrapper<GeneralDomainObject> queryWrapper) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.listObjs(queryWrapper);
     }
 
@@ -515,8 +514,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param <V>
      * @return list obj
      */
-    default <V> List<V> listObjs(Long boId, Wrapper<DomainEntity> queryWrapper, Function<? super Object, V> mapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default <V> List<V> listObjs(Long boId, Wrapper<GeneralDomainObject> queryWrapper, Function<? super Object, V> mapper) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.listObjs(queryWrapper, mapper);
     }
 
@@ -535,8 +534,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param <E>
      * @return page map
      */
-    default <E extends IPage<Map<String, Object>>> E pageMaps(Long boId, E page, Wrapper<DomainEntity> queryWrapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default <E extends IPage<Map<String, Object>>> E pageMaps(Long boId, E page, Wrapper<GeneralDomainObject> queryWrapper) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.pageMaps(page, queryWrapper);
     }
 
@@ -546,8 +545,8 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @param queryWrapper 查询条件
      * @return tree
      */
-    default List<DomainEntity> tree(Long boId, Wrapper<DomainEntity> queryWrapper) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default List<GeneralDomainObject> tree(Long boId, Wrapper<GeneralDomainObject> queryWrapper) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.tree(queryWrapper);
     }
 
@@ -556,14 +555,13 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      *
      * @param queryWrapper 查询条件
      * @param treeType     领域树类型
-     * @param <Z>
+     * @param <Z>          Tree entity
      * @return tree
      */
-    default <Z extends TreeDomain<DomainEntity, Z>> List<Z> tree(Long boId, Wrapper<DomainEntity> queryWrapper, Class<Z> treeType) throws BizException {
-        IDomainCrudTreeRepositoryService boRepository = getBoRepositoryOrThrow(boId);
+    default <Z extends TreeDomain<GeneralDomainObject, Z>> List<Z> tree(Long boId, Wrapper<GeneralDomainObject> queryWrapper, Class<Z> treeType) throws BizException {
+        IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
         return boRepository.tree(queryWrapper, treeType);
     }
-
 
     /**
      * 基于获取业务对象Repository
@@ -571,119 +569,6 @@ public interface IBoDomainService extends Subscriber<DomainEntity> {
      * @return ITurboCrudTreeRepositoryService
      * @throws BizException 如果为null则抛出
      */
-    IDomainCrudTreeRepositoryService getBoRepositoryOrThrow(Long boId) throws BizException;
+    IDomainService<GeneralDomainObject> getBoRepositoryOrThrow(Long boId) throws BizException;
 
-
-    /**
-     * 领域对象crud repository-service
-     */
-    interface IDomainCrudTreeRepositoryService extends ITurboCrudTreeRepositoryService<DomainEntity> {
-
-        /**
-         * @see #aspectOn(String, ThrowingMethodConsumer)
-         */
-        default <T> void aspectOn(ThrowingMethodConsumer<T> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
-            String domainMethodName = domainMethod.getMethodName();
-            aspectOn(domainMethodName, callback);
-        }
-
-        /**
-         * @see #aspectOn(String, ThrowingMethodConsumer)
-         */
-        default <T> void aspectOn(ThrowingMethodSupplier<T> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
-            String domainMethodName = domainMethod.getMethodName();
-            aspectOn(domainMethodName, callback);
-        }
-
-        /**
-         * @see #aspectOn(String, ThrowingMethodConsumer)
-         */
-        default <T, R> void aspectOn(ThrowingMethodFunction<T, R> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
-            String domainMethodName = domainMethod.getMethodName();
-            aspectOn(domainMethodName, callback);
-        }
-
-        /**
-         * @see #aspectOn(String, ThrowingMethodConsumer)
-         */
-        default <T1, T2> void aspectOn(ThrowingMethodBiConsumer<T1, T2> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
-            String domainMethodName = domainMethod.getMethodName();
-            aspectOn(domainMethodName, callback);
-        }
-
-        /**
-         * @see #aspectOn(String, ThrowingMethodConsumer)
-         */
-        default <T1, T2, R> void aspectOn(ThrowingMethodBiFunction<T1, T2, R> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
-            String domainMethodName = domainMethod.getMethodName();
-            aspectOn(domainMethodName, callback);
-        }
-
-        /**
-         * @see #aspectOn(String, ThrowingMethodConsumer)
-         */
-        default <T1, T2, T3> void aspectOn(ThrowingMethodTerConsumer<T1, T2, T3> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
-            String domainMethodName = domainMethod.getMethodName();
-            aspectOn(domainMethodName, callback);
-        }
-
-        /**
-         * @see #aspectOn(String, ThrowingMethodConsumer)
-         */
-        default <T1, T2, T3, R> void aspectOn(ThrowingMethodTerFunction<T1, T2, T3, R> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
-            String domainMethodName = domainMethod.getMethodName();
-            aspectOn(domainMethodName, callback);
-        }
-
-        /**
-         * @see #aspectOn(String, ThrowingMethodConsumer)
-         */
-        default <T1, T2, T3, T4> void aspectOn(ThrowingMethodQueConsumer<T1, T2, T3, T4> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
-            String domainMethodName = domainMethod.getMethodName();
-            aspectOn(domainMethodName, callback);
-        }
-
-        /**
-         * @see #aspectOn(String, ThrowingMethodConsumer)
-         */
-        default <T1, T2, T3, T4, R> void aspectOn(ThrowingMethodQueFunction<T1, T2, T3, T4, R> domainMethod, ThrowingMethodConsumer<OptionalContext> callback) {
-            String domainMethodName = domainMethod.getMethodName();
-            aspectOn(domainMethodName, callback);
-        }
-
-        /**
-         * <b>领域切面</b>。
-         * <p>在领域对象的领域行为调用前执行。</p>
-         * <p>据含有的特性</p>
-         * <ul>
-         *     <li>用完即毁</li>
-         *     <li>切面行为在队列中等待执行</li>
-         * </ul>
-         *
-         * @param domainMethod 领域行为
-         * @param callback     当给定领域行为发生时的回调
-         */
-        void aspectOn(String domainMethod, ThrowingMethodConsumer<OptionalContext> callback);
-
-        /**
-         * 获取领域切面的队列
-         */
-        Queue<DomainAspect> getDomainAspects();
-    }
-
-    /**
-     * 领域对象切面
-     */
-    interface DomainAspect {
-
-        /**
-         * 获取领域行为
-         */
-        String getDomainMethod();
-
-        /**
-         * 获取领域行为回调
-         */
-        ThrowingMethodConsumer<OptionalContext> getCallback();
-    }
 }

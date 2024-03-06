@@ -7,7 +7,7 @@ import cc.allio.turbo.common.db.mybatis.service.ITurboTreeCrudService;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.i18n.ExceptionCodes;
 import cc.allio.turbo.common.web.params.QueryParam;
-import cc.allio.uno.core.util.ReflectTool;
+import cc.allio.uno.core.util.ReflectTools;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,14 +36,14 @@ public abstract class TurboServiceTreeCrudController<T extends TreeEntity, Z ext
 
     @Override
     public Class<T> getEntityType() {
-        return (Class<T>) ReflectTool.getGenericType(this, TurboServiceTreeCrudController.class, 0);
+        return (Class<T>) ReflectTools.getGenericType(this, TurboServiceTreeCrudController.class, 0);
     }
 
     /**
      * 获取树类型
      */
     public Class<Z> getTreeType() {
-        return (Class<Z>) ReflectTool.getGenericType(this, TurboServiceTreeCrudController.class, 1);
+        return (Class<Z>) ReflectTools.getGenericType(this, TurboServiceTreeCrudController.class, 1);
     }
 
     @Override

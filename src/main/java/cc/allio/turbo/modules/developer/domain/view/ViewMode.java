@@ -15,12 +15,12 @@ public enum ViewMode {
     CARD_PAGE("cardPage", "卡片列表"),
     SCROLLING_LIST("scrollingList", "滚动列表"),
     SCROLLING_CARD("scrollingCard", "滚动卡片"),
-    LEFT_TREE_RIGHT_LIST("left_tree_right_list", "左树右列表"),
-    LEFT_TREE_RIGHT_PAGE("left_tree_right_page", "左树右分页列表"),
-    LEFT_TREE_RIGHT_TREE("left_tree_right_tree", "左树右树"),
-    LEFT_TREE_RIGHT_CARD_PAGE("left_tree_right_card_page", "左树右分页卡片列表"),
-    LEFT_TREE_RIGHT_SCROLLING_CARD("left_tree_right_card_page", "左树右滚动卡片列表"),
-    LEFT_TREE_RIGHT_SCROLLING_LIST("left_tree_right_scrolling_list", "左树右滚动列表");
+    LEFT_TREE_RIGHT_LIST("leftTreeRightList", "左树右列表"),
+    LEFT_TREE_RIGHT_PAGE("leftTreeRightPage", "左树右分页列表"),
+    LEFT_TREE_RIGHT_TREE("leftTreeRightTree", "左树右树"),
+    LEFT_TREE_RIGHT_CARD_PAGE("leftTreeRightCardPage", "左树右分页卡片列表"),
+    LEFT_TREE_RIGHT_SCROLLING_CARD("leftTreeRightScrollingCard", "左树右滚动卡片列表"),
+    LEFT_TREE_RIGHT_SCROLLING_LIST("leftTreeRightScrollingList", "左树右滚动列表");
 
     @JsonValue
     @EnumValue

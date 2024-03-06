@@ -25,16 +25,36 @@ public class TurboAspectProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (CollectionUtils.isNotEmpty(builders)) {
-            boolean matched = builders.stream().anyMatch(a -> a.allow(bean.getClass()));
+            boolean matched = matched(bean);
             if (!matched) {
                 return bean;
             }
-            // 匹配当前bean类型的advisor
-            List<TurboAdvisorBuilder<? extends TurboAdvisor>> matchedAdvisorBuilder = builders.stream().filter(a -> a.allow(bean.getClass())).toList();
-            List<TurboAdvisor> matchedAdvisors = (List<TurboAdvisor>) matchedAdvisorBuilder.stream().map(TurboAdvisorBuilder::build).toList();
+            List<TurboAdvisor> matchedAdvisors = getMatchedAdvisors(bean);
             return Aspects.create(bean, matchedAdvisors);
         }
         return bean;
     }
 
+    /**
+     * 验证bean是否匹配advisor
+     *
+     * @param bean bean
+     * @return true if matched
+     */
+    boolean matched(Object bean) {
+        for (TurboAdvisorBuilder<? extends TurboAdvisor> builder : builders) {
+            if (builder.allow(bean)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    List<TurboAdvisor> getMatchedAdvisors(Object bean) {
+        var matchedAdvisorBuilder =
+                builders.stream()
+                        .filter(a -> a.allow(bean))
+                        .toList();
+        return (List<TurboAdvisor>) matchedAdvisorBuilder.stream().map(TurboAdvisorBuilder::build).toList();
+    }
 }
