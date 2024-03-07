@@ -1,0 +1,81 @@
+# 安全配置
+turbo:
+  secure:
+    # 系统加密密钥
+    secret-key: efogaWfblI3TK5u1
+    # 系统加密算法
+    secure-algorithm: aes
+    # 忽略认证的接口地址
+    skip-list:
+      - ${spring.security.oauth2.authorizationserver.endpoint.authorization-uri}
+      - ${spring.security.oauth2.authorizationserver.endpoint.token-uri}
+      - ${spring.security.oauth2.authorizationserver.endpoint.token-revocation-uri}
+      - ${spring.security.oauth2.authorizationserver.endpoint.oidc.client-registration-uri}
+      - ${spring.security.oauth2.authorizationserver.endpoint.oidc.user-info-uri}
+      - ${spring.security.oauth2.authorizationserver.endpoint.oidc.logout-uri}
+      - /login
+      - /auth/login # 登陆
+      - /doc.html
+      - /webjars/** # knife4j 静态资源
+      - /v3/api-docs/**
+      - /auth/captcha # 验证码
+      - /sys/tenant/** # 租户
+      - /auth/register # 注册
+      - /sys/attachment/download/** # 文件下载
+    jwt:
+      issuer: https://allio.cc
+      subject: token
+      # token过期时间
+      expire-at: d_1
+    captcha:
+      # 验证码宽度
+      width: 120
+      # 验证码高度
+      height: 30
+      # 验证码字符长度
+      length: 4
+      # 验证码过期时间
+      expire-at: M_5
+  file:
+    upload:
+      path: http://localhost:8600
+      # 文件上传最大大小
+      max-size: 10485760
+  persistent:
+    tenant:
+      # 租户字段
+      field: tenant_id
+      # 租户拼接忽略的表
+      ignore-list:
+        - sys_tenant
+        - sys_user_role
+        - sys_role_menu
+        - sys_cloud_storage_config
+        - sys_user_post
+        - biz_tree
+        - dev_datasource
+  ob:
+    log:
+      exporter:
+        # 是否启用日志
+        enabled: false
+        # 日志服务地址
+        endpoint: http://43.143.195.208:5080/api/default/default/_json
+        # 日志头
+        headers:
+          Authorization: "Basic amlhbmd3MTAyN0BnbWFpbC5jb206RmExZFNhU1VaNXByZ3VVbQ=="
+          stream-name: "default"
+        # 日志发送超时时间
+        timeout: 100000
+    metric:
+      exporter:
+        # 是否启用metric
+        enabled: false
+        # 内置metric服务地址
+        port: 9464
+    trace:
+      exporter:
+        # 是否启用trace
+        enabled: false
+        # trace服务地址
+        endpoint: http://43.143.195.208:9411/api/v2/spans

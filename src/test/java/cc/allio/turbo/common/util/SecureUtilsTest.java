@@ -1,10 +1,13 @@
 package cc.allio.turbo.common.util;
 
+import cc.allio.uno.starter.core.UnoCoreAutoConfiguration;
 import cc.allio.uno.test.BaseTestCase;
 import cc.allio.turbo.common.constant.SecureAlgorithm;
 import cc.allio.turbo.common.util.SecureUtil;
+import cc.allio.uno.test.RunTest;
 import org.junit.jupiter.api.Test;
 
+@RunTest(components = UnoCoreAutoConfiguration.class, active = "turbo")
 public class SecureUtilsTest extends BaseTestCase {
 
     @Test
@@ -15,8 +18,13 @@ public class SecureUtilsTest extends BaseTestCase {
         String encrypt = secureCipher.encrypt("admin", randomSecureKey, null);
 
         String decrypt = secureCipher.decrypt(encrypt, randomSecureKey, null);
-
         assertEquals(plainText, decrypt);
+    }
 
+    @Test
+    void testSystemSecurityKey() {
+        String systemSecretKey = SecureUtil.getSystemSecretKey();
+
+        assertEquals("efogaWfblI3TK5u1", systemSecretKey);
     }
 }
