@@ -42,16 +42,16 @@ public class DomainLockRepositoryMethodInterceptor extends LockRepositoryMethodI
         BoSchema schema = schemaLoader.get();
         lockContext.putAttribute(DomainEntity.SCHEMA, schema);
         // 领域切面实现
-        Object theThis = invocation.getThis();
+        Object that = invocation.getThis();
         Method method = invocation.getMethod();
-        if (theThis instanceof IDomainService<? extends DomainObject> domainCrudTreeRepositoryService) {
+        if (that instanceof IDomainService<? extends DomainObject> domainCrudTreeRepositoryService) {
             Queue<DomainAspect> domainAspects = domainCrudTreeRepositoryService.getDomainAspects();
             DomainAspect domainInspect = domainAspects.poll();
             if (domainInspect != null && isMatch(domainInspect.getDomainMethod(), method)) {
                 if (log.isDebugEnabled()) {
                     log.debug("domain object [{}] aspect domain method [{}]", schema.getName(), domainInspect.getDomainMethod());
                 }
-                // 存入参数
+                // save in arguments
                 Object[] arguments = invocation.getArguments();
                 OptionalContext.ImmutableOptionalContext immutableContext = OptionalContext.immutable(lockContext, arguments);
                 ThrowingMethodConsumer<OptionalContext> callback = domainInspect.getCallback();

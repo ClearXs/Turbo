@@ -29,8 +29,7 @@ import java.util.Queue;
  * @since 0.1.1
  */
 public interface IDomainService<T extends DomainObject>
-        extends ITurboCrudTreeRepositoryService<T>, AdvisorPredicate,
-        ApplicationContextGetter, BoSchemaGetter {
+        extends ITurboCrudTreeRepositoryService<T>, AdvisorPredicate, ApplicationContextGetter, BoSchemaGetter {
 
     /**
      * @see #aspectOn(String, ThrowingMethodConsumer)
