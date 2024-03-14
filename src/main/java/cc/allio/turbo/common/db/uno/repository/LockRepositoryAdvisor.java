@@ -10,7 +10,7 @@ import java.util.Objects;
  * 基于{@link LockContext}实现的切面。
  * <p>其作用是：在Repository层，对每个方法进行加锁处理。并把{@link LockContext}放入{@link ThreadLocal}中</p>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/7 14:05
  * @since 0.1.0
  */

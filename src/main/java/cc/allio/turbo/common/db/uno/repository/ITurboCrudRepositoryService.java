@@ -20,7 +20,7 @@ import java.util.function.Function;
 /**
  * uno-data 桥接{@link com.baomidou.mybatisplus.extension.service.IService}的功能
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/3 00:18
  * @since 0.1.0
  */

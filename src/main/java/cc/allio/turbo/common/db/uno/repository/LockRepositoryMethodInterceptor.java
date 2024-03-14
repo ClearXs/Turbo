@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * {@link LockRepositoryAdvisor}的实现
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/7 14:07
  * @since 0.1.0
  */

@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * 声明式领域服务，对{@link DomainCrudTreeRepositoryServiceImpl}的装饰。
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/28 19:51
  * @since 0.1.1
  */

@@ -13,7 +13,7 @@ import java.util.Optional;
 /**
  * 定义Repository Crud操作集合。参考至{@link org.springframework.data.repository.ListCrudRepository}
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/23 23:47
  * @since 0.1.0
  */

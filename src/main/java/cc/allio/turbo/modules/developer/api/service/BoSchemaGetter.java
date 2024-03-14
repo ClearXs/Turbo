@@ -6,7 +6,7 @@ import cc.allio.turbo.modules.developer.domain.BoSchema;
 /**
  * marked {@link BoSchema} getter interface
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/3/6 20:23
  * @since 0.1.1
  */

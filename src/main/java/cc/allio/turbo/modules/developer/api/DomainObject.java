@@ -8,7 +8,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 /**
  * 领域对象定义，可以通过编码方式操作领域对象
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/27 18:24
  * @since 0.1.1
  */

@@ -5,7 +5,7 @@ import cc.allio.turbo.common.db.entity.Entity;
 /**
  * 由{@link ITurboRepository}继承，获取实体类型
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/29 23:26
  * @since 0.1.1
  */

@@ -908,7 +908,7 @@ INSERT INTO "public"."sys_user" ("id", "created_by", "created_time", "updated_by
                                  "version", "tenant_id", "username", "password", "email", "phone", "status", "avatar",
                                  "nickname", "org_id")
 VALUES (1172583529205202944, 1166010721390034944, '2023-11-10 17:08:18.914', 1166010721390034944,
-        '2023-11-10 17:16:57.812', 0, 1, 0, 'jiangwei', 'jiangwei', 'jiangw1027@gmail.com', NULL, 'ENABLE', NULL, NULL,
+        '2023-11-10 17:16:57.812', 0, 1, 0, 'j.x', 'j.x', 'jiangw1027@gmail.com', NULL, 'ENABLE', NULL, NULL,
         1180175387064532992);
 INSERT INTO "public"."sys_user" ("id", "created_by", "created_time", "updated_by", "updated_time", "is_deleted",
                                  "version", "tenant_id", "username", "password", "email", "phone", "status", "avatar",

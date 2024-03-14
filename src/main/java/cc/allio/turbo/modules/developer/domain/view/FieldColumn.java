@@ -6,7 +6,7 @@ import lombok.Data;
 /**
  * 视图数据字段列定义
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/3 19:48
  * @since 0.1.0
  */

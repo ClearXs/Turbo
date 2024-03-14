@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * tree结点标识
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/19 00:02
  * @since 0.1.0
  */

@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationListener;
  * 领域事件订阅者
  *
  * @param <D> 领域类型
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/26 17:12
  * @since 0.1.0
  */

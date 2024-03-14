@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 /**
  * 领域对象切面的实现
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/28 19:48
  * @since 0.1.1
  */

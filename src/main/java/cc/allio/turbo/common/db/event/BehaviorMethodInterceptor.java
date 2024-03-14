@@ -16,7 +16,7 @@ import java.util.Objects;
 /**
  * 领域方法拦截器，对非{@link Subscriber}的外一切方法进行发布领域事件（如果存在）
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/3/5 23:13
  * @since 0.1.1
  */

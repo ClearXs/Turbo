@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 /**
  * 基于系统内置{@link CommandExecutor}的CRUD实现
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/4 22:20
  * @since 0.1.0
  */

@@ -7,7 +7,7 @@ import cc.allio.uno.data.orm.executor.CommandExecutor;
 /**
  * base on abstract class {@link ITurboCrudTreeRepositoryService}
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/29 23:30
  * @since 0.1.1
  */

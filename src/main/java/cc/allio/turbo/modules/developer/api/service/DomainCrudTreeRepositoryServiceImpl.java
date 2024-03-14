@@ -13,7 +13,7 @@ import java.util.Queue;
 /**
  * {@link IDomainService}的默认实现
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/28 19:44
  * @since 0.1.1
  */

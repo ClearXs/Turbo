@@ -6,7 +6,7 @@ import cc.allio.uno.core.function.lambda.ThrowingMethodConsumer;
 /**
  * 领域对象切面
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/28 19:05
  * @since 0.1.1
  */

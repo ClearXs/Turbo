@@ -10,7 +10,7 @@ import cc.allio.uno.data.orm.dsl.helper.TableResolver;
 /**
  * {@link DomainEntity} table 解析器
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/6 20:59
  * @since 0.1.0
  */

@@ -12,7 +12,7 @@ import java.io.Serializable;
 /**
  * dev props
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/18 17:29
  * @since 0.1.0
  */

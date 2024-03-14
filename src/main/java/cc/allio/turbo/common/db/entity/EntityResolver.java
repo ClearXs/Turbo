@@ -8,7 +8,7 @@ import cc.allio.uno.data.orm.dsl.helper.TableResolver;
 /**
  * mybatis-plus 实体解析器
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/6 23:57
  * @since 0.1.0
  */

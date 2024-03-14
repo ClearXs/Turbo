@@ -10,7 +10,7 @@ import cc.allio.uno.data.orm.executor.CommandExecutor;
 /**
  * base on abstract class {@link ITurboCrudRepositoryService}
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/29 23:29
  * @since 0.1.1
  */

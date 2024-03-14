@@ -21,7 +21,7 @@ import java.util.Queue;
  *     <li><b>如果多继承，只会选取扫描到的第一个</b></li>
  * </ul>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/27 17:33
  * @see DeclareDomainCrudTreeRepositoryServiceImpl
  * @see DomainServiceRegistryImpl

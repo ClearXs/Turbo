@@ -5,7 +5,7 @@ import cc.allio.uno.core.util.JsonUtils;
 /**
  * 具有Json能力的domain对象
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/18 17:25
  * @since 0.1.0
  */

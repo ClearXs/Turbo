@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * 基于{@link java.beans.BeanInfo}把map数据转换为{@link MapEntity}
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/3 00:00
  * @since 0.1.0
  */

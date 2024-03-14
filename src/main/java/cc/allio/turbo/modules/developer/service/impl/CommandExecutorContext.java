@@ -28,7 +28,7 @@ import java.util.function.Supplier;
  *     <li>提供用于维护{@link DevDataSource}与{@link CommandExecutor}key的api</li>
  * </ul>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/29 13:02
  * @since 0.1.0
  */

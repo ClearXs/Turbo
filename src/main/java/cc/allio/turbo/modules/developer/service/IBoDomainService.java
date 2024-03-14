@@ -23,7 +23,7 @@ import java.util.function.Function;
  *     <li>基于{@link LockRepositoryMethodInterceptor}创建AOP对象</li>
  * </ul>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/6 15:42
  * @since 0.1.0
  */

@@ -14,7 +14,7 @@ import java.util.List;
  * @param <T> 实体类型
  * @param <D> 领域类型
  * @param <Z> 树结点
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/18 18:41
  * @since 0.1.0
  */

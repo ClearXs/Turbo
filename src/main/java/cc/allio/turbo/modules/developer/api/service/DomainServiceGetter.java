@@ -7,7 +7,7 @@ import cc.allio.turbo.modules.developer.api.GeneralDomainObject;
 /**
  * 实现该接口的类可以快速获取领域对象
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/27 18:25
  * @since 0.1.1
  */

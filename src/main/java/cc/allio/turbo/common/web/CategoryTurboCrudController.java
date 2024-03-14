@@ -6,7 +6,7 @@ import cc.allio.turbo.common.db.entity.IdEntity;
 /**
  * 标识类
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/14 12:37
  * @since 0.1.0
  */

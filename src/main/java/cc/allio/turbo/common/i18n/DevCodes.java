@@ -3,7 +3,7 @@ package cc.allio.turbo.common.i18n;
 /**
  * turbo codes
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/19 17:36
  * @since 0.1.0
  */

@@ -46,7 +46,7 @@ import java.util.function.Supplier;
  * <p>此外，该类的所有公有方法都加上锁进行获取。</p>
  * <p>该实现里面通过订阅{@link BoSchema}的变化，能够动态的变化对应的{@link IDomainService}</p>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/3/3 23:48
  * @since 0.1.1
  */

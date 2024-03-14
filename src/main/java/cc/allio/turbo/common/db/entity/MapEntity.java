@@ -18,7 +18,7 @@ import java.util.HashMap;
  *     <li>作为一种类型用作于范型域</li>
  * </ul>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/2 23:40
  * @since 0.1.0
  */

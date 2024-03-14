@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * {@link CommandExecutor}装饰器，基于{@link cc.allio.uno.data.orm.dsl.type.DBType}获取对应的{@link CommandExecutor}
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/25 00:37
  * @since 0.1.0
  */

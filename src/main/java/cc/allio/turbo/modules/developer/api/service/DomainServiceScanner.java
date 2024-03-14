@@ -35,7 +35,7 @@ import java.util.*;
  * 扫描cc.allio.turbo路径下所有class对象。
  * <p>并且把继承自{@link IDomainService}的接口并且该接口上具有{@link Domain}的注解加入Spring Bean Factory中。</p>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/28 23:48
  * @see Domain
  * @since 0.1.1

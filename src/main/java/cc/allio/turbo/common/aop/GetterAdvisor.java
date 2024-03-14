@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 /**
  * via aop advisor interceptor all getter interface, and supported it's all acquiring types.
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/3/6 20:04
  * @see Getter
  * @since 0.1.1

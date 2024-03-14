@@ -14,7 +14,7 @@ import java.util.Queue;
 /**
  * 考虑{@link IDomainService}是一个依赖于外部服务的对象，故做此报装类，需等有时才进行加载
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/28 23:23
  * @since 0.1.1
  */

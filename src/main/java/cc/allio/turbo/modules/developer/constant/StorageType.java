@@ -9,7 +9,7 @@ import lombok.Getter;
 /**
  * 存储类型
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/25 00:21
  * @since 0.1.0
  */

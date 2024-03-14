@@ -9,7 +9,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 /**
  * 领域行为切面
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/26 17:13
  * @see BehaviorAdvisorBuilder#builder(Class, MethodPredicate)
  * @since 0.1.0

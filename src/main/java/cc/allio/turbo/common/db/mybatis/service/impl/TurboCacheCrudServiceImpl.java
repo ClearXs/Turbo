@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 /**
  * cache 标识接口
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/24 15:44
  * @since 0.1.0
  */

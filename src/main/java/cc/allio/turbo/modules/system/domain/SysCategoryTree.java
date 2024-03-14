@@ -15,7 +15,7 @@ import java.util.Comparator;
 /**
  * 种类树
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/11 11:42
  * @since 0.1.0
  */

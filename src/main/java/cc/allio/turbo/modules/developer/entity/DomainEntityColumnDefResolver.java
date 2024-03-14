@@ -13,7 +13,7 @@ import java.lang.reflect.Field;
 /**
  * {@link DomainEntity}的{@link ColumnDef}的解析
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/7 17:39
  * @since 0.1.0
  */

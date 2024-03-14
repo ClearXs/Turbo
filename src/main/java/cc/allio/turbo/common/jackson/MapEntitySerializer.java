@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * 基于{@link java.beans.BeanInfo}当map数据序列化时放入map中使之借助{@link MapSerializer}转换为json数据
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/2 23:58
  * @since 0.1.0
  */

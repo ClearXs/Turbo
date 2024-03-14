@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  *     <li>定时更新数据源状态</li>
  * </ul>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/26 00:11
  * @since 0.1.0
  */

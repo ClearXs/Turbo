@@ -39,7 +39,7 @@ import java.util.stream.Stream;
  * mybatis的{@link com.baomidou.mybatisplus.core.conditions.Wrapper}适配器，
  * <p>目的是能够通过该对象填充{@link cc.allio.uno.data.orm.dsl.Operator}的数据，以达到适配mybatis-plus ORM API的部分</p>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/5 12:19
  * @see #adapt(Wrapper, Object)
  * @since 0.1.0

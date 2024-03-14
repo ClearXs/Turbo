@@ -26,7 +26,7 @@ import org.springframework.core.annotation.AnnotationUtils;
  *     <li>register operate：注册值</li>
  * </ul>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/27 18:41
  * @see DomainServiceScanner
  * @since 0.1.1

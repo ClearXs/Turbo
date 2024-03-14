@@ -9,7 +9,7 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 /**
  * 定义 Domain Bean Definition
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/3/5 23:03
  * @since 0.1.1
  */

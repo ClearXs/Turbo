@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationContext;
  * marked get {@link ApplicationContext} Getter interface
  * <p>generally through implementation by aop method interceptor</p>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/3/6 20:01
  * @since 0.1.1
  */

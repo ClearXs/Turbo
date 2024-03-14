@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @param <T> 实体类型
  * @param <D> 领域类型，用于与实体类型进行相互转换
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/4 22:22
  * @see cc.allio.turbo.common.domain.Domains
  * @since 0.1.0

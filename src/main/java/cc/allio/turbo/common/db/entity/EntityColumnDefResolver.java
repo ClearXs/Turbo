@@ -20,7 +20,7 @@ import java.util.Collection;
 /**
  * mybatis-plus的{@link com.baomidou.mybatisplus.annotation.TableField}解析器
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/7 00:01
  * @since 0.1.0
  */

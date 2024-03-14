@@ -17,7 +17,7 @@ import java.util.function.UnaryOperator;
 /**
  * Repository marker interface，Anywhere domain object Operate Collection of base Interface in System. Base on <b>uno-data</b>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/23 23:42
  * @since 0.1.0
  */

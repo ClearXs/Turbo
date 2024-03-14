@@ -20,7 +20,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *     <li>可以用于实现{@link IDomainService}的类上</li>
  * </ul>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/27 17:29
  * @see DomainServiceScanner
  * @see DomainServiceRegistry

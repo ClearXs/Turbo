@@ -3,7 +3,7 @@ package cc.allio.turbo.common.cache;
 /**
  * 定义CacheName
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/28 18:42
  * @since 0.1.0
  */

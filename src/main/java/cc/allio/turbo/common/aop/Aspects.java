@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * 基于{@link AspectJProxyFactory}快捷创建Proxy对象
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/7 17:11
  * @since 0.1.0
  */
