@@ -233,10 +233,9 @@ public class TurboRedisCacheImpl implements TenantCache {
         String paramKey = Optional.ofNullable(key).orElse(StringPool.EMPTY);
         String tenant = getTenant();
         if (StringUtils.isBlank(tenant)) {
-            return expressionTemplate.paresTemplate(PREFIX_TEMPLATE, "name", getName()).concat(paramKey);
+            return expressionTemplate.parseTemplate(PREFIX_TEMPLATE, "name", getName()).concat(paramKey);
         } else {
             return expressionTemplate.parseTemplate(PREFIX_TENANT_TEMPLATE, "name", getName(), "tenant", tenant).concat(paramKey);
         }
-
     }
 }
