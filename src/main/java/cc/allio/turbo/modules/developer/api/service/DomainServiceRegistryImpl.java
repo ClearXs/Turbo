@@ -18,6 +18,7 @@ import cc.allio.uno.core.exception.Exceptions;
 import cc.allio.uno.core.function.lambda.ThrowingMethodSupplier;
 import cc.allio.uno.core.type.Types;
 import cc.allio.uno.core.util.StringUtils;
+import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import cc.allio.uno.data.orm.executor.CommandExecutor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -42,7 +43,7 @@ import java.util.function.Supplier;
 
 /**
  * {@link DomainServiceRegistry}的默认实现。
- * <p>该实现大量用到Map缓存进行存放{@link IDomainService}实例，<b>值得注意其实例都是使用{@link #createAop(CommandExecutor, BoSchema, Class)}cglib的代理实例</b></p>
+ * <p>该实现大量用到Map缓存进行存放{@link IDomainService}实例，<b>值得注意其实例都是使用{@link #createAop(AggregateCommandExecutor, BoSchema, Class)}cglib的代理实例</b></p>
  * <p>此外，该类的所有公有方法都加上锁进行获取。</p>
  * <p>该实现里面通过订阅{@link BoSchema}的变化，能够动态的变化对应的{@link IDomainService}</p>
  *
@@ -185,7 +186,7 @@ public final class DomainServiceRegistryImpl implements DomainServiceRegistry, S
                                     throw new BizException(DevCodes.BO_NONE_MATERIALIZED, boSchema.getName());
                                 }
                                 Long dataSourceId = boSchema.getDataSourceId();
-                                CommandExecutor commandExecutor = dataSourceService.getCommandExecutor(dataSourceId);
+                                AggregateCommandExecutor commandExecutor = dataSourceService.getCommandExecutor(dataSourceId);
                                 if (commandExecutor != null) {
                                     internalDomainService = createAop(commandExecutor, boSchema, GeneralDomainObject.class);
                                 }
@@ -436,10 +437,10 @@ public final class DomainServiceRegistryImpl implements DomainServiceRegistry, S
      *
      * @param original original class
      * @return ITurboCrudTreeRepositoryService instance
-     * @see #createAop(CommandExecutor, BoSchema, Class)
+     * @see #createAop(AggregateCommandExecutor, BoSchema, Class)
      */
     <T extends DomainObject> IDomainService<T> copyToAop(IDomainService<?> original, Class<T> domainObjectClass) {
-        CommandExecutor commandExecutor = original.getRepository().getExecutor();
+        AggregateCommandExecutor commandExecutor = original.getRepository().getExecutor();
         BoSchema schema = original.getBoSchema();
         return createAop(commandExecutor, schema, domainObjectClass);
     }
@@ -452,7 +453,7 @@ public final class DomainServiceRegistryImpl implements DomainServiceRegistry, S
      * @return ITurboCrudTreeRepositoryService instance
      * @see #aopify(IDomainService, Class)
      */
-    <T extends DomainObject> IDomainService<T> createAop(CommandExecutor commandExecutor, BoSchema schema, Class<T> domainObjectClass) {
+    <T extends DomainObject> IDomainService<T> createAop(AggregateCommandExecutor commandExecutor, BoSchema schema, Class<T> domainObjectClass) {
         DomainCrudTreeRepositoryServiceImpl<T> repository = new DomainCrudTreeRepositoryServiceImpl<>(commandExecutor, schema, domainObjectClass);
         return aopify(repository, DomainCrudTreeRepositoryServiceImpl.class);
     }

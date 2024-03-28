@@ -8,7 +8,7 @@ import cc.allio.turbo.common.web.R;
 import cc.allio.turbo.common.web.params.EntityTerm;
 import cc.allio.turbo.common.web.params.QueryParam;
 import cc.allio.turbo.modules.developer.api.GeneralDomainObject;
-import cc.allio.turbo.modules.developer.constant.FieldType;
+import cc.allio.turbo.common.db.constant.FieldType;
 import cc.allio.turbo.modules.developer.domain.BoAttrSchema;
 import cc.allio.turbo.modules.developer.domain.BoSchema;
 import cc.allio.turbo.modules.developer.service.IBoDomainService;

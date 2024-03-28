@@ -4,7 +4,7 @@ import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
 import cc.allio.turbo.common.db.uno.repository.impl.SimpleTurboCrudRepositoryServiceImpl;
 import cc.allio.uno.core.exception.Exceptions;
-import cc.allio.uno.data.orm.executor.CommandExecutor;
+import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import cc.allio.uno.data.orm.executor.CommandExecutorFactory;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
@@ -411,7 +411,7 @@ public interface ITurboCrudRepositoryService<T extends Entity> extends ITurboCru
      * @return SimpleTurboCrudRepositoryServiceImpl
      * @see cc.allio.turbo.common.db.uno.repository.impl.SimpleTurboCrudRepositoryServiceImpl
      */
-    static <T extends Entity> ITurboCrudRepositoryService<T> simply(CommandExecutor commandExecutor, Class<T> entityClass) {
+    static <T extends Entity> ITurboCrudRepositoryService<T> simply(AggregateCommandExecutor commandExecutor, Class<T> entityClass) {
         return new SimpleTurboCrudRepositoryServiceImpl<>(commandExecutor, entityClass);
     }
 }

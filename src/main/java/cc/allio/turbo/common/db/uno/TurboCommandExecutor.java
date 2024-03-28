@@ -20,7 +20,7 @@ import java.util.List;
  * @date 2024/1/25 00:37
  * @since 0.1.0
  */
-public class TurboCommandExecutor implements CommandExecutor {
+public class TurboCommandExecutor implements AggregateCommandExecutor {
 
     private final CommandExecutor innerCommandExecutor;
 
@@ -50,7 +50,7 @@ public class TurboCommandExecutor implements CommandExecutor {
     }
 
     @Override
-    public <R> List<R> queryList(QueryOperator queryOperator, CommandType commandType, ListResultSetHandler<R> resultSetHandler) {
+    public <R> List<R> queryList(Operator<?> queryOperator, CommandType commandType, ListResultSetHandler<R> resultSetHandler) {
         return innerCommandExecutor.queryList(queryOperator, commandType, resultSetHandler);
     }
 
@@ -72,5 +72,10 @@ public class TurboCommandExecutor implements CommandExecutor {
     @Override
     public ExecutorOptions getOptions() {
         return innerCommandExecutor.getOptions();
+    }
+
+    @Override
+    public void destroy() {
+        innerCommandExecutor.destroy();
     }
 }

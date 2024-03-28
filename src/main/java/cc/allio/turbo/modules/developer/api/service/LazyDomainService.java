@@ -7,6 +7,7 @@ import cc.allio.uno.core.api.OptionalContext;
 import cc.allio.uno.core.exception.Exceptions;
 import cc.allio.uno.core.function.lambda.ThrowingMethodConsumer;
 import cc.allio.uno.core.function.lambda.ThrowingMethodSupplier;
+import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import cc.allio.uno.data.orm.executor.CommandExecutor;
 
 import java.util.Queue;
@@ -33,7 +34,7 @@ public class LazyDomainService<T extends DomainObject> implements IDomainService
     }
 
     @Override
-    public CommandExecutor getExecutor() {
+    public AggregateCommandExecutor getExecutor() {
         return getRepository().getExecutor();
     }
 

@@ -5,7 +5,7 @@ import cc.allio.turbo.modules.developer.api.DomainObject;
 import cc.allio.turbo.modules.developer.domain.BoSchema;
 import cc.allio.uno.core.api.OptionalContext;
 import cc.allio.uno.core.function.lambda.ThrowingMethodConsumer;
-import cc.allio.uno.data.orm.executor.CommandExecutor;
+import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import com.google.common.collect.Queues;
 
 import java.util.Queue;
@@ -22,7 +22,7 @@ public class DomainCrudTreeRepositoryServiceImpl<T extends DomainObject> extends
     private final Queue<DomainAspect> domainAspects;
     private final BoSchema schema;
 
-    public DomainCrudTreeRepositoryServiceImpl(CommandExecutor commandExecutor, BoSchema schema, Class<T> domainObjectClass) {
+    public DomainCrudTreeRepositoryServiceImpl(AggregateCommandExecutor commandExecutor, BoSchema schema, Class<T> domainObjectClass) {
         super(commandExecutor, domainObjectClass);
         this.domainAspects = Queues.newConcurrentLinkedQueue();
         this.schema = schema;

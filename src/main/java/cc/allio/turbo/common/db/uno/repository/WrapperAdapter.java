@@ -367,7 +367,7 @@ public class WrapperAdapter {
                     if (left != null && predicate != null) {
                         injector.accept(left, logic, predicate, right);
                         injectBetween = SqlKeyword.BETWEEN == predicate || SqlKeyword.NOT_BETWEEN == predicate;
-                        // 进入下一次轮回
+                        // 进入下一次递归
                         left = null;
                         predicate = null;
                         right = null;

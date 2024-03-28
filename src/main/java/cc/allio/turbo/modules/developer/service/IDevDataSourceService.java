@@ -5,6 +5,7 @@ import cc.allio.turbo.modules.developer.domain.TableColumns;
 import cc.allio.turbo.modules.developer.entity.DevDataSource;
 import cc.allio.uno.data.orm.dsl.Table;
 import cc.allio.uno.data.orm.dsl.ddl.AlterTableOperator;
+import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import cc.allio.uno.data.orm.executor.CommandExecutor;
 import cc.allio.uno.data.orm.executor.options.ExecutorOptions;
 
@@ -53,7 +54,7 @@ public interface IDevDataSourceService extends ITurboCrudService<DevDataSource> 
      * @param dataSourceId dataSourceId
      * @return CommandExecutor
      */
-    CommandExecutor getCommandExecutor(Long dataSourceId);
+    AggregateCommandExecutor getCommandExecutor(Long dataSourceId);
 
     /**
      * 根据数据源id获取{@link Table}数据表

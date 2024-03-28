@@ -3,8 +3,8 @@ package cc.allio.turbo.common.db.uno.repository.impl;
 import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepository;
 import cc.allio.uno.core.api.Step;
+import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import cc.allio.uno.data.orm.executor.CommandExecutor;
-import cc.allio.uno.data.orm.executor.CommandExecutorFactory;
 
 import java.util.function.Supplier;
 
@@ -17,34 +17,35 @@ import java.util.function.Supplier;
  */
 public class SimpleTurboCurdRepositoryImpl<T extends Entity> extends TurboCrudRepositoryImpl<T> implements ITurboCrudRepository<T> {
 
-    private final CommandExecutor commandExecutor;
+    private final AggregateCommandExecutor commandExecutor;
     private final Supplier<Class<T>> entityClassGetter;
     private Class<T> entityType;
 
     public SimpleTurboCurdRepositoryImpl() {
-        this(CommandExecutorFactory.getDSLExecutor());
+        this.commandExecutor = null;
+        this.entityClassGetter = null;
     }
 
-    public SimpleTurboCurdRepositoryImpl(CommandExecutor commandExecutor) {
+    public SimpleTurboCurdRepositoryImpl(AggregateCommandExecutor commandExecutor) {
         this.commandExecutor = commandExecutor;
         this.entityType = null;
         this.entityClassGetter = null;
     }
 
-    public SimpleTurboCurdRepositoryImpl(CommandExecutor commandExecutor, Class<T> entityType) {
+    public SimpleTurboCurdRepositoryImpl(AggregateCommandExecutor commandExecutor, Class<T> entityType) {
         this.commandExecutor = commandExecutor;
         this.entityType = entityType;
         this.entityClassGetter = null;
     }
 
-    public SimpleTurboCurdRepositoryImpl(CommandExecutor commandExecutor, Supplier<Class<T>> entityClassGetter) {
+    public SimpleTurboCurdRepositoryImpl(AggregateCommandExecutor commandExecutor, Supplier<Class<T>> entityClassGetter) {
         this.commandExecutor = commandExecutor;
         this.entityType = null;
         this.entityClassGetter = entityClassGetter;
     }
 
     @Override
-    public CommandExecutor getExecutor() {
+    public AggregateCommandExecutor getExecutor() {
         if (commandExecutor == null) {
             return super.getExecutor();
         }

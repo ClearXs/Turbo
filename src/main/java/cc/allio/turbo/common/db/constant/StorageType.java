@@ -1,4 +1,4 @@
-package cc.allio.turbo.modules.developer.constant;
+package cc.allio.turbo.common.db.constant;
 
 import cc.allio.uno.data.orm.dsl.type.DBType;
 import com.baomidou.mybatisplus.annotation.EnumValue;

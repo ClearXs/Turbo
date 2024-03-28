@@ -4,8 +4,8 @@ import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.event.Subscriber;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepository;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepositoryService;
-import cc.allio.uno.core.util.ReflectTools;
-import cc.allio.uno.data.orm.executor.CommandExecutor;
+import cc.allio.uno.core.reflect.ReflectTools;
+import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 
 /**
  * base on abstract class {@link ITurboCrudRepositoryService}
@@ -20,11 +20,11 @@ public abstract class TurboCrudRepositoryServiceImpl<T extends Entity> implement
     private Class<T> entityClass;
     private Subscriber<T> proxySubscriber;
 
-    protected TurboCrudRepositoryServiceImpl(CommandExecutor commandExecutor) {
+    protected TurboCrudRepositoryServiceImpl(AggregateCommandExecutor commandExecutor) {
         this(commandExecutor, null);
     }
 
-    protected TurboCrudRepositoryServiceImpl(CommandExecutor commandExecutor, Class<T> entityClass) {
+    protected TurboCrudRepositoryServiceImpl(AggregateCommandExecutor commandExecutor, Class<T> entityClass) {
         if (entityClass == null) {
             this.repository = new SimpleTurboCurdRepositoryImpl<>(commandExecutor, this::getEntityClass);
         } else {

@@ -93,7 +93,7 @@ public class DataSourceDetector implements DisposableBean, ApplicationListener<A
      */
     void onInitialization(Subscription<DevDataSource> subscription) {
         TransactionContext.execute(() -> {
-            List<CommandExecutor> allDefault = commandExecutorContext.getAllDefault();
+            List<AggregateCommandExecutor> allDefault = commandExecutorContext.getAllDefault();
             // 保存所有默认的
             List<DevDataSource> defaultDataSources =
                     allDefault

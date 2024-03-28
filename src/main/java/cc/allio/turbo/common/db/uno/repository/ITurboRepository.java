@@ -1,14 +1,13 @@
 package cc.allio.turbo.common.db.uno.repository;
 
 import cc.allio.turbo.common.db.entity.Entity;
-import cc.allio.uno.core.util.ReflectTools;
+import cc.allio.uno.core.reflect.ReflectTools;
 import cc.allio.uno.data.orm.dsl.dml.DeleteOperator;
 import cc.allio.uno.data.orm.dsl.dml.InsertOperator;
 import cc.allio.uno.data.orm.dsl.dml.QueryOperator;
 import cc.allio.uno.data.orm.dsl.dml.UpdateOperator;
 import cc.allio.uno.data.orm.dsl.exception.DSLException;
-import cc.allio.uno.data.orm.executor.CommandExecutor;
-import cc.allio.uno.data.orm.executor.CommandExecutorFactory;
+import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import cc.allio.uno.data.orm.executor.IPage;
 
 import java.util.List;
@@ -92,8 +91,8 @@ public interface ITurboRepository<T extends Entity> extends EntityTypeAware<T> {
      *
      * @return CommandExecutor
      */
-    default CommandExecutor getExecutor() {
-        return CommandExecutorFactory.getDSLExecutor();
+    default AggregateCommandExecutor getExecutor() {
+        return DSExtractor.extract(this.getClass());
     }
 
     /**

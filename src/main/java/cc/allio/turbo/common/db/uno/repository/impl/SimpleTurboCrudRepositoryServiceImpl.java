@@ -2,6 +2,7 @@ package cc.allio.turbo.common.db.uno.repository.impl;
 
 import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepositoryService;
+import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import cc.allio.uno.data.orm.executor.CommandExecutor;
 import cc.allio.uno.data.orm.executor.CommandExecutorFactory;
 
@@ -22,11 +23,11 @@ public class SimpleTurboCrudRepositoryServiceImpl<T extends Entity> extends Turb
         this(CommandExecutorFactory.getDSLExecutor(), entityClass);
     }
 
-    public SimpleTurboCrudRepositoryServiceImpl(CommandExecutor commandExecutor) {
+    public SimpleTurboCrudRepositoryServiceImpl(AggregateCommandExecutor commandExecutor) {
         this(commandExecutor, null);
     }
 
-    public SimpleTurboCrudRepositoryServiceImpl(CommandExecutor commandExecutor, Class<T> entityClass) {
+    public SimpleTurboCrudRepositoryServiceImpl(AggregateCommandExecutor commandExecutor, Class<T> entityClass) {
         super(commandExecutor, entityClass);
     }
 }

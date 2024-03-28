@@ -3,7 +3,7 @@ package cc.allio.turbo.common.db.mybatis.service.impl;
 import cc.allio.turbo.common.db.entity.IdEntity;
 import cc.allio.turbo.common.db.event.Subscriber;
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
-import cc.allio.uno.core.util.ReflectTools;
+import cc.allio.uno.core.reflect.ReflectTools;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
