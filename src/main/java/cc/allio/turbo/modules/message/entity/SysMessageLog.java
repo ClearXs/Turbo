@@ -1,7 +1,7 @@
-package cc.allio.turbo.modules.system.entity;
+package cc.allio.turbo.modules.message.entity;
 
 import cc.allio.turbo.common.db.entity.TenantEntity;
-import cc.allio.turbo.modules.system.constant.SendStatus;
+import cc.allio.turbo.modules.message.constant.SendStatus;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;

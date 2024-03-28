@@ -1,4 +1,4 @@
-package cc.allio.turbo.modules.system.constant;
+package cc.allio.turbo.modules.message.constant;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -7,9 +7,11 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum MessageSource {
+public enum NotificationType {
 
-    SYSTEM("SYSTEM", "系统");
+    REMIND("Remind", "提醒"),
+    NOTICE("Notice", "通知"),
+    ALERT("Alert", "告警");
 
     @JsonValue
     @EnumValue

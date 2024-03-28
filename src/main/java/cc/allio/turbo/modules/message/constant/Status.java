@@ -1,4 +1,4 @@
-package cc.allio.turbo.modules.system.constant;
+package cc.allio.turbo.modules.message.constant;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum MessageStatus {
+public enum Status {
 
     UN_READABLE("UnReadable", "未读"),
     READABLE("Readable", "已读");

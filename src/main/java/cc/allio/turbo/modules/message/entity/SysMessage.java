@@ -1,9 +1,9 @@
-package cc.allio.turbo.modules.system.entity;
+package cc.allio.turbo.modules.message.entity;
 
 import cc.allio.turbo.common.db.entity.TenantEntity;
-import cc.allio.turbo.modules.system.constant.MessageSource;
-import cc.allio.turbo.modules.system.constant.MessageStatus;
-import cc.allio.turbo.modules.system.constant.NotificationType;
+import cc.allio.turbo.modules.message.constant.Source;
+import cc.allio.turbo.modules.message.constant.Status;
+import cc.allio.turbo.modules.message.constant.NotificationType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -44,14 +44,14 @@ public class SysMessage extends TenantEntity {
      */
     @TableField("message_source")
     @Schema(description = "消息来源")
-    private MessageSource messageSource;
+    private Source messageSource;
 
     /**
      * 消息状态
      */
     @TableField("message_status")
     @Schema(description = "消息来源")
-    private MessageStatus messageStatus;
+    private Status messageStatus;
 
     /**
      * 消息类型
