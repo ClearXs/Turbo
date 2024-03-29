@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * 行为订阅信息
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/26 19:04
  * @since 0.1.0
  */

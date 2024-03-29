@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * 针对单实体类型，排序SQL更改
  *
- * @author jiangwei
+ * @author j.x
  * @date 2023/12/7 17:06
  * @see Sortable
  * @since 0.1.0

@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * @author jiangwei
+ * @author j.x
  * @date 2023/12/22 10:01
  * @see <a href="https://opentelemetry.io/docs/instrumentation/java/exporters/">exporter in opertelemetry</a>
  * @since 0.1.0

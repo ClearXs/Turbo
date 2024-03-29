@@ -9,7 +9,7 @@ import org.springframework.aop.support.NameMatchMethodPointcut;
  * turbo aspect advisor
  * <p><b>每一个bean都需要有自己的advisor</b></p>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/6 23:16
  * @since 0.1.0
  */

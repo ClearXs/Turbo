@@ -8,7 +8,7 @@ import lombok.Data;
  * {@link cc.allio.turbo.modules.developer.entity.DevPage}类的领域化
  * <p>提供页面视图相关数据</p>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/6 17:04
  * @since 0.1.0
  */

@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.developer.service.impl;
 
 import cc.allio.turbo.common.db.mybatis.service.impl.TurboCrudServiceImpl;
-import cc.allio.turbo.modules.developer.constant.StorageType;
+import cc.allio.turbo.common.db.constant.StorageType;
 import cc.allio.turbo.modules.developer.domain.TableColumns;
 import cc.allio.turbo.modules.developer.entity.DevDataSource;
 import cc.allio.turbo.modules.developer.mapper.DevDataSourceMapper;
@@ -78,7 +78,7 @@ public class DevDataSourceServiceImpl
     @Override
     public boolean createTables(Long dataSourceId, TableColumns... tableColumns) {
         if (tableColumns != null && tableColumns.length > 0) {
-            CommandExecutor commandExecutor = getCommandExecutor(dataSourceId);
+            AggregateCommandExecutor commandExecutor = getCommandExecutor(dataSourceId);
             if (commandExecutor != null) {
                 return Arrays.stream(tableColumns)
                         .allMatch(tableColumn -> commandExecutor.createTable(
@@ -91,7 +91,7 @@ public class DevDataSourceServiceImpl
     @Override
     public boolean dropTables(Long dataSourceId, String... tableNames) {
         if (tableNames != null && tableNames.length > 0) {
-            CommandExecutor commandExecutor = getCommandExecutor(dataSourceId);
+            AggregateCommandExecutor commandExecutor = getCommandExecutor(dataSourceId);
             if (commandExecutor == null) {
                 return false;
             }
@@ -102,7 +102,7 @@ public class DevDataSourceServiceImpl
 
     @Override
     public boolean alertTable(Long dataSourceId, UnaryOperator<AlterTableOperator> func) {
-        CommandExecutor commandExecutor = getCommandExecutor(dataSourceId);
+        AggregateCommandExecutor commandExecutor = getCommandExecutor(dataSourceId);
         if (commandExecutor == null) {
             return false;
         }
@@ -110,7 +110,7 @@ public class DevDataSourceServiceImpl
     }
 
     @Override
-    public CommandExecutor getCommandExecutor(Long dataSourceId) {
+    public AggregateCommandExecutor getCommandExecutor(Long dataSourceId) {
         if (dataSourceId == null) {
             return null;
         }
@@ -120,7 +120,7 @@ public class DevDataSourceServiceImpl
 
     @Override
     public List<TableColumns> showTables(Long dataSourceId, Table... tables) {
-        CommandExecutor commandExecutor = getCommandExecutor(dataSourceId);
+        AggregateCommandExecutor commandExecutor = getCommandExecutor(dataSourceId);
         if (commandExecutor == null) {
             return Collections.emptyList();
         }
@@ -139,7 +139,6 @@ public class DevDataSourceServiceImpl
                     return tableColumns;
                 })
                 .toList();
-
     }
 
     @Override

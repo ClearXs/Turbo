@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  *     <li>定时更新数据源状态</li>
  * </ul>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/26 00:11
  * @since 0.1.0
  */
@@ -93,7 +93,7 @@ public class DataSourceDetector implements DisposableBean, ApplicationListener<A
      */
     void onInitialization(Subscription<DevDataSource> subscription) {
         TransactionContext.execute(() -> {
-            List<CommandExecutor> allDefault = commandExecutorContext.getAllDefault();
+            List<AggregateCommandExecutor> allDefault = commandExecutorContext.getAllDefault();
             // 保存所有默认的
             List<DevDataSource> defaultDataSources =
                     allDefault

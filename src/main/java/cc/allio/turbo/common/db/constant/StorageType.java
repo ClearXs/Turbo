@@ -1,4 +1,4 @@
-package cc.allio.turbo.modules.developer.constant;
+package cc.allio.turbo.common.db.constant;
 
 import cc.allio.uno.data.orm.dsl.type.DBType;
 import com.baomidou.mybatisplus.annotation.EnumValue;
@@ -9,7 +9,7 @@ import lombok.Getter;
 /**
  * 存储类型
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/25 00:21
  * @since 0.1.0
  */

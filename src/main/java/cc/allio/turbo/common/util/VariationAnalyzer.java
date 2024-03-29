@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  *
  * @param <T>   用于分析的元素类型
  * @param <Key> 元素唯一标识类型
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/27 16:40
  * @since 0.1.0
  */

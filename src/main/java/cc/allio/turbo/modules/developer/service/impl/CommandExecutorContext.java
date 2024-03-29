@@ -3,7 +3,7 @@ package cc.allio.turbo.modules.developer.service.impl;
 import cc.allio.turbo.modules.developer.entity.DevDataSource;
 import cc.allio.uno.core.function.VoidConsumer;
 import cc.allio.uno.core.util.StringUtils;
-import cc.allio.uno.data.orm.executor.CommandExecutor;
+import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import cc.allio.uno.data.orm.executor.CommandExecutorRegistry;
 import cc.allio.uno.data.orm.executor.options.ExecutorKey;
 import cc.allio.uno.data.orm.executor.options.ExecutorOptions;
@@ -21,14 +21,14 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * 用于维护{@link DevDataSource}与{@link CommandExecutor}之间的关系。
+ * 用于维护{@link DevDataSource}与{@link AggregateCommandExecutor}之间的关系。
  * <p><b>该类里面的方法将进行加锁处理</b></p>
  * <ul>
  *     <li>提供{@link CommandExecutorRegistry}的所有方法</li>
- *     <li>提供用于维护{@link DevDataSource}与{@link CommandExecutor}key的api</li>
+ *     <li>提供用于维护{@link DevDataSource}与{@link AggregateCommandExecutor}key的api</li>
  * </ul>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/29 13:02
  * @since 0.1.0
  */
@@ -47,27 +47,27 @@ public class CommandExecutorContext implements CommandExecutorRegistry {
     }
 
     @Override
-    public <T extends CommandExecutor> T crate(@NotNull ExecutorOptions executorOptions) {
+    public <T extends AggregateCommandExecutor> T crate(@NotNull ExecutorOptions executorOptions) {
         return registry.crate(executorOptions);
     }
 
     @Override
-    public <T extends CommandExecutor> T createAndRegister(@NotNull ExecutorOptions executorOptions) {
+    public <T extends AggregateCommandExecutor> T createAndRegister(@NotNull ExecutorOptions executorOptions) {
         return registry.createAndRegister(executorOptions);
     }
 
     @Override
-    public <T extends CommandExecutor> T registerCommandExecutor(ExecutorOptions executorOptions, Supplier<T> commandExecutorSupplier, boolean ifPresent) {
+    public <T extends AggregateCommandExecutor> T registerCommandExecutor(ExecutorOptions executorOptions, Supplier<T> commandExecutorSupplier, boolean ifPresent) {
         return registry.registerCommandExecutor(executorOptions, commandExecutorSupplier, ifPresent);
     }
 
     @Override
-    public <T extends CommandExecutor> T getCommandExecutor(ExecutorKey executorKey) {
+    public <T extends AggregateCommandExecutor> T getCommandExecutor(ExecutorKey executorKey) {
         return registry.getCommandExecutor(executorKey);
     }
 
     @Override
-    public <T extends CommandExecutor> T getCommandExecutor(String key) {
+    public <T extends AggregateCommandExecutor> T getCommandExecutor(String key) {
         return registry.getCommandExecutor(key);
     }
 
@@ -92,12 +92,12 @@ public class CommandExecutorContext implements CommandExecutorRegistry {
     }
 
     @Override
-    public List<CommandExecutor> getAllDefault() {
+    public List<AggregateCommandExecutor> getAllDefault() {
         return registry.getAllDefault();
     }
 
     @Override
-    public List<CommandExecutor> getAll() {
+    public List<AggregateCommandExecutor> getAll() {
         return registry.getAll();
     }
 

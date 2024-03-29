@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
 /**
  * domain 相关操作
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/18 21:47
  * @since 0.1.0
  */

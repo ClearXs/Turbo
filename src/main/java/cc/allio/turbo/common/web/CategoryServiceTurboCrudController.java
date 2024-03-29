@@ -9,7 +9,7 @@ import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
  *
  * @param <T> 实体类型
  * @param <S> Service类型
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/19 13:48
  * @since 0.1.0
  */

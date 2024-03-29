@@ -12,7 +12,7 @@ import java.util.Optional;
  * <p><b>解决领域行为异步订阅时web域数据的丢失问题</b></p>
  * 基于{@link ThreadLocal}的带有Web属性{@link DomainEventContext}
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/1 17:10
  * @since 0.1.0
  */

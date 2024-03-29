@@ -6,7 +6,7 @@ import lombok.Getter;
  * 描述i18n的code接口
  * <b>描述信息可以使用%s进行占位处理</b>
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/19 17:13
  * @since 0.1.0
  */

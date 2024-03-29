@@ -25,8 +25,8 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        if (authentication instanceof TurboJwtAuthenticationToken) {
-            Jwt token = ((TurboJwtAuthenticationToken) authentication).getToken();
+        if (authentication instanceof TurboJwtAuthenticationToken turboJwtAuthenticationToken) {
+            Jwt token = turboJwtAuthenticationToken.getToken();
             R<Jwt> ok = R.ok(token);
             response.setStatus(ok.getCode());
             IoUtils.write(JsonUtils.toJson(ok), response.getOutputStream(), StandardCharsets.UTF_8);

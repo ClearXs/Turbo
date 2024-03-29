@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.developer.domain;
 
 import cc.allio.turbo.common.domain.JsonDomain;
-import cc.allio.turbo.modules.developer.constant.FieldType;
+import cc.allio.turbo.common.db.constant.FieldType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -12,7 +12,7 @@ import java.io.Serializable;
 /**
  * dev props
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/18 17:29
  * @since 0.1.0
  */

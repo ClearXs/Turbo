@@ -24,6 +24,14 @@ public interface IDevBoService extends ITurboCacheCrudService<DevBo> {
     Boolean materialize(Long boId) throws BizException;
 
     /**
+     * 根据BoKey获取BoSchema
+     *
+     * @param boKey boKey
+     * @return BoSchema
+     */
+    BoSchema cacheToSchema(String boKey) throws BizException;
+
+    /**
      * 根据BoId获取BoSchema
      *
      * @param boId boId
@@ -40,4 +48,9 @@ public interface IDevBoService extends ITurboCacheCrudService<DevBo> {
      * @return true if success
      */
     Boolean saveBoSchema(BoSchema boSchema);
+
+    @Override
+    default String getCacheName() {
+        return "bo";
+    }
 }

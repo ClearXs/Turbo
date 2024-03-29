@@ -9,7 +9,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 /**
  * 解析mybatis table
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/6 23:58
  * @since 0.1.0
  */

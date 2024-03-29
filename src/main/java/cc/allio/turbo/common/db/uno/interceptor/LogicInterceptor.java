@@ -9,7 +9,7 @@ import cc.allio.uno.data.orm.executor.interceptor.Interceptor;
 /**
  * 逻辑删除拦截器
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/16 23:50
  * @since 1.1.6
  */

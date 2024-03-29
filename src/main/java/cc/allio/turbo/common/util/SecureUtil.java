@@ -54,14 +54,14 @@ public class SecureUtil {
      * 获取当前系统使用的密钥
      */
     public static String getSystemSecretKey() {
-        return Envs.getProperty("secure.secret-key");
+        return Envs.getProperty("turbo.secure.secret-key");
     }
 
     /**
      * 获取当前系统使用的加密算法，如果系统没有内置则使用AES作为默认
      */
     public static SecureCipher getSystemSecureCipher() {
-        String algorithm = Envs.getProperty("secure.secure-algorithm");
+        String algorithm = Envs.getProperty("turbo.secure.secure-algorithm");
         if (StringUtils.isBlank(algorithm)) {
             return aesCipher;
         } else {

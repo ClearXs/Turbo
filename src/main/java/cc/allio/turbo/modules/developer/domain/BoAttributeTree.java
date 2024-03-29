@@ -2,7 +2,7 @@ package cc.allio.turbo.modules.developer.domain;
 
 import cc.allio.turbo.common.domain.TreeDomain;
 import cc.allio.turbo.modules.developer.constant.AttributeType;
-import cc.allio.turbo.modules.developer.constant.FieldType;
+import cc.allio.turbo.common.db.constant.FieldType;
 import cc.allio.turbo.modules.developer.entity.DevBoAttribute;
 import cc.allio.uno.data.orm.dsl.ColumnDef;
 import cc.allio.uno.data.orm.dsl.DSLName;

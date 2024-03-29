@@ -6,6 +6,7 @@ import cc.allio.uno.core.util.ClassUtils;
 import cc.allio.uno.core.util.CollectionUtils;
 import cc.allio.uno.core.util.ObjectUtils;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.aop.Advice;
 
 import java.util.Arrays;
@@ -15,20 +16,21 @@ import java.util.List;
 /**
  * {@link TurboAdvisor}构建器
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/14 10:46
  * @since 0.1.0
  */
+@Slf4j
 public abstract class TurboAdvisorBuilder<T extends TurboAdvisor> implements Self<TurboAdvisorBuilder<T>> {
 
     private final Class<T> targetClass;
     private final List<String> mappedNames;
-    private final MethodPredicate<Class<?>> allowBuilder;
+    private final MethodPredicate<Object> allowBuilder;
     private Integer order;
     private Advice advice;
     private Object[] parameters;
 
-    protected TurboAdvisorBuilder(Class<T> targetClass, MethodPredicate<Class<?>> allowBuilder) {
+    protected TurboAdvisorBuilder(Class<T> targetClass, MethodPredicate<Object> allowBuilder) {
         this.targetClass = targetClass;
         this.mappedNames = Lists.newArrayList();
         this.allowBuilder = allowBuilder;
@@ -41,7 +43,7 @@ public abstract class TurboAdvisorBuilder<T extends TurboAdvisor> implements Sel
      * @param <T>          {@link TurboAdvisor}类型
      * @return TurboAdvisorBuilder
      */
-    public static <T extends TurboAdvisor> TurboAdvisorBuilder<T> builder(Class<T> advisorClass, MethodPredicate<Class<?>> allowBuilder) {
+    public static <T extends TurboAdvisor> TurboAdvisorBuilder<T> builder(Class<T> advisorClass, MethodPredicate<Object> allowBuilder) {
         return new SimpleTurboAdvisorBuilder<>(advisorClass, allowBuilder);
     }
 
@@ -92,11 +94,18 @@ public abstract class TurboAdvisorBuilder<T extends TurboAdvisor> implements Sel
     /**
      * 基于{@link #allowBuilder}测试是否允许构建
      *
-     * @param proxyClass 用于测试的class对象
+     * @param target 用于测试的目标对象
      * @return true if build
      */
-    public boolean allow(Class<?> proxyClass) {
-        return allowBuilder != null && allowBuilder.test(proxyClass);
+    public boolean allow(Object target) {
+        if (target instanceof AdvisorPredicate advisorPredicate) {
+            try {
+                return advisorPredicate.test(this);
+            } catch (Throwable ex) {
+                log.error("test target {} allow build aop proxy has error, then used proxy build test", target.getClass().getName(), ex);
+            }
+        }
+        return allowBuilder != null && allowBuilder.test(target);
     }
 
     /**
@@ -126,7 +135,7 @@ public abstract class TurboAdvisorBuilder<T extends TurboAdvisor> implements Sel
     }
 
     public static class SimpleTurboAdvisorBuilder<T extends TurboAdvisor> extends TurboAdvisorBuilder<T> {
-        public SimpleTurboAdvisorBuilder(Class<T> advisorClass, MethodPredicate<Class<?>> allowBuilder) {
+        public SimpleTurboAdvisorBuilder(Class<T> advisorClass, MethodPredicate<Object> allowBuilder) {
             super(advisorClass, allowBuilder);
         }
     }

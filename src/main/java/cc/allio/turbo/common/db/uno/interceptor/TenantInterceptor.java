@@ -16,7 +16,7 @@ import net.sf.jsqlparser.expression.StringValue;
 /**
  * 租户拦截器。基于MyBatis{@link TenantLineHandler}
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/17 14:04
  * @since 1.1.6
  */

@@ -14,7 +14,7 @@ import static cc.allio.turbo.common.db.entity.EntityResolver.COLUMN_DEF_RESOLVER
 /**
  * mybatis entity解析
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/7 00:00
  * @since 0.1.0
  */

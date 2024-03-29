@@ -15,7 +15,7 @@ import java.util.List;
  * @param <T> 实体类型
  * @param <D> 领域类型
  * @param <S> 实体对应service类型
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/18 18:41
  * @since 0.1.0
  */

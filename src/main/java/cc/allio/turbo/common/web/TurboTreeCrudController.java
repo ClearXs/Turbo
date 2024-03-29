@@ -7,7 +7,7 @@ import cc.allio.turbo.common.domain.TreeDomain;
 /**
  * 标识通用树查询抽象类
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/23 20:50
  * @since 0.1.0
  */

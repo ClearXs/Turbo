@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 /**
  * 领域行为观察者，封装{@link org.reactivestreams.Subscription}
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/26 18:57
  * @since 1.1.6
  */

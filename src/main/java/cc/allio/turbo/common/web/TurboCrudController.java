@@ -5,7 +5,7 @@ import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.mybatis.helper.Conditions;
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
 import cc.allio.turbo.common.web.params.QueryParam;
-import cc.allio.uno.core.util.ReflectTool;
+import cc.allio.uno.core.reflect.ReflectTools;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -184,14 +184,14 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
      * 获取实体类型
      */
     public Class<T> getEntityType() {
-        return (Class<T>) ReflectTool.getGenericType(this, TurboCrudController.class);
+        return (Class<T>) ReflectTools.getGenericType(this, TurboCrudController.class);
     }
 
     /**
      * 获取领域类型
      */
     public Class<D> getDomainType() {
-        return (Class<D>) ReflectTool.getGenericType(this, TurboCrudController.class, 1);
+        return (Class<D>) ReflectTools.getGenericType(this, TurboCrudController.class, 1);
     }
 
     /**

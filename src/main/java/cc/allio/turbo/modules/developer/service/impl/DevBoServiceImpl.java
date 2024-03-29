@@ -106,6 +106,15 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
         return update(Wrappers.<DevBo>lambdaUpdate().set(DevBo::isMaterialize, true).eq(DevBo::getId, boId));
     }
 
+    @Override
+    public BoSchema cacheToSchema(String boKey) throws BizException {
+        DevBo bo = getOne(Wrappers.<DevBo>lambdaQuery().eq(DevBo::getCode, boKey));
+        if (bo == null) {
+            return null;
+        }
+        return cacheToSchema(bo.getId());
+    }
+
     /**
      * 基于对{@link TableColumns}进行物化处理
      * <p>该方法基于{@link VariationAnalyzer}进行差异分析，根据结果</p>
@@ -218,11 +227,6 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
         }
         getCache().put(id, boSchema);
         return true;
-    }
-
-    @Override
-    public String getCacheName() {
-        return "bo";
     }
 
     @Override

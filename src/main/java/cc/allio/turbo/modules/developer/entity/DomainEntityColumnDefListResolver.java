@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * {@link DomainEntity}的{@link ColumnDef}的解析器
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/2/6 21:25
  * @since 0.1.0
  */

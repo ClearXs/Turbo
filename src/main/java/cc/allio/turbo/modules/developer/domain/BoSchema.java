@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * 业务对象Schema，一个领域对象。用于描述业务对象
  *
- * @author jiangwei
+ * @author j.x
  * @date 2024/1/18 16:36
  * @since 0.1.0
  */

@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class Conditions {
 
-
     static Map<Class<?>, TermCondition> specialConds = Maps.newHashMap();
     static TermCondition generalCond = new TermConditionImpl();
     // 以实体为key，value存储{key=field name, value=field}

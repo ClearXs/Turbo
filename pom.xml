@@ -5,13 +5,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.2</version>
+        <version>3.2.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <groupId>cc.allio</groupId>
     <artifactId>Turbo</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <name>Turbo</name>
     <description>Turbo快速开发平台</description>
     <url>https://github.com/ClearXs/Turbo.git</url>
@@ -25,7 +25,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <uno.version>1.1.6</uno.version>
+        <uno.version>1.1.8</uno.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <maven-plugin.version>3.11.0</maven-plugin.version>
         <knife4j.version>4.3.0</knife4j.version>
@@ -91,10 +91,6 @@
             <groupId>io.springboot.plugin</groupId>
             <artifactId>captcha-core</artifactId>
             <version>${capatcha.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
