@@ -4,12 +4,13 @@ import cc.allio.turbo.modules.developer.api.GeneralDomainObject;
 import cc.allio.turbo.modules.developer.domain.BoSchema;
 import cc.allio.turbo.modules.developer.service.IDevBoService;
 import cc.allio.turbo.modules.developer.service.IDevDataSourceService;
+import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import cc.allio.uno.data.orm.executor.CommandExecutor;
 import cc.allio.uno.test.BaseTestCase;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class DomainServiceRegistryTest extends BaseTestCase {
+class DomainServiceRegistryTest extends BaseTestCase {
 
     DomainServiceRegistry domainServiceRegistry;
 
@@ -36,7 +37,7 @@ public class DomainServiceRegistryTest extends BaseTestCase {
         Mockito.when(devBoService.cacheToSchema("test")).thenReturn(mockSchema2);
         Mockito.when(devBoService.cacheToSchema("student")).thenReturn(mockSchema3);
 
-        CommandExecutor commandExecutor = Mockito.mock(CommandExecutor.class);
+        AggregateCommandExecutor commandExecutor = Mockito.mock(AggregateCommandExecutor.class);
         IDevDataSourceService dataSourceService = Mockito.mock(IDevDataSourceService.class);
         Mockito.when(dataSourceService.getCommandExecutor(1L)).thenReturn(commandExecutor);
 

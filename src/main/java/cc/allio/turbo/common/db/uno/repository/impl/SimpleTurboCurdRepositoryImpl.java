@@ -18,47 +18,40 @@ import java.util.function.Supplier;
 public class SimpleTurboCurdRepositoryImpl<T extends Entity> extends TurboCrudRepositoryImpl<T> implements ITurboCrudRepository<T> {
 
     private final AggregateCommandExecutor commandExecutor;
-    private final Supplier<Class<T>> entityClassGetter;
+    private final Supplier<Class<T>> entityClassSupplier;
+    private final Supplier<AggregateCommandExecutor> commandExecutorSupplier;
     private Class<T> entityType;
-
-    public SimpleTurboCurdRepositoryImpl() {
-        this.commandExecutor = null;
-        this.entityClassGetter = null;
-    }
-
-    public SimpleTurboCurdRepositoryImpl(AggregateCommandExecutor commandExecutor) {
-        this.commandExecutor = commandExecutor;
-        this.entityType = null;
-        this.entityClassGetter = null;
-    }
 
     public SimpleTurboCurdRepositoryImpl(AggregateCommandExecutor commandExecutor, Class<T> entityType) {
         this.commandExecutor = commandExecutor;
         this.entityType = entityType;
-        this.entityClassGetter = null;
+        this.entityClassSupplier = null;
+        this.commandExecutorSupplier = null;
     }
 
-    public SimpleTurboCurdRepositoryImpl(AggregateCommandExecutor commandExecutor, Supplier<Class<T>> entityClassGetter) {
-        this.commandExecutor = commandExecutor;
+    public SimpleTurboCurdRepositoryImpl(Supplier<AggregateCommandExecutor> commandExecutorSupplier, Supplier<Class<T>> entityClassSupplier) {
         this.entityType = null;
-        this.entityClassGetter = entityClassGetter;
+        this.commandExecutor = null;
+        this.commandExecutorSupplier = commandExecutorSupplier;
+        this.entityClassSupplier = entityClassSupplier;
     }
 
     @Override
     public AggregateCommandExecutor getExecutor() {
-        if (commandExecutor == null) {
-            return super.getExecutor();
-        }
-        return commandExecutor;
+        return Step.<AggregateCommandExecutor>start()
+                .then(() -> commandExecutor)
+                .then(commandExecutorSupplier)
+                .then(super::getExecutor)
+                .end();
     }
 
     @Override
     public Class<T> getEntityType() {
         return Step.<Class<T>>start()
                 .then(() -> entityType)
-                .then(entityClassGetter)
+                .then(entityClassSupplier)
                 .then(super::getEntityType)
-                .stop();
+                .end();
     }
 
     /**

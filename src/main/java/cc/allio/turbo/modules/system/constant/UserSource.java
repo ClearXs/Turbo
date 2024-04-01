@@ -1,4 +1,4 @@
-package cc.allio.turbo.modules.message.constant;
+package cc.allio.turbo.modules.system.constant;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -7,10 +7,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Status {
+public enum UserSource {
 
-    UNREAD("UNREAD", "未读"),
-    READ("READ", "已读");
+    SELF_BUILT("SELF-BUILT", "自建"),
+    THIRD("THIRD", "第三方");
 
     @JsonValue
     @EnumValue

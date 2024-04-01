@@ -108,7 +108,7 @@ public class MessageCollector implements SourceCollector<ReceiveMetadata> {
                                 sysMessage.setTemplateKey(messageTemplate.getKey());
                                 sysMessage.setMessageType(messageConfiguration.getMessageType());
                                 sysMessage.setAction(messageConfiguration.getNoticeType());
-                                sysMessage.setMessageStatus(Status.UN_READABLE);
+                                sysMessage.setMessageStatus(Status.UNREAD);
                                 // 发送人、接收人
                                 sysMessage.setSendUser(AuthUtil.getCurrentUserId());
                                 sysMessage.setSendTime(DateUtil.parse(String.valueOf(variables

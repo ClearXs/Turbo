@@ -17,6 +17,7 @@ public final class ExceptionCodes {
     private static final String USER_GROUP = "user";
     private static final String MENU_GROUP = "menu";
     private static final String ATTACHMENT_GROUP = "attachment";
+    private static final String OAUTH2_GROUP = "oauth2";
 
     public static final I18nCode OPERATE_ERROR = I18nCode.of("error.system.operate.error", "系统通用错误 '操作失败'", GROUP, SYSTEM_GROUP);
     public static final I18nCode AUTHENTICATION_FAILED = I18nCode.of("error.auth.authentication.failed", "认证失败", GROUP, AUTH_GROUP);
@@ -34,5 +35,6 @@ public final class ExceptionCodes {
     public static final I18nCode ATTACHMENT_UPLOAD_EXCEED_SIZE = I18nCode.of("error.attachment.upload.exceed.size", "", GROUP, ATTACHMENT_GROUP);
     public static final I18nCode ATTACHMENT_UPLOAD_EXECUTOR_NOTFOUND = I18nCode.of("error.attachment.upload.executor.notfound", "", GROUP, ATTACHMENT_GROUP);
 
-
+    public static final I18nCode OAUTH2_LOGIN_FAILED = I18nCode.of("error.oauth2.login.failed", "", GROUP, OAUTH2_GROUP);
+    public static final I18nCode MISTAKE_OAUTH2_TOKEN = I18nCode.of("error.oauth2.login.token", "", GROUP, OAUTH2_GROUP);
 }

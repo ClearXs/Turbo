@@ -155,8 +155,7 @@ public class DevBoAttributeServiceImpl extends TurboTreeCrudServiceImpl<DevBoAtt
                         .setAttrType(AttributeType.FIELD)
                         .setProps(
                                 new DevAttributeProps()
-                                        .setType(FieldType.VARCHAR)
-                                        .setPrecision(32)
+                                        .setType(FieldType.INTEGER)
                                         .setDefaulted(true)
                                         .toJson()
                         );

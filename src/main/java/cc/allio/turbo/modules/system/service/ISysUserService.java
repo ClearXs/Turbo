@@ -19,6 +19,20 @@ public interface ISysUserService extends ITurboCrudService<SysUser> {
     SysUserVO findByUsername(String username) throws BizException;
 
     /**
+     * obtains user details
+     * <ul>
+     *     <li>post</li>
+     *     <li>role</li>
+     *     <li>organization</li>
+     *     <li>...</li>
+     * </ul>
+     *
+     * @param sysUser the sys user
+     * @return a {@link SysUserVO} instance
+     */
+    SysUserVO findUserDetails(SysUser sysUser);
+
+    /**
      * 用户绑定角色
      *
      * @param bindingRole bindingRole
@@ -33,7 +47,7 @@ public interface ISysUserService extends ITurboCrudService<SysUser> {
      * @param newPassword 新密码
      * @return
      */
-    Boolean changePassword(Long userId,  String newPassword) throws BizException;
+    Boolean changePassword(Long userId, String newPassword) throws BizException;
 
     /**
      * 绑定组织

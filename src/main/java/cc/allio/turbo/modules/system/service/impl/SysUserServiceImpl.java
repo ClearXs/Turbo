@@ -125,7 +125,8 @@ public class SysUserServiceImpl extends TurboCrudServiceImpl<SysUserMapper, SysU
      * @param sysUser sysUser
      * @return SysUserVO
      */
-    private SysUserVO findUserDetails(SysUser sysUser) {
+    @Override
+    public SysUserVO findUserDetails(SysUser sysUser) {
         SysUserVO userVO = BeanUtils.copy(sysUser, SysUserVO.class);
         // 1.查找组织信息
         if (sysUser.getOrgId() != null) {

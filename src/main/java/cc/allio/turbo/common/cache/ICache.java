@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2024/3/29 00:03
  * @since 0.1.1
  */
-public interface ICache extends TurboCache, CacheName {
+public interface ICache extends Cache, CacheName {
 
     /**
      * 根据指定的key获取缓存中的值
@@ -29,6 +29,11 @@ public interface ICache extends TurboCache, CacheName {
      */
     default <T> T get(Object key, Class<T> classType, Callable<T> valueLoader) {
         return Optional.ofNullable(obtainCache()).map(cache -> cache.get(key, classType, valueLoader)).orElse(null);
+    }
+
+    @Override
+    default <T> T get(Object key, Callable<T> valueLoader) {
+        return Optional.ofNullable(obtainCache()).map(cache -> cache.get(key, valueLoader)).orElse(null);
     }
 
     /**
@@ -49,7 +54,7 @@ public interface ICache extends TurboCache, CacheName {
      * @param time     time
      * @param timeUnit timeUnit
      */
-    default void setEx(String key, ValueWrapper value, long time, TimeUnit timeUnit) {
+    default void setEx(String key, Cache.ValueWrapper value, long time, TimeUnit timeUnit) {
         Optional.ofNullable(obtainCache()).ifPresent(cache -> cache.setEx(key, value, time, timeUnit));
     }
 
@@ -95,7 +100,7 @@ public interface ICache extends TurboCache, CacheName {
     }
 
     @Override
-    default ValueWrapper get(Object key) {
+    default Cache.ValueWrapper get(Object key) {
         return Optional.ofNullable(obtainCache()).map(cache -> cache.get(key)).orElse(null);
     }
 

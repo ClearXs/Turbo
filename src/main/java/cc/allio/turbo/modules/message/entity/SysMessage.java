@@ -50,7 +50,7 @@ public class SysMessage extends TenantEntity {
      * 消息状态
      */
     @TableField("message_status")
-    @Schema(description = "消息来源")
+    @Schema(description = "消息状态")
     private Status messageStatus;
 
     /**

@@ -16,11 +16,11 @@ import cc.allio.uno.data.orm.executor.CommandExecutorFactory;
 public class SimpleTurboCrudRepositoryServiceImpl<T extends Entity> extends TurboCrudRepositoryServiceImpl<T> {
 
     public SimpleTurboCrudRepositoryServiceImpl() {
-        this(CommandExecutorFactory.getDSLExecutor(), null);
+        this(null, null);
     }
 
     public SimpleTurboCrudRepositoryServiceImpl(Class<T> entityClass) {
-        this(CommandExecutorFactory.getDSLExecutor(), entityClass);
+        this(null, entityClass);
     }
 
     public SimpleTurboCrudRepositoryServiceImpl(AggregateCommandExecutor commandExecutor) {

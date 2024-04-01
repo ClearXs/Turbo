@@ -1,12 +1,12 @@
 package cc.allio.turbo.common.db.uno;
 
-import cc.allio.turbo.common.db.uno.repository.WrapperAdapter;
+import cc.allio.turbo.common.db.uno.repository.mybatis.WrapperAdapter;
+import cc.allio.turbo.common.db.uno.repository.mybatis.WrapperAdapterConfiguration;
 import cc.allio.uno.data.orm.dsl.OperatorKey;
 import cc.allio.uno.data.orm.dsl.SPIOperatorHelper;
 import cc.allio.uno.data.orm.dsl.dml.QueryOperator;
 import cc.allio.uno.data.orm.dsl.dml.UpdateOperator;
 import cc.allio.uno.test.BaseTestCase;
-import cc.allio.uno.test.Inject;
 import cc.allio.uno.test.RunTest;
 import cc.allio.uno.test.env.annotation.MybatisPlusEnv;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -14,32 +14,13 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.Data;
-import org.apache.ibatis.builder.MapperBuilderAssistant;
-import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-@RunTest(active = "repository")
+@RunTest(active = "repository", components = WrapperAdapterConfiguration.class)
 @MybatisPlusEnv
-public class WrapperAdapterTest extends BaseTestCase {
-
-    @Inject
-    private SqlSessionFactory sqlSessionFactory;
-
-    @BeforeEach
-    public void init() {
-        Configuration configuration = sqlSessionFactory.getConfiguration();
-
-        MapperBuilderAssistant mock = Mockito.mock(MapperBuilderAssistant.class);
-
-        Mockito.when(mock.getConfiguration()).thenReturn(configuration);
-        Mockito.when(mock.getCurrentNamespace()).thenReturn(WrapperAdapterTest.User.class.getName());
-        TableInfoHelper.initTableInfo(mock, WrapperAdapterTest.User.class);
-    }
+class WrapperAdapterTest extends BaseTestCase {
 
     @Test
     void testWhereEQ() {
@@ -352,6 +333,18 @@ public class WrapperAdapterTest extends BaseTestCase {
                 "SET a1 = 'a1', a2 = 'a2'\n" +
                 "WHERE a1 = 'as'\n" +
                 "\tAND a2 >= '123'", dsl);
+    }
+
+    @Test
+    void testLambdaWrapper() {
+        LambdaQueryWrapper<User> wrapper = Wrappers.lambdaQuery(User.class).eq(User::getName, "2");
+        QueryOperator queryOperator = SPIOperatorHelper.lazyGet(QueryOperator.class, OperatorKey.SQL);
+        WrapperAdapter.adapt(wrapper, queryOperator);
+
+        String dsl = queryOperator.getDSL();
+        assertEquals("SELECT *\n" +
+                "FROM PUBLIC.User\n" +
+                "WHERE name = '2'", dsl);
     }
 
     @Data

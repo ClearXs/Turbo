@@ -79,6 +79,5 @@ public class SysMenuTree extends TreeDomain<SysMenu, SysMenuTree> {
      */
     @Schema(description = "attrs")
     private String[] attrs;
-
 }
 

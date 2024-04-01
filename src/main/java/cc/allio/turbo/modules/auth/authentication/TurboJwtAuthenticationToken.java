@@ -23,4 +23,17 @@ public class TurboJwtAuthenticationToken extends AbstractOAuth2TokenAuthenticati
     public Map<String, Object> getTokenAttributes() {
         return getToken().getClaims();
     }
+
+    /**
+     * get id
+     *
+     * @return id
+     */
+    public Long getUserId() {
+        Object id = getTokenAttributes().get("userId");
+        if (id != null) {
+            return (Long) id;
+        }
+        return null;
+    }
 }
