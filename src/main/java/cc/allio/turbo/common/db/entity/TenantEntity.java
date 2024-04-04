@@ -19,5 +19,5 @@ public abstract class TenantEntity extends BaseEntity {
 
     @TableField("tenant_id")
     @Schema(description = "租户")
-    private long tenantId;
+    private Long tenantId;
 }

@@ -2,10 +2,14 @@ package cc.allio.turbo.common.db.uno.repository.impl;
 
 import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.event.Subscriber;
+import cc.allio.turbo.common.db.uno.repository.DSExtractor;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepository;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepositoryService;
 import cc.allio.uno.core.reflect.ReflectTools;
 import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
+
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * base on abstract class {@link ITurboCrudRepositoryService}
@@ -25,11 +29,15 @@ public abstract class TurboCrudRepositoryServiceImpl<T extends Entity> implement
     }
 
     protected TurboCrudRepositoryServiceImpl(AggregateCommandExecutor commandExecutor, Class<T> entityClass) {
-        if (entityClass == null) {
-            this.repository = new SimpleTurboCurdRepositoryImpl<>(commandExecutor, this::getEntityClass);
-        } else {
-            this.repository = new SimpleTurboCurdRepositoryImpl<>(commandExecutor, entityClass);
-        }
+        Supplier<AggregateCommandExecutor> commandExecutorSupplier =
+                Optional.ofNullable(commandExecutor)
+                        .<Supplier<AggregateCommandExecutor>>map(c -> () -> c)
+                        .orElse(() -> DSExtractor.extract(this.getClass()));
+        Supplier<Class<T>> entityClassSupplier =
+                Optional.ofNullable(entityClass)
+                        .<Supplier<Class<T>>>map(e -> () -> e)
+                        .orElse(this::getEntityClass);
+        this.repository = new SimpleTurboCurdRepositoryImpl<>(commandExecutorSupplier, entityClassSupplier);
         this.entityClass = entityClass;
     }
 

@@ -6,7 +6,7 @@ import lombok.Data;
  * 发送与模板配置
  */
 @Data
-public class SendTemplate {
+public class SendModel {
 
     /**
      * 发送方式
@@ -18,11 +18,6 @@ public class SendTemplate {
      * 发送标识 用于SMS、EMAIL等
      */
     private String sendKey;
-
-    /**
-     * 消息模板 KEY集合
-     */
-    private String[] templates;
 
     /**
      * 消息推送的网络集合

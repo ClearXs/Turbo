@@ -73,11 +73,9 @@ public final class AuthUtil {
     public static TurboUser getCurrentUser() {
         try {
             Jwt jwt = JwtUtil.decode(WebUtil.getToken());
-            return Optional.ofNullable(jwt)
-                    .map(TurboUser::new)
-                    .orElse(null);
+            return Optional.ofNullable(jwt).map(TurboUser::new).orElse(null);
         } catch (BadJwtException ex) {
-            log.debug("decode jwt token error", ex);
+            log.error("decode jwt token error", ex);
         }
         return null;
     }

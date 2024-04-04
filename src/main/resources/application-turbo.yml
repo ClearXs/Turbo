@@ -15,6 +15,7 @@ turbo:
       - ${spring.security.oauth2.authorizationserver.endpoint.oidc.logout-uri}
       - /login
       - /auth/login # 登陆
+      - /oauth2/**  # oauth2 client 相关接口
       - /doc.html
       - /webjars/** # knife4j 静态资源
       - /v3/api-docs/**

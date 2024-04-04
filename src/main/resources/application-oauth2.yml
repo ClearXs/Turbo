@@ -1,0 +1,20 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: bd1d756a53ca039c1675
+            client-secret: f9e53705d74c3a135de407e3ef41aaf1a93cd7b0
+      authorizationserver:
+        endpoint:
+          # 授权码
+          authorization-uri: /oauth2/authorize
+          # token
+          token-uri: /oauth2/token
+          # revoke
+          token-revocation-uri: /oauth2/revoke
+          oidc:
+            client-registration-uri: /connect/register
+            logout-uri: /connect/logout
+            user-info-uri: /userinfo

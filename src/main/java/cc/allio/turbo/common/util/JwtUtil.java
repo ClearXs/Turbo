@@ -40,7 +40,7 @@ public final class JwtUtil {
      * @param user 实例
      * @return
      */
-    public static synchronized TurboJwtAuthenticationToken encode(TurboUser user) {
+    public static TurboJwtAuthenticationToken encode(TurboUser user) {
         JwtUtil instance = getInstance();
         Long expireTime = instance.secureProperties.getJwt().getExpireAt().getTime().get();
         Instant expiresAt = new Date(expireTime).toInstant();

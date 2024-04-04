@@ -1,6 +1,7 @@
 package cc.allio.turbo.modules.system.entity;
 
 import cc.allio.turbo.common.db.entity.TenantEntity;
+import cc.allio.turbo.modules.system.constant.UserSource;
 import cc.allio.turbo.modules.system.constant.UserStatus;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
@@ -97,4 +98,11 @@ public class SysUser extends TenantEntity {
     @ColumnWidth(25)
     @ExcelProperty(value = "所属组织", index = 7)
     private Long orgId;
+
+    /**
+     * 用户来源
+     */
+    @TableField("source")
+    @Schema(description = "用户来源")
+    private UserSource source;
 }

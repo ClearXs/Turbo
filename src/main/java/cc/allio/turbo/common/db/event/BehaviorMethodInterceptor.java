@@ -128,12 +128,12 @@ public class BehaviorMethodInterceptor implements MethodInterceptor {
                 }
             }
             if (result != null) {
-                // 放入结果
+                // result
                 eventContext.putAttribute(DomainEventContext.BEHAVIOR_RESULT_KEY, result);
             }
-            // 存放所有参数
+            // put all arguments
             eventContext.putAll(methodParameterMap);
-            // 发布领域行为数据
+            // publish domain event context in event bus
             eventBus.publish(path, eventContext);
         }
     }

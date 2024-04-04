@@ -8,11 +8,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Protocol {
 
-	WEBSOCKET("WEBSOCKET", "WEBSOCKET"),
-	MQTT("MQTT", "MQTT"),
-	HTTP("HTTP", "HTTP");
+    WEBSOCKET("WEBSOCKET", "WEBSOCKET"),
+    MQTT("MQTT", "MQTT");
 
-	@JsonValue
-	private final String value;
-	private final String label;
+    @JsonValue
+    private final String value;
+    private final String label;
 }

@@ -37,6 +37,7 @@
         <okhttp>4.12.0</okhttp>
         <easyeexcel.version>3.3.2</easyeexcel.version>
         <opentelemetry.version>1.33.0</opentelemetry.version>
+        <justauth.version>1.16.6</justauth.version>
     </properties>
 
     <dependencyManagement>
@@ -148,6 +149,10 @@
         <dependency>
             <groupId>cc.allio</groupId>
             <artifactId>uno-data-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cc.allio</groupId>
+            <artifactId>uno-data-mongodb</artifactId>
         </dependency>
         <dependency>
             <groupId>ognl</groupId>
@@ -267,6 +272,11 @@
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-exporter-prometheus</artifactId>
             <version>1.32.0-alpha</version>
+        </dependency>
+        <dependency>
+            <groupId>me.zhyd.oauth</groupId>
+            <artifactId>JustAuth</artifactId>
+            <version>${justauth.version}</version>
         </dependency>
         <!-- test -->
         <dependency>

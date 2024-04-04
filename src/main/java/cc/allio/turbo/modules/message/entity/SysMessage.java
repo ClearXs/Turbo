@@ -50,7 +50,7 @@ public class SysMessage extends TenantEntity {
      * 消息状态
      */
     @TableField("message_status")
-    @Schema(description = "消息来源")
+    @Schema(description = "消息状态")
     private Status messageStatus;
 
     /**
@@ -105,7 +105,7 @@ public class SysMessage extends TenantEntity {
     /**
      * 消息模板Key
      */
-    @TableField("config_key")
+    @TableField("template_key")
     @Schema(description = "消息配置Key")
     private String templateKey;
 

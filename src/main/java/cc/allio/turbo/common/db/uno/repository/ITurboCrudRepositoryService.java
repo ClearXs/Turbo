@@ -3,6 +3,7 @@ package cc.allio.turbo.common.db.uno.repository;
 import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
 import cc.allio.turbo.common.db.uno.repository.impl.SimpleTurboCrudRepositoryServiceImpl;
+import cc.allio.turbo.common.db.uno.repository.mybatis.WrapperAdapter;
 import cc.allio.uno.core.exception.Exceptions;
 import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import cc.allio.uno.data.orm.executor.CommandExecutorFactory;

@@ -1,6 +1,7 @@
 package cc.allio.turbo.common.db.uno.repository;
 
 import cc.allio.turbo.common.db.constant.StorageType;
+import cc.allio.uno.core.exception.Exceptions;
 import cc.allio.uno.data.orm.dsl.type.DBType;
 import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import cc.allio.uno.data.orm.executor.CommandExecutorFactory;
@@ -32,7 +33,10 @@ public final class DSExtractor {
         if (dbType == null) {
             return CommandExecutorFactory.getDSLExecutor();
         }
-        ExecutorKey executorKey = ExecutorKey.returnKey(dbType);
-        return CommandExecutorFactory.getDSLExecutor(executorKey);
+        AggregateCommandExecutor commandExecutor = CommandExecutorFactory.getDSLExecutorByDbType(dbType);
+        if (commandExecutor == null) {
+            throw Exceptions.unNull(String.format("Failed to base on %s find command executor. ", dbType.getName()));
+        }
+        return commandExecutor;
     }
 }

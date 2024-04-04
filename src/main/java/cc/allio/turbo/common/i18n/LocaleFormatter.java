@@ -35,26 +35,38 @@ public class LocaleFormatter implements ApplicationContextAware {
     }
 
     /**
-     * 尝试从给定的code中获取国际化的信息，使用{@link Locale}
-     *
-     * @param code 在properties文件中声明的标识
-     * @return 国际化信息
+     * @see #getMessage(String, Object[], String)
      */
     public static String getMessage(String code) {
-        Optional.ofNullable(WebUtil.getRequest()).ifPresent(request -> setLocale(request.getLocale()));
-        return getMessage(code, new String[]{});
+        return getMessage(code, new Object[]{}, StringPool.EMPTY);
     }
 
     /**
-     * 尝试从给定的code中获取国际化的信息，使用{@link Locale}
-     *
-     * @param code 在properties文件中声明的标识
-     * @param args 数据占位符
-     * @return 国际化信息
+     * @see #getMessage(String, Object[], String)
      */
     public static String getMessage(String code, Object[] args) {
-        Optional.ofNullable(WebUtil.getRequest()).ifPresent(request -> setLocale(request.getLocale()));
         return getMessage(code, args, StringPool.EMPTY);
+    }
+
+    /**
+     * @see #getMessage(String, Object[], String)
+     */
+    public static String getMessage(I18nCode code) {
+        return getMessage(code.getKey(), new Object[]{}, StringPool.EMPTY);
+    }
+
+    /**
+     * @see #getMessage(String, Object[], String)
+     */
+    public static String getMessage(I18nCode code, Object[] args) {
+        return getMessage(code.getKey(), args, StringPool.EMPTY);
+    }
+
+    /**
+     * @see #getMessage(String, Object[], String)
+     */
+    public static String getMessage(I18nCode code, Object[] args, String defaultMessage) {
+        return getMessage(code.getKey(), args, defaultMessage);
     }
 
     /**
@@ -88,5 +100,4 @@ public class LocaleFormatter implements ApplicationContextAware {
     public static void setLocale(Locale locale) {
         LocaleFormatter.locale = locale;
     }
-
 }

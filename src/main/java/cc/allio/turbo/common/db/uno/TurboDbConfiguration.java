@@ -31,5 +31,4 @@ public class TurboDbConfiguration {
     public TenantInterceptor turboTenantInterceptor(PersistentProperties persistentProperties) {
         return new TenantInterceptor(new TurboTenantLineHandler(persistentProperties.getTenant()));
     }
-
 }

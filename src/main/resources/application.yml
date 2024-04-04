@@ -9,25 +9,11 @@ spring:
   application:
     name: turbo
   profiles:
-    active: dev,turbo,reactor
+    active: dev,turbo,reactor,oauth2
     # 开启虚拟线程
   threads:
     virtual:
       enabled: true
-  security:
-    oauth2:
-      authorizationserver:
-        endpoint:
-          # 授权码
-          authorization-uri: /oauth2/authorize
-          # token
-          token-uri: /oauth2/token
-          # revoke
-          token-revocation-uri: /oauth2/revoke
-          oidc:
-            client-registration-uri: /connect/register
-            logout-uri: /connect/logout
-            user-info-uri: /userinfo
 # mybatis 配置
 mybatis-plus:
   # mybatis mapper路径

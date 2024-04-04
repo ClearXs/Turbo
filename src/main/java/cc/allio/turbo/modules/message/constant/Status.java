@@ -9,8 +9,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Status {
 
-    UN_READABLE("UnReadable", "未读"),
-    READABLE("Readable", "已读");
+    UNREAD("UNREAD", "未读"),
+    READ("READ", "已读");
 
     @JsonValue
     @EnumValue

@@ -14,6 +14,13 @@ import java.util.List;
 public interface MessageConfig {
 
     /**
+     * is enable message config
+     *
+     * @return true enable
+     */
+    Boolean isEnabled();
+
+    /**
      * 获取Key
      *
      * @return
@@ -33,6 +40,13 @@ public interface MessageConfig {
      * @return 通知类型
      */
     NotificationType getNoticeType();
+
+    /**
+     * get send model
+     *
+     * @return a {@link SendModel} instance
+     */
+    SendModel getSendModel();
 
     /**
      * 获取发送与模板配置

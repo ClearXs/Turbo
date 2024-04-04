@@ -67,13 +67,14 @@ public class TenantInterceptor implements Interceptor {
      * @param table          table
      * @param tenantConsumer 两个参数，参数1是租户字段名称，参数2是租户值
      */
-    private void allowTenant(Table table, MethodBiConsumer<String, String> tenantConsumer) {
+    private void allowTenant(Table table, MethodBiConsumer<String, Object> tenantConsumer) {
         String tableName = table.getName().format();
         Expression tenantIdExpression = tenantLineHandler.getTenantId();
         boolean ignored = tenantLineHandler.ignoreTable(tableName);
         String tenantIdColumn = tenantLineHandler.getTenantIdColumn();
         if (!ignored && tenantIdExpression instanceof StringValue tenantId) {
-            tenantConsumer.accept(tenantIdColumn, tenantId.getValue());
+            // to Long
+            tenantConsumer.accept(tenantIdColumn, Long.valueOf(tenantId.getNotExcapedValue()));
         }
     }
 }

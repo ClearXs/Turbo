@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 @DS(StorageType.MONGODB)
 public class SysMessageConfigServiceImpl extends SimpleTurboCrudRepositoryServiceImpl<SysMessageConfig> implements ISysMessageConfigService {
 
-
     @Override
     public String getCacheName() {
         return "sysmessge_config";

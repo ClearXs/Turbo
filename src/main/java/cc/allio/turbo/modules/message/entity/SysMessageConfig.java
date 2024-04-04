@@ -3,8 +3,7 @@ package cc.allio.turbo.modules.message.entity;
 import cc.allio.turbo.common.db.entity.TenantEntity;
 import cc.allio.turbo.modules.message.config.RetryFailed;
 import cc.allio.turbo.modules.message.config.SendTarget;
-import cc.allio.turbo.modules.message.config.SendTemplate;
-import cc.allio.turbo.modules.message.constant.Enabled;
+import cc.allio.turbo.modules.message.config.SendModel;
 import cc.allio.turbo.modules.message.constant.NotificationType;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.NullSerializer;
@@ -15,13 +14,6 @@ import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
-/**
- * 消息配置
- *
- * @author jiangwei
- * @date 2022/12/2 20:19
- * @since 2.9.0-RELEASE
- */
 @Data
 @Table(name = "sys_message_config")
 @EqualsAndHashCode(callSuper = true)
@@ -44,14 +36,14 @@ public class SysMessageConfig extends TenantEntity {
      */
     @Schema(description = "是否启用")
     @JsonSerialize(nullsUsing = NullSerializer.class)
-    private Enabled enabled;
+    private Boolean enabled;
 
     /**
      * 发送方式模板配置
      * <p>[{"sendWay":"发送方式 SYSTEM 系统信息、SMS 短信 EMAIL 邮箱 DINGDING ","sendKey":"发送标识","templates":[""],"protocol":"系统消息发送协议 WEBSOCKET 、MQTT "}],</p>
      */
     @Schema(description = "发送方式模板配置")
-    private List<SendTemplate> sendTemplates;
+    private SendModel sendModel;
 
     /**
      * 消息类型
@@ -78,4 +70,10 @@ public class SysMessageConfig extends TenantEntity {
      */
     @Schema(description = "发送目标")
     private List<SendTarget> sendTargets;
+
+    /**
+     * 默认模板
+     */
+    @Schema(description = "默认模板")
+    private List<Long> defaultTemplateIds;
 }

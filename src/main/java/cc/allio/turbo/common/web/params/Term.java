@@ -1,7 +1,9 @@
 package cc.allio.turbo.common.web.params;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 与实体对应的查询条件。可以考虑做成通用查询构建，比如：
@@ -17,6 +19,8 @@ import lombok.Data;
  */
 @Data
 @Schema(description = "查询条件")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Term {
 
     /**

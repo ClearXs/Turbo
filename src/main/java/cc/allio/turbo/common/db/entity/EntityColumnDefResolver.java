@@ -1,5 +1,6 @@
 package cc.allio.turbo.common.db.entity;
 
+import cc.allio.uno.core.util.CollectionUtils;
 import cc.allio.uno.data.orm.dsl.ColumnDef;
 import cc.allio.uno.data.orm.dsl.DSLName;
 import cc.allio.uno.data.orm.dsl.dialect.TypeTranslator;
@@ -18,7 +19,7 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 
 /**
- * mybatis-plus的{@link com.baomidou.mybatisplus.annotation.TableField}解析器
+ * mybatis-plus的{@link TableField}解析器
  *
  * @author j.x
  * @date 2024/2/7 00:01
@@ -34,7 +35,9 @@ public class EntityColumnDefResolver implements ColumnDefResolver {
             builder.isPk(true);
         }
         TableField tableField = AnnotationUtils.findAnnotation(field, TableField.class);
-        JdbcType jdbcType;
+        JdbcType jdbcType = null;
+        // resolve jdbc type by @TableField annotation
+        // or directly guess jdbc type
         if (tableField != null) {
             builder.dslName(DSLName.of(tableField.value(), DSLName.UNDERLINE_FEATURE));
             org.apache.ibatis.type.JdbcType mybatisJdbcType = tableField.jdbcType();
@@ -42,19 +45,23 @@ public class EntityColumnDefResolver implements ColumnDefResolver {
                 jdbcType = TypeRegistry.getInstance().getJdbcType(mybatisJdbcType.TYPE_CODE);
             } else {
                 Collection<JdbcType> jdbcTypes = TypeRegistry.getInstance().guessJdbcType(field.getType());
-                jdbcType = Lists.newArrayList(jdbcTypes).get(0);
+                jdbcType = Lists.newArrayList(jdbcTypes).getFirst();
             }
         } else {
             builder.dslName(DSLName.of(field.getName(), DSLName.UNDERLINE_FEATURE));
             Collection<JdbcType> jdbcTypes = TypeRegistry.getInstance().guessJdbcType(field.getType());
-            jdbcType = Lists.newArrayList(jdbcTypes).get(0);
+            if (CollectionUtils.isNotEmpty(jdbcTypes)) {
+                jdbcType = Lists.newArrayList(jdbcTypes).getFirst();
+            }
         }
         if (jdbcType != null) {
             DSLType guessSQLType = DSLType.getByJdbcCode(jdbcType.getJdbcCode());
-            TypeTranslator translator = TypeTranslatorHolder.getTypeTranslator();
-            DSLType sqlType = translator.translate(guessSQLType);
-            DataType type = DataType.create(sqlType);
-            builder.dataType(type);
+            if (guessSQLType != null) {
+                TypeTranslator translator = TypeTranslatorHolder.getTypeTranslator();
+                DSLType sqlType = translator.translate(guessSQLType);
+                DataType type = DataType.create(sqlType);
+                builder.dataType(type);
+            }
         }
         return builder.build();
     }
