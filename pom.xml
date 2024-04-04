@@ -24,7 +24,7 @@
     </developers>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>22</java.version>
         <uno.version>1.1.8</uno.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <maven-plugin.version>3.11.0</maven-plugin.version>
