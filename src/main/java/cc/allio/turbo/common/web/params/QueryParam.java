@@ -1,8 +1,12 @@
 package cc.allio.turbo.common.web.params;
 
 import cc.allio.turbo.common.db.entity.Entity;
+import cc.allio.uno.core.api.Self;
 import cc.allio.uno.core.function.lambda.MethodReferenceColumn;
+import cc.allio.uno.core.function.lambda.ThrowingMethodSupplier;
+import cc.allio.uno.core.util.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -20,7 +24,7 @@ import java.util.List;
  * @since 0.1.0
  */
 @Data
-public class QueryParam<T extends Entity> {
+public class QueryParam<T extends Entity> implements Self<QueryParam<T>> {
 
     /**
      * 分页
@@ -63,5 +67,27 @@ public class QueryParam<T extends Entity> {
                 .filter(term -> term.getField().equals(field))
                 .findFirst()
                 .orElse(null);
+    }
+
+    /**
+     * @see #addTerm(String, Object)
+     */
+    public <F> QueryParam<T> addTerm(ThrowingMethodSupplier<F> field, Object value) {
+        return addTerm(field.getFieldName(), value);
+    }
+
+    /**
+     * add {@link Term} to {@link QueryParam}
+     *
+     * @param field the field
+     * @param value the value
+     * @return self
+     */
+    public QueryParam<T> addTerm(String field, Object value) {
+        if (CollectionUtils.isEmpty(terms)) {
+            terms = Lists.newArrayList();
+        }
+        terms.add(new Term(field, value));
+        return self();
     }
 }

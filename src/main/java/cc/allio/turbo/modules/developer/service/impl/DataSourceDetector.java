@@ -77,8 +77,8 @@ public class DataSourceDetector implements DisposableBean, ApplicationListener<A
         this.checkService = new ScheduledThreadPoolExecutor(1, virtualThreadFactory);
         checkService.scheduleAtFixedRate(
                 this::onDetectStatusChange,
-                Duration.ofMinutes(1).toMinutes(),
-                Duration.ofMinutes(10).toMinutes(),
+                Duration.ofSeconds(1).toMillis(),
+                Duration.ofMinutes(10).toMillis(),
                 TimeUnit.MINUTES);
     }
 

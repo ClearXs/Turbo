@@ -16,9 +16,6 @@ public class DefaultMessageTemplate implements MessageTemplate {
      */
     private final Map<String, String> texts;
 
-    // DEFAULT
-    private static final Extension DEFAULT_EXTENSION = new Extension();
-
     public DefaultMessageTemplate(SysMessageTemplate messageTemplate) {
         // 模板#{}表达式模板解析器
         this.templateKey = messageTemplate.getKey();
@@ -48,5 +45,4 @@ public class DefaultMessageTemplate implements MessageTemplate {
     public String getText(String key) {
         return texts.getOrDefault(key, "");
     }
-
 }

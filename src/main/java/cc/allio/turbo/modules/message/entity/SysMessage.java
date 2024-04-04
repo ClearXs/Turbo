@@ -105,7 +105,7 @@ public class SysMessage extends TenantEntity {
     /**
      * 消息模板Key
      */
-    @TableField("config_key")
+    @TableField("template_key")
     @Schema(description = "消息配置Key")
     private String templateKey;
 

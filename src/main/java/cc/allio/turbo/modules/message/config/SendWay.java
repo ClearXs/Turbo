@@ -10,7 +10,7 @@ public enum SendWay {
 
 	SYSTEM("SYSTEM", "系统消息"),
 	SMS("SMS", "短消息"),
-	DINGDING("DINGDING", "DINGDING");
+	DINGDING("DINGTALK", "钉钉");
 
 	@JsonValue
 	private final String value;

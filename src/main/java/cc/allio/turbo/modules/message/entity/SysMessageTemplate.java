@@ -34,6 +34,12 @@ public class SysMessageTemplate extends TenantEntity {
     private String title;
 
     /**
+     * 消息副标题
+     */
+    @Schema(description = "消息副标题")
+    private String subtitle;
+
+    /**
      * 模板内容
      */
     @Schema(description = "模板内容")

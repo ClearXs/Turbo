@@ -1,5 +1,6 @@
 package cc.allio.turbo.modules.message.runtime;
 
+import cc.allio.turbo.modules.message.template.TemporaryTemplate;
 import cc.allio.uno.core.metadata.Metadata;
 import cc.allio.uno.core.metadata.convert.ConverterFactory;
 import cc.allio.uno.core.metadata.mapping.DefaultMappingMetadata;
@@ -21,16 +22,15 @@ import java.util.Map;
 public class ReceiveMetadata implements Metadata {
 
     private String configKey;
-
-    private String businessConfigKey;
-    private Map<String, Object> variables;
+    private TemporaryTemplate temporary;
     private final MappingMetadata metadata;
+    private final Map<String, Object> variables;
 
     public ReceiveMetadata() {
         this.metadata = new DefaultMappingMetadata(ConverterFactory.createConverter(this.getClass()));
         this.variables = Maps.newHashMap();
         this.metadata.addMapping(MappingField.builder().name("configKey").build(), MappingField.builder().name("configKey").build());
-        this.metadata.addMapping(MappingField.builder().name("businessConfigKey").build(), MappingField.builder().name("businessConfigKey").build());
+        this.metadata.addMapping(MappingField.builder().name("temporary").build(), MappingField.builder().name("temporary").build());
     }
 
     @Override
@@ -41,9 +41,5 @@ public class ReceiveMetadata implements Metadata {
     @Override
     public Map<String, Object> getValues() {
         return variables;
-    }
-
-    public Map<String, Object> getVariables() {
-        return getValues();
     }
 }

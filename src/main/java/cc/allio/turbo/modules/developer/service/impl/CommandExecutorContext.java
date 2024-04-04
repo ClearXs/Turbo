@@ -3,6 +3,7 @@ package cc.allio.turbo.modules.developer.service.impl;
 import cc.allio.turbo.modules.developer.entity.DevDataSource;
 import cc.allio.uno.core.function.VoidConsumer;
 import cc.allio.uno.core.util.StringUtils;
+import cc.allio.uno.data.orm.dsl.type.DBType;
 import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import cc.allio.uno.data.orm.executor.CommandExecutorRegistry;
 import cc.allio.uno.data.orm.executor.options.ExecutorKey;
@@ -69,6 +70,11 @@ public class CommandExecutorContext implements CommandExecutorRegistry {
     @Override
     public <T extends AggregateCommandExecutor> T getCommandExecutor(String key) {
         return registry.getCommandExecutor(key);
+    }
+
+    @Override
+    public <T extends AggregateCommandExecutor> T getCommandExecutorByDBTypeFirst(DBType dbType) {
+        return registry.getCommandExecutorByDBTypeFirst(dbType);
     }
 
     @Override

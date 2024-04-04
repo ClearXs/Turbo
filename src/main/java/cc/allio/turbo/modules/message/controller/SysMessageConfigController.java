@@ -11,4 +11,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/sys/message/config")
 @Tag(name = "消息配置")
 public class SysMessageConfigController extends TurboCrudController<SysMessageConfig, SysMessageConfig, ISysMessageConfigService> {
+
 }

@@ -26,9 +26,6 @@ public class MessageSourceConverter implements SourceConverter<ReceiveMetadata> 
     @Override
     public ReceiveMetadata doConvert(ApplicationContext context, JsonNode value) throws Throwable {
         Converter<ReceiveMetadata> converter = ConverterFactory.createConverter(ReceiveMetadata.class);
-        ReceiveMetadata receive = converter.execute(context, value);
-        Map<String, Object> variables = JsonUtils.readMap(value.toPrettyString(), String.class, Object.class);
-        receive.setVariables(variables);
-        return receive;
+        return converter.execute(context, value);
     }
 }
