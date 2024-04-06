@@ -28,7 +28,7 @@ public class CustomTargeter implements Targeter {
         // 模板变量读取
         String key = sendTarget.getKey();
         RuntimeText runtimeText = new PlaceholderRuntimeText(key, runtimeVariable);
-        String maybeUserId = runtimeText.runThenText();
+        String maybeUserId = runtimeText.thenText();
         return Arrays.stream(maybeUserId.split(StringPool.COMMA)).map(Long::valueOf).toList();
     }
 

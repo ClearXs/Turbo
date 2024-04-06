@@ -73,6 +73,7 @@ otel:
       enabled: false
   sdk:
     disabled: false
+
 # easyexcel枚举扫描路径
 excel:
   enum:

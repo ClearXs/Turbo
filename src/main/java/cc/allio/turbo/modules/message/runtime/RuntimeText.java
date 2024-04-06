@@ -15,7 +15,7 @@ public interface RuntimeText {
 	 * @return 解析后的文本数据
 	 * @throws NullPointerException 给定的变量数据为null抛出异常
 	 */
-	String runThenText();
+	String thenText();
 
 	/**
 	 * 获取原始文本信息

@@ -33,12 +33,12 @@ public class TenantSessionAuthorizationRequestRepository implements Authorizatio
     @Override
     public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest, HttpServletRequest request, HttpServletResponse response) {
         // try to tenant id or '0' if tenant is empty
-        String tenantId = request.getHeader(WebUtil.TENANT);
+        String tenantId = request.getHeader(WebUtil.X_TENANT);
         if (StringUtils.isBlank(tenantId)) {
             tenantId = "0";
         }
         // set tenant to session
-        request.getSession().setAttribute(WebUtil.TENANT, tenantId);
+        request.getSession().setAttribute(WebUtil.X_TENANT, tenantId);
         internal.saveAuthorizationRequest(authorizationRequest, request, response);
     }
 
@@ -48,9 +48,9 @@ public class TenantSessionAuthorizationRequestRepository implements Authorizatio
         if (oAuth2AuthorizationRequest != null) {
             // remove and set tenant to attributes
             HttpSession session = request.getSession(false);
-            Object tenant = session.getAttribute(WebUtil.TENANT);
-            request.setAttribute(WebUtil.TENANT, tenant);
-            session.removeAttribute(WebUtil.TENANT);
+            Object tenant = session.getAttribute(WebUtil.X_TENANT);
+            request.setAttribute(WebUtil.X_TENANT, tenant);
+            session.removeAttribute(WebUtil.X_TENANT);
         }
         return oAuth2AuthorizationRequest;
     }

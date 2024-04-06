@@ -46,7 +46,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                     log.info("Oauth2 login success, create token is {}", token.getClaims());
                 }
                 String tokenValue = token.getTokenValue();
-                Cookie cookie = new Cookie(WebUtil.AUTHENTICATION, tokenValue);
+                Cookie cookie = new Cookie(WebUtil.X_AUTHENTICATION, tokenValue);
                 response.addCookie(cookie);
                 // redirect
                 response.sendRedirect("/home");

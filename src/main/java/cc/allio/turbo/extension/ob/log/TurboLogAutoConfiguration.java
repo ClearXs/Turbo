@@ -12,24 +12,28 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Map;
 
 @Configuration
-@EnableConfigurationProperties(TurboLogExporterProperties.class)
+@EnableConfigurationProperties(OpenObserverProperties.class)
 @ConditionalOnClass(LogRecordExporter.class)
-@ConditionalOnProperty(prefix = "turbo.ob.log.exporter", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "turbo.ob.log.openobserve", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class TurboLogAutoConfiguration {
+
+    private static final String URL = "/api/%s/%s/_json";
 
     @Bean
     @ConditionalOnMissingBean
-    public OpenObserveHttpLogRecordExporter openObserveHttpLogRecordExporter(TurboLogExporterProperties logExporterProperties) {
+    public OpenObserveHttpLogRecordExporter openObserveHttpLogRecordExporter(OpenObserverProperties openObserverProperties) {
         OpenObverseHttpLogRecordExporterBuilder logRecordExporterBuilder = new OpenObverseHttpLogRecordExporterBuilder();
-        logRecordExporterBuilder.setEndpoint(logExporterProperties.getEndpoint());
-        Map<String, String> headers = logExporterProperties.getHeaders();
+        String endpoint = openObserverProperties.getEndpoint();
+        String path = String.format(URL, openObserverProperties.getOrganization(), openObserverProperties.getStream());
+        logRecordExporterBuilder.setEndpoint(endpoint + path);
+        Map<String, String> headers = openObserverProperties.getHeaders();
         if (CollectionUtils.isNotEmpty(headers)) {
             logRecordExporterBuilder.setHeaders(() -> headers);
         }
-        if (logExporterProperties.isWriteToJson()) {
+        if (openObserverProperties.isWriteToJson()) {
             logRecordExporterBuilder.writeJson();
         }
-        logRecordExporterBuilder.setTimeout(logExporterProperties.getTimeout());
+        logRecordExporterBuilder.setTimeout(openObserverProperties.getTimeout());
         return logRecordExporterBuilder.build();
     }
 }

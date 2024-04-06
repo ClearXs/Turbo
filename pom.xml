@@ -155,6 +155,10 @@
             <artifactId>uno-data-mongodb</artifactId>
         </dependency>
         <dependency>
+            <groupId>cc.allio</groupId>
+            <artifactId>uno-http</artifactId>
+        </dependency>
+        <dependency>
             <groupId>ognl</groupId>
             <artifactId>ognl</artifactId>
             <version>${ognl.version}</version>

@@ -3,6 +3,7 @@ package cc.allio.turbo.modules.message.runtime;
 import cc.allio.turbo.common.util.AuthUtil;
 import cc.allio.turbo.modules.message.config.*;
 import cc.allio.turbo.modules.message.constant.SendStatus;
+import cc.allio.turbo.modules.message.constant.Source;
 import cc.allio.turbo.modules.message.constant.Status;
 import cc.allio.turbo.modules.message.entity.SysMessage;
 import cc.allio.turbo.modules.message.entity.SysMessageConfig;
@@ -30,6 +31,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 消息收集器
@@ -48,22 +50,18 @@ public class MessageCollector implements SourceCollector<ReceiveMetadata> {
 
     @Override
     public void collect(ReceiveMetadata element) {
-        Mono.just(element)
-                .flatMapMany(this::disposeMessage)
+        Mono.just(element).flatMapMany(this::disposeMessage)
                 // 保存消息数据
                 .flatMap(gk ->
                         gk.flatMap(messages -> {
                             Template template = gk.key();
                             // 创建Sender对象
                             Sender sender = Senders.create(template);
-                            if (sender == null) {
-                                return Flux.empty();
-                            }
                             return Flux.fromIterable(messages)
                                     .map(runtimeMessage -> {
                                         // 存储于历史数据
                                         SysMessage message = runtimeMessage.getMessage();
-                                        boolean send = sender.send(message);
+                                        boolean send = Optional.ofNullable(sender).map(s -> s.send(message)).orElse(false);
                                         SysMessageLog messageLog = Objects.requireNonNull(BeanUtils.copy(message, SysMessageLog.class));
                                         messageLog.setMessageId(message.getId());
                                         messageLog.setVariables(runtimeMessage.getMessageTemplate().getRuntimeVariables().getJsonVariables());
@@ -91,7 +89,6 @@ public class MessageCollector implements SourceCollector<ReceiveMetadata> {
         if (Boolean.FALSE.equals(messageConfig.isEnabled())) {
             throw new UnsupportedOperationException(String.format("UnEnable Message Configuration %s", messageConfig.getKey()));
         }
-
         Map<String, Object> variables = receive.getVariables();
         // 构建目标发送人集合
         List<SendTarget> sendTarget = messageConfig.getSendTarget();
@@ -99,7 +96,6 @@ public class MessageCollector implements SourceCollector<ReceiveMetadata> {
                 sendTarget.stream()
                         .flatMap(target -> Targets.getTargetUser(target, new RuntimeVariable(receive.getVariables())).stream())
                         .toList();
-
         List<Template> templates = messageConfig.getTemplates();
         return Flux.fromIterable(templates)
                 .groupBy(
@@ -117,17 +113,18 @@ public class MessageCollector implements SourceCollector<ReceiveMetadata> {
                                         sysMessage.setMessageType(messageConfig.getMessageType());
                                         sysMessage.setAction(messageConfig.getNoticeType());
                                         sysMessage.setMessageStatus(Status.UNREAD);
+                                        sysMessage.setMessageSource(Source.SYSTEM);
                                         // 发送人、接收人
                                         sysMessage.setSendUser(AuthUtil.getCurrentUserId());
                                         sysMessage.setSendTime(DateUtil.parse(String.valueOf(variables
                                                 .getOrDefault("sendTime", DateUtil.format(DateUtil.now(), DateUtil.PATTERN_DATETIME))), DateUtil.PATTERN_DATETIME));
                                         sysMessage.setReceiver(target);
                                         // 消息内容
-                                        sysMessage.setContent(runtimeMessageTemplate.getContentText().runThenText());
-                                        sysMessage.setTitle(String.valueOf(variables.getOrDefault("title", runtimeMessageTemplate.getTitleTxt().runThenText())));
+                                        sysMessage.setContent(runtimeMessageTemplate.getContentText().thenText());
+                                        sysMessage.setTitle(String.valueOf(variables.getOrDefault("title", runtimeMessageTemplate.getTitleTxt().thenText())));
                                         sysMessage.setSubtitle(String.valueOf(variables.getOrDefault("subtitle", "")));
-                                        sysMessage.setAppUrl(runtimeMessageTemplate.getRuntimeText(extension.getAppUrl()).runThenText());
-                                        sysMessage.setPcUrl(runtimeMessageTemplate.getRuntimeText(extension.getPcUrl()).runThenText());
+                                        sysMessage.setAppUrl(runtimeMessageTemplate.getRuntimeText(extension.getAppUrl()).thenText());
+                                        sysMessage.setPcUrl(runtimeMessageTemplate.getRuntimeText(extension.getPcUrl()).thenText());
                                         return new RuntimeMessage()
                                                 .setMessage(sysMessage)
                                                 .setMessageConfiguration(messageConfig)

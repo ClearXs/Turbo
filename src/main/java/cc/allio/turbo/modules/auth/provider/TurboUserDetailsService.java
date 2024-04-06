@@ -22,7 +22,7 @@ public class TurboUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        SysUserVO user = null;
+        SysUserVO user;
         try {
             user = userService.findByUsername(username);
         } catch (BizException e) {

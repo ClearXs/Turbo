@@ -20,8 +20,6 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,14 +40,6 @@ public class OAuth2LoginConfiguration {
     @Bean
     @Order(0)
     public SecurityFilterChain oauth2loginFilterChain(HttpSecurity http, OAuth2TokenGenerator oAuth2TokenGenerator) throws Exception {
-        UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("*");
-        corsConfiguration.addAllowedHeader("*");
-        corsConfiguration.addAllowedMethod("*");
-        corsConfiguration.setAllowCredentials(true);
-        corsConfigurationSource.registerCorsConfiguration("/oauth2/**", corsConfiguration);
-
         http.authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/oauth2/**")
@@ -65,9 +55,6 @@ public class OAuth2LoginConfiguration {
                                         e.authorizationRequestRepository(new TenantSessionAuthorizationRequestRepository())
                                                 .authorizationRedirectStrategy(new CORSAuthorizationRedirectStrategy()))
                 )
-                .cors(c -> {
-                    c.configurationSource(corsConfigurationSource);
-                })
                 .sessionManagement(sessionManager -> {
                     sessionManager.sessionCreationPolicy(SessionCreationPolicy.NEVER);// 禁止用session来进行认证
                 });

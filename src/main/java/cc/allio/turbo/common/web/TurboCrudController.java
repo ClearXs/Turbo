@@ -1,6 +1,5 @@
 package cc.allio.turbo.common.web;
 
-import cc.allio.turbo.common.excel.util.ExcelUtil;
 import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.mybatis.helper.Conditions;
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
@@ -162,7 +161,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
         QueryWrapper<T> queryWrapper = Conditions.entityQuery(params, clazz);
         List<T> list = service.list(queryWrapper);
         List<D> ds = interceptor.onExportBefore(service, list);
-        ExcelUtil.export(response, ds, getDomainType());
+//        ExcelUtil.export(response, ds, getDomainType());
         interceptor.onExportAfter(service, response, ds);
     }
 
@@ -174,7 +173,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     public R importFile(MultipartFile file) {
         WebCrudInterceptor<T, D, S> interceptor = getInterceptor();
         interceptor.onImportBefore(service, file);
-        ExcelUtil.save(file, service, getEntityType());
+//        ExcelUtil.save(file, service, getEntityType());
         interceptor.onImportAfter(service);
         return ok(Boolean.TRUE);
     }

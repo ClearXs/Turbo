@@ -3,11 +3,13 @@ package cc.allio.turbo.modules.message.runtime;
 import cc.allio.turbo.modules.message.template.Extension;
 import cc.allio.turbo.modules.message.template.MessageTemplate;
 import cc.allio.turbo.modules.message.template.Variable;
+import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.util.template.ExpressionTemplate;
 import cc.allio.uno.core.util.template.Tokenizer;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 运行时消息模板，增强{@link MessageTemplate}，为其赋予{@link RuntimeText}内容
@@ -25,6 +27,13 @@ public class RuntimeMessageTemplate implements MessageTemplate {
     @Getter
     private final RuntimeText contentText;
 
+    static final Extension DEFAULT_EXTENSION = new Extension();
+
+    static {
+        DEFAULT_EXTENSION.setAppUrl(StringPool.EMPTY);
+        DEFAULT_EXTENSION.setPcUrl(StringPool.EMPTY);
+    }
+
     public RuntimeMessageTemplate(MessageTemplate messageTemplate, RuntimeVariable runtimeVariable) {
         this.expressionTemplate = ExpressionTemplate.createTemplate(Tokenizer.HASH_BRACE);
         this.messageTemplate = messageTemplate;
@@ -40,7 +49,7 @@ public class RuntimeMessageTemplate implements MessageTemplate {
 
     @Override
     public Extension getExtension() {
-        return messageTemplate.getExtension();
+        return Optional.ofNullable(messageTemplate.getExtension()).orElse(DEFAULT_EXTENSION);
     }
 
     @Override

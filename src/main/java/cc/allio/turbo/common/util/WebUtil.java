@@ -20,8 +20,9 @@ import java.util.Optional;
  */
 public final class WebUtil extends org.springframework.web.util.WebUtils {
 
-    public static final String AUTHENTICATION = "X-AUTHENTICATION";
-    public static final String TENANT = "X-TENANT";
+    public static final String X_AUTHENTICATION = "X-AUTHENTICATION";
+    public static final String X_TENANT = "X-TENANT";
+    public static final String X_LOGIN_MODE = "X-LOGIN-MODE";
 
     private WebUtil() {
     }
@@ -34,7 +35,7 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
      * @throws NoSuchElementException value empty
      */
     public static String getTenant() {
-        return Optionals.firstNonEmpty(() -> getHeaderOpt(TENANT), () -> getAttributeOpt(TENANT)).orElse(null);
+        return Optionals.firstNonEmpty(() -> getHeaderOpt(X_TENANT), () -> getAttributeOpt(X_TENANT)).orElse(null);
     }
 
     /**
@@ -45,7 +46,14 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
      * @throws NoSuchElementException value empty
      */
     public static String getToken() {
-        return Optionals.firstNonEmpty(() -> getHeaderOpt(AUTHENTICATION), () -> getAttributeOpt(AUTHENTICATION)).orElse(StringPool.EMPTY);
+        return Optionals.firstNonEmpty(() -> getHeaderOpt(X_AUTHENTICATION), () -> getAttributeOpt(X_AUTHENTICATION)).orElse(StringPool.EMPTY);
+    }
+
+    /**
+     * get login mode
+     */
+    public static String getLoginMode() {
+        return Optionals.firstNonEmpty(() -> getHeaderOpt(X_LOGIN_MODE), () -> getAttributeOpt(X_LOGIN_MODE)).orElse(StringPool.EMPTY);
     }
 
     /**

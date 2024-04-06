@@ -1,15 +1,10 @@
 package cc.allio.turbo.modules.auth.provider;
 
 import cc.allio.turbo.modules.auth.authentication.TurboJwtAuthenticationToken;
-import cc.allio.turbo.modules.auth.exception.CaptchaError;
-import cc.allio.turbo.modules.auth.exception.CaptchaExpiredException;
+import cc.allio.turbo.modules.auth.params.*;
 import cc.allio.uno.core.util.IoUtils;
 import cc.allio.uno.core.util.JsonUtils;
-import cc.allio.uno.core.util.StringUtils;
-import cc.allio.turbo.modules.auth.params.LoginParams;
 import cc.allio.turbo.common.util.JwtUtil;
-import cc.allio.turbo.common.cache.CacheHelper;
-import cc.allio.turbo.common.cache.TurboCache;
 import cc.allio.turbo.common.util.WebUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
@@ -43,39 +38,40 @@ import java.io.IOException;
  */
 public class TurboJwtAuthenticationProvider extends DaoAuthenticationProvider {
 
-    public static final String LOGIN_PATH = "/auth/login";
+    private static final String LOGIN_PATH = "/auth/login";
 
-    public TurboJwtAuthenticationProvider(UserDetailsService userDetailsService,
-                                          PasswordEncoder passwordEncoder) {
+    public TurboJwtAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
         setUserDetailsService(userDetailsService);
         setPasswordEncoder(passwordEncoder);
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        // 1.验证登陆请求
         HttpServletRequest request = WebUtil.getRequest();
+        if (request == null) {
+            throw new AuthenticationServiceException("unknown request");
+        }
         boolean determined = determineLogin(request);
         if (!determined) {
             throw new AuthenticationServiceException("login request not standard, it's must be 'content-type':'application/json' 'request-method':'POST' 'url':'/auth/login'");
         }
-        // 2.验证验证码
-        TurboCache cache = CacheHelper.getIfAbsent(CacheHelper.CAPTCHA);
-        LoginParams loginParams = getLoginParams(request);
-        String captchaId = loginParams.getCaptchaId();
-        // 判断是否存在
-        if (StringUtils.isBlank(captchaId) || !cache.hasKey(captchaId)) {
-            throw new CaptchaExpiredException();
+        String loginModeString = WebUtil.getLoginMode();
+        LoginMode loginMode = LoginMode.of(loginModeString);
+        if (loginMode == null) {
+            throw new AuthenticationServiceException("login mode is null, it must be 'EMPTY' or 'CAPTCHA_CODE' or 'VERIFICATION_CODE'");
         }
-        String cacheContent = cache.get(captchaId, String.class);
-        // 验证码内容
-        String captcha = loginParams.getCaptcha();
-        // 获取大小写，验证验证码内容
-        if (!captcha.equalsIgnoreCase(cacheContent)) {
-            throw new CaptchaError();
+        // verify several login method valid
+        UsernamePasswordAuthenticationToken newAuthentication = null;
+        if (LoginMode.EMPTY == loginMode) {
+            LoginUsernamePassword loginParams = getLoginParams(request, LoginUsernamePassword.class);
+            newAuthentication = new UsernamePasswordAuthenticator().authenticate(loginParams);
+        } else if (LoginMode.CAPTCHA_CODE == loginMode) {
+            LoginCaptcha loginParams = getLoginParams(request, LoginCaptcha.class);
+            newAuthentication = new CaptchaCodeAuthenticator().authenticate(loginParams);
+        } else if (LoginMode.VERIFICATION_CODE == loginMode) {
+            LoginVerification loginParams = getLoginParams(request, LoginVerification.class);
+            newAuthentication = new VerificationCodeAuthenticator().authenticate(loginParams);
         }
-        // 3.更改Authentication 替换为登陆信息
-        UsernamePasswordAuthenticationToken newAuthentication = new UsernamePasswordAuthenticationToken(loginParams.getUsername(), loginParams.getPassword());
         return super.authenticate(newAuthentication);
     }
 
@@ -114,10 +110,10 @@ public class TurboJwtAuthenticationProvider extends DaoAuthenticationProvider {
      * @param request
      * @return
      */
-    private LoginParams getLoginParams(HttpServletRequest request) {
+    private <T extends LoginClaim> T getLoginParams(HttpServletRequest request, Class<T> loginClaimType) {
         try {
             byte[] bytes = IoUtils.readToByteArray(request.getInputStream());
-            return JsonUtils.parse(bytes, LoginParams.class);
+            return JsonUtils.parse(bytes, loginClaimType);
         } catch (IOException e) {
             throw new AuthenticationServiceException("request login form inputStream empty");
         }
