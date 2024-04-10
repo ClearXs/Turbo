@@ -61,7 +61,7 @@ public class Knife4jConfiguration implements WebMvcConfigurer {
         Contact contact = new Contact();
         contact.setName("j.x");
         contact.setEmail("jiangw1027@gmail.com");
-        contact.setUrl("https://github.com/b6688c/Turbo.git");
+        contact.setUrl("https://github.com/ClearXs/Turbo");
         Info info = new Info()
                 .title("Turbo快速开发平台")
                 .description("基于springboot3.x，拥有多租户、鉴权、用户菜单、工作流、表单的快速开发平台")
