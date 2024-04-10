@@ -66,7 +66,7 @@ public class Knife4jConfiguration implements WebMvcConfigurer {
                 .title("Turbo快速开发平台")
                 .description("基于springboot3.x，拥有多租户、鉴权、用户菜单、工作流、表单的快速开发平台")
                 .contact(contact)
-                .version("1.0");
+                .version("0.1.1");
         return new OpenAPI().info(info);
     }
 
