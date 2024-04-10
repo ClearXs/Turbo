@@ -39,16 +39,34 @@ public class Knife4jConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
+    public GroupedOpenApi developerApi() {
+        return GroupedOpenApi.builder()
+                .group("developer")
+                .displayName("开发者模块")
+                .pathsToMatch("/developer/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi messageApi() {
+        return GroupedOpenApi.builder()
+                .group("message")
+                .displayName("消息模块")
+                .pathsToMatch("/message/**")
+                .build();
+    }
+
+    @Bean
     public OpenAPI customOpenAPI() {
         Contact contact = new Contact();
         contact.setName("j.x");
         contact.setEmail("jiangw1027@gmail.com");
-        contact.setUrl("https://github.com/b6688c/Turbo.git");
+        contact.setUrl("https://github.com/ClearXs/Turbo");
         Info info = new Info()
                 .title("Turbo快速开发平台")
                 .description("基于springboot3.x，拥有多租户、鉴权、用户菜单、工作流、表单的快速开发平台")
                 .contact(contact)
-                .version("1.0");
+                .version("0.1.1");
         return new OpenAPI().info(info);
     }
 
