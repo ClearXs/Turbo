@@ -36,6 +36,7 @@ import static cc.allio.turbo.common.i18n.ExceptionCodes.MISTAKE_OAUTH2_TOKEN;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final OAuth2TokenGenerator oAuth2TokenGenerator;
+    private final TurboOAuth2ClientProperties oAuth2ClientProperties;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -45,11 +46,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 if (log.isInfoEnabled()) {
                     log.info("Oauth2 login success, create token is {}", token.getClaims());
                 }
+                String domain = oAuth2ClientProperties.getDomain();
                 String tokenValue = token.getTokenValue();
                 Cookie cookie = new Cookie(WebUtil.X_AUTHENTICATION, tokenValue);
+                cookie.setPath("/");
                 response.addCookie(cookie);
                 // redirect
-                response.sendRedirect("/home");
+                response.sendRedirect(domain);
             } catch (BizException ex) {
                 throw new IOException(ex.getMessage());
             }
@@ -60,5 +63,4 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             IoUtils.write(JsonUtils.toJson(error), outputStream, StandardCharsets.UTF_8);
         }
     }
-
 }

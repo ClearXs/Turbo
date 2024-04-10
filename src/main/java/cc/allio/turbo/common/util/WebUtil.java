@@ -1,6 +1,8 @@
 package cc.allio.turbo.common.util;
 
+import cc.allio.turbo.common.web.App;
 import cc.allio.uno.core.StringPool;
+import cc.allio.uno.core.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.util.Optionals;
 import org.springframework.web.context.request.RequestAttributes;
@@ -23,6 +25,7 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
     public static final String X_AUTHENTICATION = "X-AUTHENTICATION";
     public static final String X_TENANT = "X-TENANT";
     public static final String X_LOGIN_MODE = "X-LOGIN-MODE";
+    public static final String X_APP = "X-APP";
 
     private WebUtil() {
     }
@@ -54,6 +57,17 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
      */
     public static String getLoginMode() {
         return Optionals.firstNonEmpty(() -> getHeaderOpt(X_LOGIN_MODE), () -> getAttributeOpt(X_LOGIN_MODE)).orElse(StringPool.EMPTY);
+    }
+
+    /**
+     * get app
+     */
+    public static App getApp() {
+        String app = Optionals.firstNonEmpty(() -> getHeaderOpt(X_APP), () -> getAttributeOpt(X_APP)).orElse(StringPool.EMPTY);
+        if (StringUtils.isNotBlank(app)) {
+            return App.valueOf(app);
+        }
+        return null;
     }
 
     /**
