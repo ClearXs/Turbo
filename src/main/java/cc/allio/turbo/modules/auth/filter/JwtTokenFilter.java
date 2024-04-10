@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtValidationException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.authentication.*;
@@ -53,28 +54,30 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // 1.验证请求头
+        String token = request.getHeader(WebUtil.X_AUTHENTICATION);
+        if (StringUtils.isBlank(token)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        // 2.验签
+        Jwt jwt;
         try {
-            // 1.验证请求头
-            String token = request.getHeader(WebUtil.AUTHENTICATION);
-            if (StringUtils.isBlank(token)) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-            // 2.验签
-            Jwt jwt = JwtUtil.decode(token);
-            if (jwt == null) {
-                throw new BadCredentialsException("bad credentials");
-            }
-            // 3.验证是否过期
-            Instant expiresAt = jwt.getExpiresAt();
-            if (expiresAt != null && expiresAt.isBefore(DateUtil.now().toInstant())) {
-                unsuccessfulAuthentication(request, response, new CredentialsExpiredException("token expired"));
-            } else {
-                AbstractAuthenticationToken newAuthentication = converter.convert(jwt);
-                successfulAuthentication(request, response, filterChain, newAuthentication);
-            }
-        } catch (Throwable ex) {
+            jwt = JwtUtil.decode(token);
+        } catch (JwtValidationException ex) {
             unsuccessfulAuthentication(request, response, new AuthenticationServiceException(ex.getMessage()));
+            return;
+        }
+        if (jwt == null) {
+            throw new BadCredentialsException("bad credentials");
+        }
+        // 3.验证是否过期
+        Instant expiresAt = jwt.getExpiresAt();
+        if (expiresAt != null && expiresAt.isBefore(DateUtil.now().toInstant())) {
+            unsuccessfulAuthentication(request, response, new CredentialsExpiredException("token expired"));
+        } else {
+            AbstractAuthenticationToken newAuthentication = converter.convert(jwt);
+            successfulAuthentication(request, response, filterChain, newAuthentication);
         }
     }
 

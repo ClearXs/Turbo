@@ -1,6 +1,5 @@
 package cc.allio.turbo.extension.ob.log;
 
-import cc.allio.uno.core.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -13,16 +12,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class Printer {
 
-
-    /**
-     * 根据输入的对象，按照系统的配置进行日志输出
-     *
-     * @param formatContent 提供slf4j的语法内容进行格式化输出
-     * @param source        对象源
-     */
-    public static void print(String formatContent, Object... source) {
-        log.debug(formatContent, JsonUtils.toJson(source));
+    public static void print(String template, Object... args) {
+        log.debug(template, args);
     }
+
+    public static void print(LogType logType, String template, Object... args) {
+
+    }
+
+    public static void print(LogType logType, Object obj) {
+
+    }
+
 
     /**
      * 输出错误信息

@@ -3,11 +3,11 @@ package cc.allio.turbo.modules.message.runtime.sender;
 import cc.allio.turbo.modules.message.entity.SysMessage;
 
 /**
- * 消息发送网络
+ * network is publish message methods.
  *
- * @author jiangwei
- * @date 2022/12/6 11:27
- * @since 2.9.0-RELEASE
+ * @author j.x
+ * @date 2024/4/5 04:48
+ * @since 0.1.1
  */
 public interface Network {
 

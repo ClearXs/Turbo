@@ -47,7 +47,7 @@ public enum OAuth2Provider {
         @Override
         public ClientRegistration.Builder getBuilder() {
             ClientRegistration.Builder builder = getBuilder(ClientAuthenticationMethod.CLIENT_SECRET_BASIC, DEFAULT_REDIRECT_URL);
-            String scope = combineScope(AuthWechatMpScope.SNSAPI_USERINFO);
+            String[] scope = combineScope(AuthWechatMpScope.SNSAPI_USERINFO);
             builder.scope(scope);
             builder.authorizationUri("https://open.weixin.qq.com/connect/oauth2/authorize");
             builder.tokenUri("https://api.weixin.qq.com/sns/oauth2/access_token");
@@ -76,14 +76,14 @@ public enum OAuth2Provider {
     /**
      * wechat enterprise qrcode third login
      */
-    WECHAT_ENTERPRISE_QRCODE_THIRD("wechat-enterprise-qrcode-third") {
+    WECHAT_ENTERPRISE_QR("wechat-enterprise-qr") {
         @Override
         public ClientRegistration.Builder getBuilder() {
             ClientRegistration.Builder builder = getBuilder(ClientAuthenticationMethod.CLIENT_SECRET_BASIC, DEFAULT_REDIRECT_URL);
             builder.authorizationUri("https://open.work.weixin.qq.com/wwopen/sso/3rd_qrConnect");
             builder.tokenUri("https://qyapi.weixin.qq.com/cgi-bin/service/get_provider_token");
             builder.userInfoUri("https://qyapi.weixin.qq.com/cgi-bin/service/get_login_info");
-            builder.clientName("wechat-enterprise-qrcode-third");
+            builder.clientName("wechat-enterprise-qr");
             return builder;
         }
     },
@@ -95,7 +95,7 @@ public enum OAuth2Provider {
         @Override
         public ClientRegistration.Builder getBuilder() {
             ClientRegistration.Builder builder = getBuilder(ClientAuthenticationMethod.CLIENT_SECRET_BASIC, DEFAULT_REDIRECT_URL);
-            String scope = combineScope(AuthWeChatEnterpriseWebScope.SNSAPI_BASE);
+            String[] scope = combineScope(AuthWeChatEnterpriseWebScope.SNSAPI_BASE);
             builder.scope(scope);
             builder.authorizationUri("https://open.weixin.qq.com/connect/oauth2/authorize");
             builder.tokenUri("https://qyapi.weixin.qq.com/cgi-bin/gettoken");
@@ -109,7 +109,7 @@ public enum OAuth2Provider {
         @Override
         public ClientRegistration.Builder getBuilder() {
             ClientRegistration.Builder builder = getBuilder(ClientAuthenticationMethod.CLIENT_SECRET_BASIC, DEFAULT_REDIRECT_URL);
-            String scope = combineScope(AuthWeiboScope.ALL);
+            String[] scope = combineScope(AuthWeiboScope.ALL);
             builder.scope(scope);
             builder.authorizationUri("https://api.weibo.com/oauth2/authorize");
             builder.tokenUri("https://api.weibo.com/oauth2/access_token");
@@ -123,9 +123,9 @@ public enum OAuth2Provider {
         @Override
         public ClientRegistration.Builder getBuilder() {
             ClientRegistration.Builder builder = getBuilder(ClientAuthenticationMethod.CLIENT_SECRET_BASIC, DEFAULT_REDIRECT_URL);
-            String scope = combineScope(AuthGiteeScope.USER_INFO, AuthGiteeScope.EMAILS);
+            String[] scope = combineScope(AuthGiteeScope.USER_INFO, AuthGiteeScope.EMAILS);
             builder.scope(scope);
-            builder.authorizationUri("https://gitee.com/oauth/authoriz");
+            builder.authorizationUri("https://gitee.com/oauth/authorize");
             builder.tokenUri("https://gitee.com/oauth/token");
             builder.userInfoUri("https://gitee.com/api/v5/user");
             builder.userNameAttributeName("id");
@@ -258,13 +258,13 @@ public enum OAuth2Provider {
      * @param scopes scopes
      * @return scope
      */
-    public static String combineScope(AuthScope... scopes) {
+    public static String[] combineScope(AuthScope... scopes) {
         if (scopes == null || scopes.length == 0) {
-            return StringPool.EMPTY;
+            return new String[]{};
         }
         return Lists.newArrayList(scopes)
                 .stream()
                 .map(AuthScope::getScope)
-                .collect(Collectors.joining(StringPool.COMMA));
+                .toArray(String[]::new);
     }
 }

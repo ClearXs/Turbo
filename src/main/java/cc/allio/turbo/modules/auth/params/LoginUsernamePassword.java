@@ -2,8 +2,11 @@ package cc.allio.turbo.modules.auth.params;
 
 import lombok.Data;
 
+/**
+ * corresponding {@link LoginMode#EMPTY} login method
+ */
 @Data
-public class LoginParams {
+public class LoginUsernamePassword implements LoginClaim {
 
     /**
      * 用户名
@@ -16,13 +19,7 @@ public class LoginParams {
     private String password;
 
     /**
-     * 验证码id
+     * login mode
      */
-    private String captchaId;
-
-    /**
-     * 验证码code
-     */
-    private String captcha;
-
+    private LoginMode loginMode;
 }

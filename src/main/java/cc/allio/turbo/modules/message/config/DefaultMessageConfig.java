@@ -31,8 +31,8 @@ public class DefaultMessageConfig implements MessageConfig {
     private final SendModel sendModel;
 
     // DEFAULT
-    private static final RetryFailed DEFAULT_RETRY_FAILED = new RetryFailed();
-    private static final SendModel DEFAULT_SEND_MODEL = new SendModel();
+    static final RetryFailed DEFAULT_RETRY_FAILED = new RetryFailed();
+    static final SendModel DEFAULT_SEND_MODEL = new SendModel();
 
     static {
         DEFAULT_RETRY_FAILED.setStrategy(RetryStrategy.IGNORE);

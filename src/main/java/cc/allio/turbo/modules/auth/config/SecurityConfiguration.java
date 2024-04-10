@@ -20,6 +20,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -33,6 +35,12 @@ public class SecurityConfiguration {
                                                           SecureProperties secureProperties,
                                                           AuthenticationExceptionHandler authenticationExceptionHandler,
                                                           ISysUserService userService) throws Exception {
+        UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
         TurboUserDetailsService userDetailsService = new TurboUserDetailsService(userService);
         TurboPasswordEncoder passwordEncoder = new TurboPasswordEncoder(secureProperties);
         TurboJwtAuthenticationProvider jwtAuthenticationProvider = new TurboJwtAuthenticationProvider(userDetailsService, passwordEncoder);
@@ -65,6 +73,7 @@ public class SecurityConfiguration {
                 .sessionManagement(sessionManager -> {
                     sessionManager.sessionCreationPolicy(SessionCreationPolicy.NEVER);// 禁止用session来进行认证
                 })
+                .cors(c -> c.configurationSource(corsConfigurationSource))
                 .build();
     }
 
@@ -72,5 +81,4 @@ public class SecurityConfiguration {
     public AuthenticationExceptionHandler authenticationExceptionHandler() {
         return new AuthenticationExceptionHandler();
     }
-
 }

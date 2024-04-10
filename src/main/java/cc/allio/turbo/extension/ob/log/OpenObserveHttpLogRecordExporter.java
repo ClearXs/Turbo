@@ -55,6 +55,6 @@ public final class OpenObserveHttpLogRecordExporter implements LogRecordExporter
 
     @Override
     public String toString() {
-        return "OtlpHttpLogRecordExporter{" + builder.toString(false) + "}";
+        return "OpenObserveHttpLogRecordExporter{" + builder.toString(false) + "}";
     }
 }

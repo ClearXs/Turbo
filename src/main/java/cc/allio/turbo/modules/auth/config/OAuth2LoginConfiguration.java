@@ -6,7 +6,7 @@ import cc.allio.turbo.modules.auth.service.IAuthService;
 import cc.allio.turbo.modules.system.service.ISysThirdUserService;
 import cc.allio.turbo.modules.system.service.ISysUserService;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -20,8 +20,6 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,19 +35,14 @@ import java.util.stream.Collectors;
  * @see OAuth2LoginAuthenticationFilter
  */
 @Configuration
+@EnableConfigurationProperties(TurboOAuth2ClientProperties.class)
 public class OAuth2LoginConfiguration {
 
     @Bean
     @Order(0)
-    public SecurityFilterChain oauth2loginFilterChain(HttpSecurity http, OAuth2TokenGenerator oAuth2TokenGenerator) throws Exception {
-        UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("*");
-        corsConfiguration.addAllowedHeader("*");
-        corsConfiguration.addAllowedMethod("*");
-        corsConfiguration.setAllowCredentials(true);
-        corsConfigurationSource.registerCorsConfiguration("/oauth2/**", corsConfiguration);
-
+    public SecurityFilterChain oauth2loginFilterChain(HttpSecurity http,
+                                                      OAuth2TokenGenerator oAuth2TokenGenerator,
+                                                      TurboOAuth2ClientProperties oAuth2ClientProperties) throws Exception {
         http.authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/oauth2/**")
@@ -60,14 +53,11 @@ public class OAuth2LoginConfiguration {
                         // third system callback uri such as: /oauth2/code/login/github?code=xxx&state=xxx
                         oauth2.loginProcessingUrl("/oauth2/code/login/*")
                                 .failureHandler(new OAuth2LoginFailureHandler())
-                                .successHandler(new OAuth2LoginSuccessHandler(oAuth2TokenGenerator))
+                                .successHandler(new OAuth2LoginSuccessHandler(oAuth2TokenGenerator, oAuth2ClientProperties))
                                 .authorizationEndpoint(e ->
                                         e.authorizationRequestRepository(new TenantSessionAuthorizationRequestRepository())
                                                 .authorizationRedirectStrategy(new CORSAuthorizationRedirectStrategy()))
                 )
-                .cors(c -> {
-                    c.configurationSource(corsConfigurationSource);
-                })
                 .sessionManagement(sessionManager -> {
                     sessionManager.sessionCreationPolicy(SessionCreationPolicy.NEVER);// 禁止用session来进行认证
                 });
@@ -86,7 +76,7 @@ public class OAuth2LoginConfiguration {
     }
 
     @Bean
-    public ClientRegistrationRepository turboClientRegistrationRepository(OAuth2ClientProperties oAuth2ClientProperties) {
+    public ClientRegistrationRepository turboClientRegistrationRepository(TurboOAuth2ClientProperties oAuth2ClientProperties) {
         return new TurboClientRegistrationRepository(oAuth2ClientProperties);
     }
 

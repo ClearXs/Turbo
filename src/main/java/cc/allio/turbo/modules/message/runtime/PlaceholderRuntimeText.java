@@ -27,7 +27,7 @@ public class PlaceholderRuntimeText implements RuntimeText {
     }
 
     @Override
-    public String runThenText() {
+    public String thenText() {
         return expressionTemplate.parseTemplate(originText, runtimeVariable.getVariables());
     }
 

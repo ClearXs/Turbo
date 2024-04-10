@@ -24,10 +24,9 @@ public class TurboClientRegistrationRepository implements ClientRegistrationRepo
 
     private final ClientRegistrationRepository internal;
 
-    public TurboClientRegistrationRepository(OAuth2ClientProperties oAuth2ClientProperties) {
+    public TurboClientRegistrationRepository(TurboOAuth2ClientProperties oAuth2ClientProperties) {
         Map<String, OAuth2ClientProperties.Registration> propertiesRegistrations = oAuth2ClientProperties.getRegistration();
         List<ClientRegistration> registrations = Lists.newArrayList();
-
         for (Map.Entry<String, OAuth2ClientProperties.Registration> entryForRegistration : propertiesRegistrations.entrySet()) {
             String registrationId = entryForRegistration.getKey();
             OAuth2Provider oAuth2Provider = OAuth2Provider.getByRegistrationId(registrationId);

@@ -5,22 +5,23 @@ import cc.allio.turbo.common.util.AuthUtil;
 import cc.allio.turbo.common.web.R;
 import cc.allio.turbo.common.web.TurboCrudController;
 import cc.allio.turbo.common.web.params.QueryParam;
+import cc.allio.turbo.modules.message.constant.Status;
 import cc.allio.turbo.modules.message.dto.ReceiveVariables;
 import cc.allio.turbo.modules.message.entity.SysMessage;
-import cc.allio.turbo.modules.message.runtime.ReceiveMetadata;
 import cc.allio.turbo.modules.message.service.ISysMessageService;
 import cc.allio.uno.core.metadata.endpoint.source.SinkSource;
 import cc.allio.uno.core.util.JsonUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/sys/message")
@@ -30,8 +31,8 @@ public class SysMessageController extends TurboCrudController<SysMessage, SysMes
     @Autowired
     private SinkSource sinkSource;
 
-    @Operation(summary = "当前用户未读消息")
-    @PostMapping("/current-user")
+    @Operation(summary = "当前用户消息")
+    @PostMapping("/current-user/all")
     public R<IPage<SysMessage>> currentUser(@RequestBody QueryParam<SysMessage> params) {
         Long currentUserId = AuthUtil.getCurrentUserId();
         SysMessage sysMessage = new SysMessage();
@@ -39,6 +40,28 @@ public class SysMessageController extends TurboCrudController<SysMessage, SysMes
         QueryWrapper<SysMessage> queryWrapper = Conditions.entityQuery(params, getEntityType());
         Page<SysMessage> entityPage = service.page(params.getPage(), queryWrapper);
         return R.ok(entityPage);
+    }
+
+    @Operation(summary = "当前用户消息数量消息")
+    @PostMapping("/current-user/count")
+    public R<Long> currentUserCount(@RequestBody QueryParam<SysMessage> params) {
+        Long currentUserId = AuthUtil.getCurrentUserId();
+        SysMessage sysMessage = new SysMessage();
+        params.addTerm(sysMessage::getReceiver, currentUserId);
+        QueryWrapper<SysMessage> queryWrapper = Conditions.entityQuery(params, getEntityType());
+        long count = service.count(queryWrapper);
+        return R.ok(count);
+    }
+
+    @Operation(summary = "更新消息未已读")
+    @PutMapping("/read")
+    public R<Boolean> currentUserCount(@RequestBody List<Long> ids) {
+        UpdateWrapper<SysMessage> updateWrapper = Wrappers.update();
+        updateWrapper.setEntityClass(SysMessage.class);
+        updateWrapper.in("id", ids);
+        updateWrapper.set("messageStatus", Status.READ);
+        boolean update = service.update(updateWrapper);
+        return R.ok(update);
     }
 
     @Operation(summary = "发送消息")
