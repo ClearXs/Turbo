@@ -50,16 +50,16 @@
 
 ### 后端技术体系
 
-1. JDK21+
+1. JDK22+
 2. springboot:3.2+
 3. [uno:1.5+](https://github.com/ClearXs/uno)
 4. mybatis-plus:3.5.3+
-5. postgresql:14+
+5. postgresql:16+
 6. mysql:8+
 7. opentelemetry
 8. openobserve
 9. redis:7+
-10. kafka:3.0+
+10. kafka:3.6+
 11. xxljob
 
 ### 前端技术体系
