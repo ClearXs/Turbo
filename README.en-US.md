@@ -6,7 +6,7 @@ English | [简体中文](./README.md)
 
 <h4 align="center">Based on the Java ecosystem, the latest technologies in the React ecosystem are dedicated to creating comprehensive, one-stop solutions suitable for enterprise-level and internet marketing needs, tailored for future trends.</h4>
 
-## Target
+## aim
 
 - 🧃 Developer-friendly, clear code, and high readability.
 - 🤖 Reducing operational costs, embracing cloud-native approaches comprehensively, supporting CI/CD, and implementing
@@ -53,16 +53,16 @@ English | [简体中文](./README.md)
 
 ### Back-end
 
-1. JDK21+
+1. JDK22+
 2. springboot:3.2+
 3. [uno:1.5+](https://github.com/ClearXs/uno)
 4. mybatis-plus:3.5.3+
-5. postgresql:14+
+5. postgresql:16+
 6. mysql:8+
 7. opentelemetry
 8. openobserve
 9. redis:7+
-10. kafka:3.0+
+10. kafka:3.6+
 11. xxljob
 
 ### Front-end
