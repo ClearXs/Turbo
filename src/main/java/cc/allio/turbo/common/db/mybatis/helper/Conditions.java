@@ -36,7 +36,7 @@ public class Conditions {
     static Map<Class<?>, TermCondition> specialConds = Maps.newHashMap();
     static TermCondition generalCond = new TermConditionImpl();
     // 以实体为key，value存储{key=field name, value=field}
-    static Map<Class<?>, Map<String, Field>> entityFields = Maps.newHashMap();
+    final static Map<Class<?>, Map<String, Field>> entityFields = Maps.newHashMap();
 
     static {
         specialConds.put(Date.class, new DateTermCondition());
@@ -62,13 +62,16 @@ public class Conditions {
      * @return QueryWrapper instance
      */
     public static <T extends Entity> QueryWrapper<T> entityQuery(QueryWrapper<T> queryWrapper, QueryParam<T> queryParam, @NonNull Class<T> entityType) {
-        Map<String, Field> nameFields =
-                entityFields.computeIfAbsent(
-                        entityType,
-                        k -> {
-                            List<Field> fields = ReflectionKit.getFieldList(entityType);
-                            return fields.stream().collect(Collectors.toMap(Field::getName, f -> f));
-                        });
+        Map<String, Field> nameFields;
+        synchronized (entityFields) {
+            nameFields =
+                    entityFields.computeIfAbsent(
+                            entityType,
+                            _ -> {
+                                List<Field> fields = ReflectionKit.getFieldList(entityType);
+                                return fields.stream().collect(Collectors.toMap(Field::getName, f -> f));
+                            });
+        }
         // 查询条件
         onQueryTerm(
                 queryParam,

@@ -14,6 +14,18 @@ import cc.allio.uno.data.orm.executor.CommandExecutor;
  */
 public class SimpleTurboCrudTreeRepositoryServiceImpl<T extends TreeNodeEntity> extends SimpleTurboCrudRepositoryServiceImpl<T> implements ITurboCrudTreeRepositoryService<T> {
 
+    public SimpleTurboCrudTreeRepositoryServiceImpl() {
+        this(null, null);
+    }
+
+    public SimpleTurboCrudTreeRepositoryServiceImpl(Class<T> entityClass) {
+        this(null, entityClass);
+    }
+
+    public SimpleTurboCrudTreeRepositoryServiceImpl(AggregateCommandExecutor commandExecutor) {
+        this(commandExecutor, null);
+    }
+
     public SimpleTurboCrudTreeRepositoryServiceImpl(AggregateCommandExecutor commandExecutor, Class<T> entityClass) {
         super(commandExecutor, entityClass);
     }

@@ -1,10 +1,13 @@
 package cc.allio.turbo.common.db.uno.repository.mybatis;
 
 import cc.allio.uno.core.StringPool;
+import cc.allio.uno.core.util.CollectionUtils;
 import cc.allio.uno.core.util.StringUtils;
+import cc.allio.uno.data.orm.dsl.DSLName;
 import cc.allio.uno.data.orm.dsl.WhereOperator;
 import cc.allio.uno.data.orm.dsl.dml.QueryOperator;
 import cc.allio.uno.data.orm.dsl.dml.UpdateOperator;
+import cc.allio.uno.data.orm.dsl.helper.PojoWrapper;
 import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -20,10 +23,7 @@ import org.apache.ibatis.session.Configuration;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * mybatis的{@link com.baomidou.mybatisplus.core.conditions.Wrapper}适配器，
@@ -36,9 +36,9 @@ import java.util.Map;
  */
 public class WrapperAdapter {
 
-    private final Class<?> entityClass;
+    private Class<?> entityClass;
     // 占位符值的存放，其key比如是#{ew.params.MPGENVAL1}
-    private final Map<String, Object> paramNameValuePairs;
+    private Map<String, Object> paramNameValuePairs;
     // 包含where group having等
     private final MergeSegments expression;
     // select 语句搜索的 select
@@ -58,6 +58,21 @@ public class WrapperAdapter {
         check(wrapper);
         this.effect = effect;
         this.expression = wrapper.getExpression();
+        if (wrapper instanceof AbstractWrapper abstractWrapper) {
+            this.paramNameValuePairs = abstractWrapper.getParamNameValuePairs();
+            this.entityClass =
+                    Optional.ofNullable(abstractWrapper.getEntityClass())
+                            .or(() -> Optional.ofNullable(abstractWrapper.getEntity()).map(Object::getClass))
+                            .orElse(null);
+        }
+        if (paramNameValuePairs == null) {
+            this.paramNameValuePairs = Collections.emptyMap();
+        }
+        if (entityClass != null) {
+            // build entity table info to mybatis plus (ignore has error)
+            MapperBuilderAssistant builderAssistant = new MapperBuilderAssistant(configuration, entityClass.getName());
+            TableInfoHelper.initTableInfo(builderAssistant, entityClass);
+        }
         if (wrapper instanceof QueryWrapper<?> || wrapper instanceof LambdaQueryWrapper<?>) {
             if (effect == Effect.UPDATE) {
                 throw new IllegalArgumentException("Operator type is 'Update' but wrapper is entityQuery, please make sure between type concurrency");
@@ -68,21 +83,6 @@ public class WrapperAdapter {
                 throw new IllegalArgumentException("Operator type is 'Query' but wrapper is update, please make sure between type concurrency");
             }
             parseUpdateWrapper(wrapper);
-        }
-        if (wrapper instanceof AbstractWrapper<?, ?, ?> abstractWrapper) {
-            this.paramNameValuePairs = abstractWrapper.getParamNameValuePairs();
-            this.entityClass = abstractWrapper.getEntityClass();
-        } else {
-            this.paramNameValuePairs = Collections.emptyMap();
-            this.entityClass = null;
-        }
-        buildEntityTableInfoToMybatis(entityClass);
-    }
-
-    void buildEntityTableInfoToMybatis(Class<?> entityClass) {
-        if (entityClass != null) {
-            MapperBuilderAssistant builderAssistant = new MapperBuilderAssistant(configuration, entityClass.getName());
-            TableInfoHelper.initTableInfo(builderAssistant, entityClass);
         }
     }
 
@@ -101,9 +101,15 @@ public class WrapperAdapter {
         }
         // default query all
         if (StringUtils.isBlank(sqlSelect)) {
-            sqlSelect = StringPool.ASTERISK;
-        }
-        if (StringUtils.isNotBlank(sqlSelect)) {
+            // find all entity field
+            if (entityClass != null) {
+                Collection<DSLName> columns = PojoWrapper.findColumns(entityClass);
+                this.selects.addAll(columns.stream().map(DSLName::format).toList());
+            }
+            if (CollectionUtils.isEmpty(selects)) {
+                this.selects.add(StringPool.ASTERISK);
+            }
+        } else {
             this.selects.addAll(Arrays.stream(sqlSelect.split(StringPool.COMMA)).toList());
         }
     }
