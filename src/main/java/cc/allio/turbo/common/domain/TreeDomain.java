@@ -97,5 +97,4 @@ public abstract class TreeDomain<T extends TreeNodeEntity, R extends TreeDomain<
         }
         this.entity = entity;
     }
-
 }

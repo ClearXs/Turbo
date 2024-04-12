@@ -18,9 +18,7 @@ public class OrgMapperTest extends BaseTestCase {
     @Test
     void testTree(@Parameter CoreTest coreTest) {
         assertDoesNotThrow(() -> orgMapper.selectTree(Wrappers.emptyWrapper()));
-
         assertDoesNotThrow(() -> orgMapper.selectTree(Wrappers.<Org>lambdaQuery().eq(Org::getName, "字典1")));
-
     }
 
 }

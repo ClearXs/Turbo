@@ -47,6 +47,11 @@ public abstract class TurboCrudRepositoryServiceImpl<T extends Entity> implement
     }
 
     @Override
+    public AggregateCommandExecutor getExecutor() {
+        return getRepository().getExecutor();
+    }
+
+    @Override
     public void setProxy(Subscriber<T> subscriber) {
         this.proxySubscriber = subscriber;
     }
