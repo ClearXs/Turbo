@@ -101,7 +101,7 @@ public class DevDataSourceServiceImpl
     }
 
     @Override
-    public boolean alertTable(Long dataSourceId, UnaryOperator<AlterTableOperator> func) {
+    public boolean alertTable(Long dataSourceId, UnaryOperator<AlterTableOperator<?>> func) {
         AggregateCommandExecutor commandExecutor = getCommandExecutor(dataSourceId);
         if (commandExecutor == null) {
             return false;
@@ -149,7 +149,7 @@ public class DevDataSourceServiceImpl
         if (DBType.DBCategory.RELATIONAL == dbType.getCategory()) {
             executorKey = ExecutorKey.DB;
             operatorKey = OperatorKey.SQL;
-        } else if (DBType.ELASTIC_SEARCH == dbType) {
+        } else if (DBType.ELASTICSEARCH == dbType) {
             executorKey = ExecutorKey.ELASTICSEARCH;
             operatorKey = OperatorKey.ELASTICSEARCH;
         } else if (DBType.REDIS == dbType) {

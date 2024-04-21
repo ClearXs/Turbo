@@ -25,7 +25,7 @@
 
     <properties>
         <java.version>22</java.version>
-        <uno.version>1.1.8</uno.version>
+        <uno.version>1.1.9</uno.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <maven-plugin.version>3.11.0</maven-plugin.version>
         <knife4j.version>4.3.0</knife4j.version>

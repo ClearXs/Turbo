@@ -29,9 +29,9 @@ public interface ITurboCrudTreeRepositoryService<T extends TreeNodeEntity> exten
                 .queryList(
                         entityClass,
                         o -> {
-                            QueryOperator baseQuery = WrapperAdapter.adapt(queryWrapper, getExecutor().getOperatorGroup().query());
-                            QueryOperator newQuery = getExecutor().getOperatorGroup().query();
-                            QueryOperator subQuery = newQuery.select(entityClass).from(entityClass);
+                            QueryOperator<?> baseQuery = WrapperAdapter.adapt(queryWrapper, getExecutor().getOperatorGroup().query());
+                            QueryOperator<?> newQuery = getExecutor().getOperatorGroup().query();
+                            QueryOperator<?> subQuery = newQuery.select(entityClass).from(entityClass);
                             return o.tree(baseQuery, subQuery);
                         });
     }

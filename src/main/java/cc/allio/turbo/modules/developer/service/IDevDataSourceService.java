@@ -46,7 +46,7 @@ public interface IDevDataSourceService extends ITurboCrudService<DevDataSource> 
      * @param func         func
      * @return true if success
      */
-    boolean alertTable(Long dataSourceId, UnaryOperator<AlterTableOperator> func);
+    boolean alertTable(Long dataSourceId, UnaryOperator<AlterTableOperator<?>> func);
 
     /**
      * 基于数据源id根据{@link CommandExecutor}实例

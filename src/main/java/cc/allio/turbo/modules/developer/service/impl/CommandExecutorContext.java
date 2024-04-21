@@ -48,6 +48,11 @@ public class CommandExecutorContext implements CommandExecutorRegistry {
     }
 
     @Override
+    public <T extends AggregateCommandExecutor> T register(ExecutorOptions executorOptions, Supplier<T> commandExecutorSupplier, boolean ifPresent) {
+        return registry.register(executorOptions, commandExecutorSupplier, ifPresent);
+    }
+
+    @Override
     public <T extends AggregateCommandExecutor> T crate(@NotNull ExecutorOptions executorOptions) {
         return registry.crate(executorOptions);
     }
@@ -55,11 +60,6 @@ public class CommandExecutorContext implements CommandExecutorRegistry {
     @Override
     public <T extends AggregateCommandExecutor> T createAndRegister(@NotNull ExecutorOptions executorOptions) {
         return registry.createAndRegister(executorOptions);
-    }
-
-    @Override
-    public <T extends AggregateCommandExecutor> T registerCommandExecutor(ExecutorOptions executorOptions, Supplier<T> commandExecutorSupplier, boolean ifPresent) {
-        return registry.registerCommandExecutor(executorOptions, commandExecutorSupplier, ifPresent);
     }
 
     @Override

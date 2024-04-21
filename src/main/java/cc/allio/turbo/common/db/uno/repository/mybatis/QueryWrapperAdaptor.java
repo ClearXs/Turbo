@@ -13,7 +13,7 @@ import java.util.Map;
  * @date 2024/3/31 15:09
  * @since 0.1.1
  */
-public class QueryWrapperAdaptor<T extends QueryOperator> implements WrapperAdaptor<T> {
+public class QueryWrapperAdaptor<T extends QueryOperator<?>> implements WrapperAdaptor<T> {
 
     private final Map<String, Object> paramNameValuePairs;
     private final MergeSegments expression;
@@ -35,7 +35,7 @@ public class QueryWrapperAdaptor<T extends QueryOperator> implements WrapperAdap
         for (String select : selects) {
             operator.select(select);
         }
-        new WhereWrapperAdaptor<QueryOperator>(paramNameValuePairs, expression).adapt(operator);
+        new WhereWrapperAdaptor(paramNameValuePairs, expression).adapt(operator);
         // from
         if (entityClass != null) {
             operator.from(entityClass);

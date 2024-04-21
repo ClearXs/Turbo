@@ -28,7 +28,7 @@ public interface ITurboRepository<T extends Entity> extends EntityTypeAware<T> {
      * @param func the func
      * @return true 成功 false 失败
      */
-    default boolean insert(UnaryOperator<InsertOperator> func) {
+    default boolean insert(UnaryOperator<InsertOperator<?>> func) {
         return getExecutor().insert(getEntityType(), func);
     }
 
@@ -39,7 +39,7 @@ public interface ITurboRepository<T extends Entity> extends EntityTypeAware<T> {
      * @param func the func
      * @return true 成功 false 失败
      */
-    default boolean update(UnaryOperator<UpdateOperator> func) {
+    default boolean update(UnaryOperator<UpdateOperator<?>> func) {
         return getExecutor().update(getEntityType(), func);
     }
 
@@ -50,7 +50,7 @@ public interface ITurboRepository<T extends Entity> extends EntityTypeAware<T> {
      * @param func func
      * @return true 成功 false 失败
      */
-    default boolean delete(UnaryOperator<DeleteOperator> func) {
+    default boolean delete(UnaryOperator<DeleteOperator<?>> func) {
         return getExecutor().delete(func);
     }
 
@@ -60,7 +60,7 @@ public interface ITurboRepository<T extends Entity> extends EntityTypeAware<T> {
      * @param func the func
      * @return 实体 or null
      */
-    default T queryOne(UnaryOperator<QueryOperator> func) {
+    default T queryOne(UnaryOperator<QueryOperator<?>> func) {
         return getExecutor().queryOne(getEntityType(), func);
     }
 
@@ -70,7 +70,7 @@ public interface ITurboRepository<T extends Entity> extends EntityTypeAware<T> {
      * @param func the func
      * @return list
      */
-    default List<T> queryList(UnaryOperator<QueryOperator> func) {
+    default List<T> queryList(UnaryOperator<QueryOperator<?>> func) {
         return getExecutor().queryList(getEntityType(), func);
     }
 
@@ -82,7 +82,7 @@ public interface ITurboRepository<T extends Entity> extends EntityTypeAware<T> {
      * @return List
      * @throws DSLException query failed throw
      */
-    default IPage<T> queryPage(IPage<?> page, UnaryOperator<QueryOperator> func) {
+    default IPage<T> queryPage(IPage<?> page, UnaryOperator<QueryOperator<?>> func) {
         return getExecutor().queryPage(page, func, getEntityType());
     }
 

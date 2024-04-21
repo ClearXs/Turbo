@@ -55,7 +55,7 @@ public class LockRepositoryMethodInterceptor implements MethodInterceptor {
         // 基于ReentrantLock，实现对Repository方法，进行加锁执行。
         return LockContext.lock(Entity::putThreadLockContext)
                 .thenApply(optionContext -> this.doInvoke(invocation, optionContext))
-                .lockEnd(lockContext -> Entity.clearThreadLockContext())
+                .lockEnd(_ -> Entity.clearThreadLockContext())
                 .release()
                 .unwrap(Throwable.class);
     }
