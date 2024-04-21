@@ -15,7 +15,7 @@ import java.util.Map;
  * @date 2024/3/31 15:10
  * @since 0.1.1
  */
-public class UpdateWrapperAdaptor<T extends UpdateOperator> implements WrapperAdaptor<T> {
+public class UpdateWrapperAdaptor<T extends UpdateOperator<?>> implements WrapperAdaptor<T> {
 
     private final List<Tuple2<String, String>> setPair;
     private final Map<String, Object> paramNameValuePairs;
@@ -34,7 +34,7 @@ public class UpdateWrapperAdaptor<T extends UpdateOperator> implements WrapperAd
 
     @Override
     public T adapt(T operator) {
-        new WhereWrapperAdaptor<UpdateOperator>(paramNameValuePairs, expression).adapt(operator);
+        new WhereWrapperAdaptor(paramNameValuePairs, expression).adapt(operator);
         for (Tuple2<String, String> pair : setPair) {
             String column = pair.getT1();
             String placeholder = pair.getT2();

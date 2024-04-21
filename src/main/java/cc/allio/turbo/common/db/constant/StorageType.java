@@ -30,7 +30,7 @@ public enum StorageType {
     REDIS(DBType.REDIS.getName(), DBType.REDIS.getName(), DBType.REDIS.getCategory()),
     INFLUXDB(DBType.INFLUXDB.getName(), DBType.INFLUXDB.getName(), DBType.INFLUXDB.getCategory()),
     NEO4J(DBType.NEO4J.getName(), DBType.NEO4J.getName(), DBType.NEO4J.getCategory()),
-    ELASTIC_SEARCH(DBType.ELASTIC_SEARCH.getName(), DBType.ELASTIC_SEARCH.getName(), DBType.ELASTIC_SEARCH.getCategory()),
+    ELASTIC_SEARCH(DBType.ELASTICSEARCH.getName(), DBType.ELASTICSEARCH.getName(), DBType.ELASTICSEARCH.getCategory()),
     TD_ENGINE(DBType.TD_ENGINE.getName(), DBType.TD_ENGINE.getName(), DBType.TD_ENGINE.getCategory());
 
     @EnumValue
