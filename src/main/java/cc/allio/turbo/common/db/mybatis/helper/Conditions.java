@@ -175,8 +175,8 @@ public class Conditions {
                     Date firstTime = translator.convert(timeArray.get(0).toString());
                     Date endTime = translator.convert(timeArray.get(1).toString());
                     String tableColumn = term.getTableColumn();
-                    queryWrapper.le(tableColumn, firstTime);
-                    queryWrapper.ge(tableColumn, endTime);
+                    queryWrapper.ge(tableColumn, firstTime);
+                    queryWrapper.le(tableColumn, endTime);
                 } catch (Throwable ex) {
                     log.error("build term {} between time entityQuery has error", term, ex);
                 }
