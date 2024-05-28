@@ -47,5 +47,4 @@ public class SysCategory extends TreeEntity {
     @TableField("func_code")
     @Schema(description = "功能标识")
     private String funcCode;
-
 }

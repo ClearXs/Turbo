@@ -12,6 +12,7 @@ public final class DevCodes {
     private static final String GROUP = "dev";
     private static final String BO = "bo";
     private static final String PAGE = "page";
+    private static final String DATASOURCE = "datasource";
 
     public static final I18nCode BO_ERROR = I18nCode.of("dev.bo.error", "", GROUP, BO);
     public static final I18nCode BO_NOT_FOUND = I18nCode.of("dev.bo.not.found", "", GROUP, BO);
@@ -19,4 +20,6 @@ public final class DevCodes {
     public static final I18nCode BO_NONE_TABLES = I18nCode.of("dev.bo.none.tables", "", GROUP, BO);
     public static final I18nCode PAGE_NOT_FOUND = I18nCode.of("dev.page.not.found", "", GROUP, PAGE);
 
+    public static final I18nCode DATATABLE_NOT_FOUND = I18nCode.of("dev.datasource.not.found.datatable", "", GROUP, DATASOURCE);
+    public static final I18nCode DATATABLE_MORE_THAN_ONE = I18nCode.of("dev.datasource.datatable.more", "", GROUP, DATASOURCE);
 }

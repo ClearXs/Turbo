@@ -6,19 +6,20 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 数据集来源
+ * code template domain
  *
  * @author j.x
- * @date 2024/1/24 14:26
- * @since 0.1.0
+ * @date 2024/5/3 15:14
+ * @since 0.1.1
  */
 @Getter
 @AllArgsConstructor
-public enum DatasetSource {
+public enum CodeTemplateDomain {
 
-    BO("bo", "业务对象"),
-    API("api", "接口"),
-    SQL("sql", "sql");
+    FRONTEND("frontend", "前端域"),
+    BACKEND("backend", "后端域"),
+    FILE("file", "文件域"),
+    OTHER("other", "其他");
 
     @JsonValue
     @EnumValue

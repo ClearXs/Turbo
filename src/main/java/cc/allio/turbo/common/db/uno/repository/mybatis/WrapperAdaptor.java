@@ -3,8 +3,8 @@ package cc.allio.turbo.common.db.uno.repository.mybatis;
 import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.util.StringUtils;
 import cc.allio.uno.core.util.template.ExpressionTemplate;
-import cc.allio.uno.core.util.template.TokenParser;
 import cc.allio.uno.core.util.template.Tokenizer;
+import cc.allio.uno.core.util.template.internal.TokenParser;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
