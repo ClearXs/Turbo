@@ -2,7 +2,7 @@ package cc.allio.turbo.common.db.mybatis.plugins.inner;
 
 import cc.allio.turbo.common.db.constraint.Unique;
 import cc.allio.uno.core.StringPool;
-import cc.allio.uno.core.bean.ObjectWrapper;
+import cc.allio.uno.core.bean.BeanWrapper;
 import cc.allio.uno.core.util.CollectionUtils;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -72,21 +72,21 @@ public class ConstraintInnerInterceptor implements InnerInterceptor {
         if (CollectionUtils.isEmpty(constraints)) {
             return null;
         }
-        ObjectWrapper objectWrapper = null;
+        BeanWrapper beanWrapper = null;
         if (parameter instanceof Map<?, ?> map) {
             Object entity = map.getOrDefault(Constants.ENTITY, null);
             if (entity != null) {
-                objectWrapper = new ObjectWrapper(entity);
+                beanWrapper = new BeanWrapper(entity);
             }
         } else {
-            objectWrapper = new ObjectWrapper(parameter);
+            beanWrapper = new BeanWrapper(parameter);
         }
-        if (objectWrapper == null) {
+        if (beanWrapper == null) {
             return null;
         }
         QueryWrapper<?> queryWrapper = Wrappers.query();
         for (Field constraint : constraints) {
-            Object value = objectWrapper.getForce(constraint.getName());
+            Object value = beanWrapper.getForce(constraint.getName());
             String column = constraint.getName();
             if (constraint.isAnnotationPresent(TableField.class)) {
                 TableField tableField = constraint.getAnnotation(TableField.class);

@@ -2,10 +2,13 @@ package cc.allio.turbo.modules.developer.service.impl;
 
 import cc.allio.turbo.common.db.mybatis.service.impl.TurboCrudServiceImpl;
 import cc.allio.turbo.common.db.constant.StorageType;
+import cc.allio.turbo.common.exception.BizException;
+import cc.allio.turbo.common.i18n.DevCodes;
 import cc.allio.turbo.modules.developer.domain.TableColumns;
 import cc.allio.turbo.modules.developer.entity.DevDataSource;
 import cc.allio.turbo.modules.developer.mapper.DevDataSourceMapper;
 import cc.allio.turbo.modules.developer.service.IDevDataSourceService;
+import cc.allio.uno.core.util.CollectionUtils;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.uno.data.orm.dsl.ColumnDef;
 import cc.allio.uno.data.orm.dsl.OperatorKey;
@@ -139,6 +142,18 @@ public class DevDataSourceServiceImpl
                     return tableColumns;
                 })
                 .toList();
+    }
+
+    @Override
+    public TableColumns showTable(Long dataSourceId, String tableName) throws BizException {
+        List<TableColumns> tableColumns = showTables(dataSourceId, Table.of(tableName));
+        if (CollectionUtils.isNotEmpty(tableColumns) && tableColumns.size() > 1) {
+            throw new BizException(DevCodes.DATATABLE_MORE_THAN_ONE);
+        }
+        if (CollectionUtils.isEmpty(tableColumns)) {
+            throw new BizException(DevCodes.DATATABLE_NOT_FOUND);
+        }
+        return tableColumns.get(0);
     }
 
     @Override

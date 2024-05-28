@@ -1,6 +1,6 @@
 package cc.allio.turbo.common.util;
 
-import cc.allio.uno.core.bean.ObjectWrapper;
+import cc.allio.uno.core.bean.BeanWrapper;
 import cc.allio.uno.core.bean.ValueWrapper;
 import cc.allio.uno.core.function.lambda.MethodFunction;
 import cc.allio.uno.core.type.Types;
@@ -84,7 +84,7 @@ public class VariationAnalyzer<T, Key> {
 
         Function<T, Key> toKey = k -> {
             if (Types.isBean(k.getClass())) {
-                Object key = ObjectWrapper.getValue(k, keyName);
+                Object key = BeanWrapper.getValue(k, keyName);
                 if (key == ValueWrapper.EMPTY_VALUE) {
                     throw new NullPointerException("specific key value is null");
                 }

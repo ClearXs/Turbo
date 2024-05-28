@@ -6,19 +6,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 数据集来源
+ * code generate source
  *
  * @author j.x
- * @date 2024/1/24 14:26
- * @since 0.1.0
+ * @date 2024/5/3 16:43
+ * @since 0.1.1
  */
 @Getter
 @AllArgsConstructor
-public enum DatasetSource {
+public enum CodeGenerateSource {
 
-    BO("bo", "业务对象"),
-    API("api", "接口"),
-    SQL("sql", "sql");
+    DATATABLE("datatable", "实体表"),
+    DATASET("page", "数据页面");
 
     @JsonValue
     @EnumValue

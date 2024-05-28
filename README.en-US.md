@@ -23,7 +23,7 @@ English | [简体中文](./README.md)
 - **Data Source Agnostic:** Highly abstracted data operations allow developers to focus solely on business logic without needing to concern themselves with the differences in underlying data sources.
 - **High Encapsulation:** Turbo draws inspiration from the design principles of Mybatis-Plus and JPA, adopting a highly encapsulated three-tier architecture (Controller-Service-Repository) along with concepts of domain events and behaviors. This approach achieves architectural uniformity and extensibility.
 - **Business Domain Modeling:** Turbo supports business domain modeling, aiding developers in better organizing and managing business logic.
-- **Unified Frontend:** Leveraging Alibaba's Formily and internally developed Tableily solutions, Turbo achieves uniformity across different ends, reducing the learning curve for developers by unifying **Form** and **Table** components.
+- **Unified Frontend:** Leveraging Alibaba's Formily and internally developed Tablily solutions, Turbo achieves uniformity across different ends, reducing the learning curve for developers by unifying **Form** and **Table** components.
 - **RBAC Permission System:** Turbo offers a comprehensive RBAC (Role-Based Access Control) permission system, enabling developers to easily implement user permission management.
 - **Supports the OAuth2.1:** Turbo supports the OAuth2.1 protocol, facilitating seamless integration with other systems.
 - **Internationalization**: Turbo supports internationalization, making it convenient to implement multi-language support.
