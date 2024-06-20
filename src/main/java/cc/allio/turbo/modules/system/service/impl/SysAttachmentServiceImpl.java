@@ -1,6 +1,8 @@
 package cc.allio.turbo.modules.system.service.impl;
 
 import cc.allio.turbo.extension.oss.*;
+import cc.allio.turbo.extension.oss.request.OssGetRequest;
+import cc.allio.turbo.extension.oss.request.OssPutRequest;
 import cc.allio.turbo.modules.system.properties.FileProperties;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.i18n.ExceptionCodes;
@@ -10,7 +12,6 @@ import cc.allio.turbo.modules.system.entity.SysAttachment;
 import cc.allio.turbo.modules.system.mapper.SysAttachmentMapper;
 import cc.allio.turbo.modules.system.service.ISysAttachmentService;
 import cc.allio.uno.core.StringPool;
-import cc.allio.uno.core.util.FileUtils;
 import cc.allio.uno.core.util.IoUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -52,13 +55,17 @@ public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachment
         if (ossExecutor == null) {
             throw new BizException(ExceptionCodes.ATTACHMENT_UPLOAD_EXECUTOR_NOTFOUND);
         }
-        OssPutRequest ossPutRequest = new OssPutRequest();
+        InputStream fileInputStream;
         try {
-            ossPutRequest.setObject(file.getOriginalFilename());
-            ossPutRequest.setInputStream(file.getInputStream());
-        } catch (Throwable ex) {
+            fileInputStream = file.getInputStream();
+        } catch (IOException e) {
             throw new BizException(ExceptionCodes.ATTACHMENT_UPLOAD_EXECUTOR_NOTFOUND);
         }
+        OssPutRequest ossPutRequest =
+                OssPutRequest.builder()
+                        .inputStream(fileInputStream)
+                        .object(file.getOriginalFilename())
+                        .build();
 
         boolean hasUpload;
         try {
@@ -103,8 +110,7 @@ public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachment
     @Override
     public void download(String object, HttpServletRequest request, HttpServletResponse response) throws BizException {
         OssExecutor ossExecutor = OssExecutorFactory.getCurrent();
-        OssGetRequest ossGetRequest = new OssGetRequest();
-        ossGetRequest.setObject(object);
+        OssGetRequest ossGetRequest = OssGetRequest.builder().object(object).build();
         try {
             OssResponse ossResponse = ossExecutor.download(ossGetRequest);
             response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + convertToFileName(request, ossResponse.getObject()));

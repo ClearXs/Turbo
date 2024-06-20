@@ -1,5 +1,8 @@
 package cc.allio.turbo.extension.oss;
 
+import cc.allio.turbo.extension.oss.request.OssGetRequest;
+import cc.allio.turbo.extension.oss.request.OssPutRequest;
+import cc.allio.turbo.extension.oss.request.OssRemoveRequest;
 import io.minio.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,6 +52,38 @@ public class MinioOssExecutor extends BaseOssExecutor {
         ossResponse.setSuccessful(true);
         ossResponse.setInputStream(response);
         return ossResponse;
+    }
+
+    @Override
+    protected boolean doRemove(OssRemoveRequest ossRemoveRequest) throws Throwable {
+        String bucket = ossTrait.getBucket();
+        RemoveObjectArgs removeObjectArgs =
+                RemoveObjectArgs.builder()
+                        .bucket(bucket)
+                        .object(ossRemoveRequest.getObject())
+                        .build();
+        minioClient.removeObject(removeObjectArgs);
+        return true;
+    }
+
+    @Override
+    protected String doCopyObject(String src, String dest) throws Throwable {
+        String bucket = ossTrait.getBucket();
+        CopyObjectArgs copyObjectArgs = CopyObjectArgs
+                .builder()
+                .bucket(bucket)
+                .source(CopySource.builder().bucket(bucket).object(src).build())
+                .object(dest)
+                .build();
+        try {
+            ObjectWriteResponse objectWriteResponse = minioClient.copyObject(copyObjectArgs);
+            if (log.isInfoEnabled()) {
+                log.info("copy source path={} to destination path={}, the result is {}", src, dest, objectWriteResponse.object());
+            }
+        } catch (Throwable ex) {
+            log.error("Failed copy source filepath={} to destination filepath={}", src, dest, ex);
+        }
+        return dest;
     }
 
     @Override
