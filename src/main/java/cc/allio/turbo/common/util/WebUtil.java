@@ -4,6 +4,7 @@ import cc.allio.turbo.common.web.App;
 import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.data.util.Optionals;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -148,5 +149,49 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
             return servletRequestAttributes.getRequest();
         }
         return null;
+    }
+
+    /**
+     * 从http请求头中获取客户端的ip地址
+     *
+     * @param request {@link HttpServletRequest} 实例
+     * @return ip for {@link String}
+     */
+    public static String getIp(HttpServletRequest request) {
+        if (request == null) {
+            return null;
+        }
+        String sourceIp = null;
+        String ipAddresses = request.getHeader("x-forwarded-for");
+        if (ipAddresses == null || ipAddresses.isEmpty() || "unknown".equalsIgnoreCase(ipAddresses)) {
+            ipAddresses = request.getHeader("Proxy-Client-IP");
+        }
+        if (ipAddresses == null || ipAddresses.isEmpty() || "unknown".equalsIgnoreCase(ipAddresses)) {
+            ipAddresses = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ipAddresses == null || ipAddresses.isEmpty() || "unknown".equalsIgnoreCase(ipAddresses)) {
+            ipAddresses = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ipAddresses == null || ipAddresses.isEmpty() || "unknown".equalsIgnoreCase(ipAddresses)) {
+            ipAddresses = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ipAddresses == null || ipAddresses.isEmpty() || "unknown".equalsIgnoreCase(ipAddresses)) {
+            ipAddresses = request.getRemoteAddr();
+        }
+        if (!StringUtils.isEmpty(ipAddresses)) {
+            sourceIp = ipAddresses.split(",")[0];
+        }
+        return sourceIp;
+    }
+
+    /**
+     * 从{@link HttpSession}中获取session id
+     *
+     * @param request {@link HttpServletRequest} 实例
+     * @return session id for {@link String}
+     */
+    public static String getSessionId(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        return session.getId();
     }
 }
