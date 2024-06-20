@@ -9,6 +9,8 @@ import cc.allio.turbo.common.util.InetUtil;
 import cc.allio.turbo.modules.system.entity.SysAttachment;
 import cc.allio.turbo.modules.system.mapper.SysAttachmentMapper;
 import cc.allio.turbo.modules.system.service.ISysAttachmentService;
+import cc.allio.uno.core.StringPool;
+import cc.allio.uno.core.util.FileUtils;
 import cc.allio.uno.core.util.IoUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import jakarta.servlet.http.HttpServletRequest;
@@ -70,7 +72,10 @@ public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachment
         }
 
         // http://localhost:8600/sys/attachment/download/test.txt
-        String filepath = InetUtil.getHttpSelfAddress() + "/sys/attachment/download/" + file.getOriginalFilename();
+        String originalFilename = file.getOriginalFilename();
+        String filepath = InetUtil.getHttpSelfAddress() + "/sys/attachment/download/" + originalFilename;
+        long filesize = file.getSize();
+        String filetype = originalFilename.substring(originalFilename.lastIndexOf(StringPool.ORIGIN_DOT));
 
         SysAttachment sysAttachment = getOne(Wrappers.<SysAttachment>lambdaQuery().eq(SysAttachment::getKey, ossPutRequest.getObject()));
         if (sysAttachment == null) {
@@ -79,6 +84,8 @@ public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachment
             sysAttachment.setKey(ossPutRequest.getObject());
             sysAttachment.setFilepath(filepath);
             sysAttachment.setProvider(ossExecutor.getProvider());
+            sysAttachment.setFilesize(filesize);
+            sysAttachment.setFiletype(filetype);
             save(sysAttachment);
         } else {
             sysAttachment.setProvider(ossExecutor.getProvider());
@@ -86,6 +93,8 @@ public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachment
             sysAttachment.setKey(ossPutRequest.getObject());
             sysAttachment.setFilepath(filepath);
             sysAttachment.setProvider(ossExecutor.getProvider());
+            sysAttachment.setFilesize(filesize);
+            sysAttachment.setFiletype(filetype);
             updateById(sysAttachment);
         }
         return sysAttachment;
@@ -93,7 +102,6 @@ public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachment
 
     @Override
     public void download(String object, HttpServletRequest request, HttpServletResponse response) throws BizException {
-
         OssExecutor ossExecutor = OssExecutorFactory.getCurrent();
         OssGetRequest ossGetRequest = new OssGetRequest();
         ossGetRequest.setObject(object);
