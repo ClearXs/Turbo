@@ -1,5 +1,6 @@
-package cc.allio.turbo.extension.oss;
+package cc.allio.turbo.extension.oss.request;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,8 +14,14 @@ import java.io.InputStream;
  * @since 0.1.0
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class OssPutRequest extends OssBaseRequest {
+@Builder
+public class OssPutRequest {
+
+    /**
+     * 对象标识。
+     * <p>比如: test.txt</p>
+     */
+    private String object;
 
     /**
      * 数据输入流

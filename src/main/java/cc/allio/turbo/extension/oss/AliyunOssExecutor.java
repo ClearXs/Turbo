@@ -1,5 +1,8 @@
 package cc.allio.turbo.extension.oss;
 
+import cc.allio.turbo.extension.oss.request.OssGetRequest;
+import cc.allio.turbo.extension.oss.request.OssPutRequest;
+import cc.allio.turbo.extension.oss.request.OssRemoveRequest;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.common.auth.CredentialsProviderFactory;
@@ -45,6 +48,16 @@ public class AliyunOssExecutor extends BaseOssExecutor {
         response.setInputStream(ossObject.getObjectContent());
 
         return response;
+    }
+
+    @Override
+    protected boolean doRemove(OssRemoveRequest ossRemoveRequest) throws Throwable {
+        return false;
+    }
+
+    @Override
+    protected String doCopyObject(String src, String dest) throws Throwable {
+        return "";
     }
 
     @Override

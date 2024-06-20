@@ -1,5 +1,9 @@
 package cc.allio.turbo.extension.oss;
 
+import cc.allio.turbo.extension.oss.request.OssGetRequest;
+import cc.allio.turbo.extension.oss.request.OssPutRequest;
+import cc.allio.turbo.extension.oss.request.OssRemoveRequest;
+
 /**
  * oss execute
  *
@@ -24,6 +28,24 @@ public interface OssExecutor {
      * @return OssResponse
      */
     OssResponse download(OssGetRequest ossGetRequest);
+
+    /**
+     * object remove
+     *
+     * @param ossRemoveRequest the {@link OssRemoveRequest} instance
+     * @return true if success
+     */
+    boolean remove(OssRemoveRequest ossRemoveRequest);
+
+    /**
+     * copy source object dest to target
+     * <p>like as /2024/xx.doc /2024/2/xx.doc</p>
+     *
+     * @param src the source path
+     * @param dest the dest path
+     * @return the object result
+     */
+    String copyObject(String src, String dest);
 
     /**
      * 获取存储商标识
