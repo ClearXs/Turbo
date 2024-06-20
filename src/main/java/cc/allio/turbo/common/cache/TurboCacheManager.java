@@ -1,12 +1,10 @@
 package cc.allio.turbo.common.cache;
 
-import cc.allio.uno.core.function.lambda.MethodConsumer;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.AbstractCacheManager;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**

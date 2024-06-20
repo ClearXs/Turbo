@@ -2,6 +2,7 @@ package cc.allio.turbo.modules.developer.domain.view;
 
 import cc.allio.turbo.common.db.entity.MapEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 视图数据字段列定义
@@ -11,7 +12,9 @@ import lombok.Data;
  * @since 0.1.0
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class FieldColumn extends MapEntity {
+
     // 字段标识
     private String field;
     // 字段位置索引
@@ -50,4 +53,6 @@ public class FieldColumn extends MapEntity {
     private Object table;
     // 是否支持搜索，如果true则把column展示在搜索栏中，默认false
     private Object search;
+    // whether column editable
+    private Boolean editable;
 }

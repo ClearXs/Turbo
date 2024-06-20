@@ -29,7 +29,7 @@ public class DevCodeGenerate extends TenantEntity implements CategoryEntity {
      * 模板集合
      */
     @TableField("template_category_id")
-    @Schema(description = "模板集合")
+    @Schema(description = "模板集")
     private Long templateCategoryId;
 
     /**

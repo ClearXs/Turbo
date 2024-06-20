@@ -22,12 +22,12 @@ public class TableInfo {
     /**
      * the {@link ColumnDef} list
      */
-    public final List<ColumnInfo> columnDefs;
+    public final List<HybridColumn> columnDefs;
 
     public TableInfo(TableColumns tableColumns) {
         Table table = tableColumns.getTable();
         this.name = table.getName();
         this.comment = table.getComment();
-        this.columnDefs = tableColumns.getColumnDefs().stream().map(ColumnInfo::new).toList();
+        this.columnDefs = tableColumns.getColumnDefs().stream().map(HybridColumn::new).toList();
     }
 }

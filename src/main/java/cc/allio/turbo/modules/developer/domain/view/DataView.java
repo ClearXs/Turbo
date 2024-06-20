@@ -2,6 +2,7 @@ package cc.allio.turbo.modules.developer.domain.view;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -12,16 +13,28 @@ import java.util.Map;
  * @since 0.1.0
  */
 @Data
-public class DataView {
+public class DataView implements Serializable {
 
     // 视图id
     private String id = "id";
     // 视图模式
     private ViewMode mode = ViewMode.PAGE;
-    // 工具栏
-    private Toolbar toolbar;
+    // table width
+    private String width;
+    // table height
+    private String height;
+    // fixed table
+    private Boolean fixed;
     // 字段集合
     private FieldColumn[] columns;
+    // 是否具有可操作（意味着能否用是否api进行crud、能否点击操作按钮进行操作...）
+    private Boolean operability;
+    // whether disable assigned value in column
+    private Boolean disableDefaultBehavior;
+    // search
+    private Search search;
+    // 工具栏
+    private Toolbar toolbar;
     // 操作栏
     private OperateBar operateBar;
     // 初始化参数

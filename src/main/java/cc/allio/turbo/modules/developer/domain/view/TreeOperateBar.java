@@ -2,8 +2,10 @@ package cc.allio.turbo.modules.developer.domain.view;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class TreeOperateBar {
+public class TreeOperateBar implements Serializable {
 
     // 是否显示怎增加操作
     private Object showAdd;
