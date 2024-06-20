@@ -2,8 +2,10 @@ package cc.allio.turbo.modules.developer.domain.view;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class Toolbar {
+public class Toolbar implements Serializable {
 
     // 是否显示增加按钮
     private boolean showAdd;
@@ -18,5 +20,6 @@ public class Toolbar {
     // 是否展示排序
     private boolean showOrdered;
     // 自定义追加
-    private Toolbar[] append;
+    private Object[] append;
+
 }

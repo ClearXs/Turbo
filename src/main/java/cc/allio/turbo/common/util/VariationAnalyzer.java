@@ -82,24 +82,23 @@ public class VariationAnalyzer<T, Key> {
 
         AnalyzeResultSet<T, Key> resultSet = new AnalyzeResultSet<>();
 
-        Function<T, Key> toKey = k -> {
-            if (Types.isBean(k.getClass())) {
-                Object key = BeanWrapper.getValue(k, keyName);
-                if (key == ValueWrapper.EMPTY_VALUE) {
-                    throw new NullPointerException("specific key value is null");
-                }
-                return (Key) key;
-            }
-            return (Key) k;
-        };
-        Map<Key, T> keySourceMap = sources.stream()
-                .collect(Collectors.toMap(
-                        toKey,
-                        v -> v));
-        Map<Key, T> keyBenchmarkMap = benchmark.stream()
-                .collect(Collectors.toMap(
-                        toKey,
-                        v -> v));
+        Function<T, Key> toKey =
+                k -> {
+                    if (Types.isBean(k.getClass())) {
+                        Object key = BeanWrapper.getValue(k, keyName);
+                        if (key == ValueWrapper.EMPTY_VALUE) {
+                            throw new NullPointerException("specific key value is null");
+                        }
+                        return (Key) key;
+                    }
+                    return (Key) k;
+                };
+
+        Map<Key, T> keySourceMap =
+                sources.stream().collect(Collectors.toMap(toKey, v -> v));
+
+        Map<Key, T> keyBenchmarkMap =
+                benchmark.stream().collect(Collectors.toMap(toKey, v -> v));
 
         Set<Key> keysSource = keySourceMap.keySet();
         Set<Key> keyBenchmark = keyBenchmarkMap.keySet();

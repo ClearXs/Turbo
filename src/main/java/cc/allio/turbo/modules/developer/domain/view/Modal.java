@@ -2,8 +2,10 @@ package cc.allio.turbo.modules.developer.domain.view;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class Modal {
+public class Modal implements Serializable {
 
     // 是否显示确认操作
     private Object showConfirm;

@@ -25,13 +25,16 @@ public interface IDevBoAttributeService extends ITurboTreeCrudService<DevBoAttri
      * @return entity
      */
     default DevBoAttribute domainToEntity(BoAttributeTree domain) {
-        return Domains.toEntity(domain, DevBoAttribute.class, (d, e) -> {
-            DevAttributeProps attributeProps = BeanUtils.copy(domain, DevAttributeProps.class);
-            if (attributeProps != null) {
-                e.setProps(attributeProps.toJson());
-            }
-            return e;
-        });
+        return Domains.toEntity(
+                domain,
+                DevBoAttribute.class,
+                (d, e) -> {
+                    DevAttributeProps attributeProps = BeanUtils.copy(domain, DevAttributeProps.class);
+                    if (attributeProps != null) {
+                        e.setProps(attributeProps.toJson());
+                    }
+                    return e;
+                });
     }
 
     /**
@@ -41,14 +44,17 @@ public interface IDevBoAttributeService extends ITurboTreeCrudService<DevBoAttri
      * @return domain
      */
     default BoAttributeTree entityToDomain(DevBoAttribute entity) {
-        return Domains.toDomain(entity, BoAttributeTree.class, (e, d) -> {
-            String props = e.getProps();
-            if (StringUtils.isBlank(props)) {
-                return d;
-            }
-            DevAttributeProps attributeProps = JsonDomain.from(props, DevAttributeProps.class);
-            BeanUtils.copy(attributeProps, d);
-            return d;
-        });
+        return Domains.toDomain(
+                entity,
+                BoAttributeTree.class,
+                (e, d) -> {
+                    String props = e.getProps();
+                    if (StringUtils.isBlank(props)) {
+                        return d;
+                    }
+                    DevAttributeProps attributeProps = JsonDomain.from(props, DevAttributeProps.class);
+                    BeanUtils.copy(attributeProps, d);
+                    return d;
+                });
     }
 }

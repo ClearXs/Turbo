@@ -1,9 +1,5 @@
 package cc.allio.turbo.common.cache;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-
 /**
  * cache工具类
  *
@@ -11,17 +7,12 @@ import org.springframework.context.ApplicationContextAware;
  * @date 2023/10/27 15:56
  * @since 0.1.0
  */
-public class CacheHelper implements ApplicationContextAware {
+public class CacheHelper {
 
     // 记录缓存名称
     public static final String CAPTCHA = "captcha";
 
-    private static TurboCacheManager cacheManager;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        CacheHelper.cacheManager = applicationContext.getBean(TurboCacheManager.class);
-    }
+    static TurboCacheManager cacheManager;
 
     /**
      * 根据缓存名称获取缓存示例

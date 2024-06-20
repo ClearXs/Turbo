@@ -2,8 +2,10 @@ package cc.allio.turbo.modules.developer.domain.view;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class TreeToolbar {
+public class TreeToolbar implements Serializable {
 
     // 是否显示增加按钮
     private boolean showAdd;
@@ -12,5 +14,5 @@ public class TreeToolbar {
     // 是否显示取消全选按钮，当属性multiple = true时生效
     private boolean showUnSelectAll;
     // 自定义追加
-    private TreeToolbar[] append;
+    private Object[] append;
 }

@@ -2,6 +2,7 @@ package cc.allio.turbo.modules.developer.domain.view;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Map;
  * @since 0.1.0
  */
 @Data
-public class TreeView {
+public class TreeView implements Serializable {
 
     // 用于初始化查询参数，如果存在的话
     private Map<String, Object> params;

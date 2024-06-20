@@ -2,8 +2,10 @@ package cc.allio.turbo.modules.developer.domain.view;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class Card {
+public class Card implements Serializable {
 
     // 卡片点击
     private Object onClick;

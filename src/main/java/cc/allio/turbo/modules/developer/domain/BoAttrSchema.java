@@ -16,10 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-public final class BoAttrSchema implements Serializable, Entity {
-
-    private BoAttrSchema() {
-    }
+public class BoAttrSchema implements Serializable, Entity {
 
     // bo attr id
     private String id;

@@ -18,7 +18,7 @@ import java.util.Optional;
  * @since 0.1.1
  */
 @Data
-public class ColumnInfo {
+public class HybridColumn {
 
     /**
      * the column name
@@ -35,10 +35,11 @@ public class ColumnInfo {
      */
     private final String comment;
 
-    public ColumnInfo(ColumnDef columnDef) {
+    public HybridColumn(ColumnDef columnDef) {
         this.name = columnDef.getDslName();
         this.comment = columnDef.getComment();
-        Class<?> dataType = Optional.ofNullable(columnDef.getDataType())
+        Class<?> dataType =
+                Optional.ofNullable(columnDef.getDataType())
                 .map(DataType::getDslType)
                 .map(DSLType::getJdbcType)
                 .map(jdbcType -> TypeRegistry.getInstance().findJavaType(jdbcType))

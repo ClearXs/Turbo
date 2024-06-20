@@ -13,4 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 @Tag(name = "代码生成")
 public class DevCodeGenerateController extends CategoryServiceTurboCrudController<DevCodeGenerate, IDevCodeGenerateService> {
+
+
 }
