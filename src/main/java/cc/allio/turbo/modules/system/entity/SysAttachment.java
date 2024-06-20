@@ -29,6 +29,20 @@ public class SysAttachment extends TenantEntity {
     private String filepath;
 
     /**
+     * 文件大小
+     */
+    @TableField("filesize")
+    @Schema(description = "文件大小")
+    private Long filesize;
+
+    /**
+     * 文件类型
+     */
+    @TableField("filetype")
+    @Schema(description = "文件类型")
+    private String filetype;
+
+    /**
      * 关键附件标识
      */
     @TableField("key")
