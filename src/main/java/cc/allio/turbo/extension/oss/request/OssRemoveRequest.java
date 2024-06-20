@@ -1,6 +1,7 @@
 package cc.allio.turbo.extension.oss.request;
 
 import lombok.Builder;
+import lombok.Data;
 
 /**
  * object remove request
@@ -10,6 +11,7 @@ import lombok.Builder;
  * @since 0.1.1
  */
 @Builder
+@Data
 public class OssRemoveRequest {
 
     /**

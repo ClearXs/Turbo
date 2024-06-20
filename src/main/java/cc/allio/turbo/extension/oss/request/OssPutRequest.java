@@ -2,7 +2,6 @@ package cc.allio.turbo.extension.oss.request;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.io.InputStream;
 
