@@ -10,7 +10,7 @@ import cc.allio.uno.core.util.template.ExpressionTemplate;
  * @date 2024/5/3 16:02
  * @since 0.1.1
  */
-public class TableTemplateParser {
+public class CodeTemplateParser {
 
     static ExpressionTemplate expressionTemplate = ExpressionTemplate.createMVEL();
 

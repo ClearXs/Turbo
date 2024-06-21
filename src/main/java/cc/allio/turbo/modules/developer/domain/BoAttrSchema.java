@@ -7,6 +7,8 @@ import cc.allio.turbo.common.db.constant.FieldType;
 import cc.allio.uno.core.type.Types;
 import cc.allio.uno.core.util.BeanUtils;
 import cc.allio.uno.core.util.CollectionUtils;
+import cc.allio.uno.data.orm.dsl.ColumnDef;
+import cc.allio.uno.data.orm.dsl.type.DataType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -75,6 +77,27 @@ public class BoAttrSchema implements Serializable, Entity {
                     return attrSchema;
                 })
                 .toList();
+    }
+
+    /**
+     * from {@link ColumnDef} create new instance of {@link BoAttrSchema}
+     *
+     * @param columnDef the {@link ColumnDef} instance
+     * @return the {@link BoAttrSchema} instance
+     */
+    public static BoAttrSchema from(ColumnDef columnDef) {
+        BoAttrSchema boAttrSchema = new BoAttrSchema();
+        boAttrSchema.setKey(columnDef.getDslName().format());
+        boAttrSchema.setField(columnDef.getDslName().format());
+        boAttrSchema.setName(columnDef.getComment());
+        boAttrSchema.setAttrType(AttributeType.FIELD);
+        DataType dataType = columnDef.getDataType();
+        boAttrSchema.setType(FieldType.castTo(dataType));
+        boAttrSchema.setPk(columnDef.isPk());
+        boAttrSchema.setFk(columnDef.isFk());
+        boAttrSchema.setNonNull(columnDef.isNonNull());
+        boAttrSchema.setUnique(columnDef.isUnique());
+        return boAttrSchema;
     }
 
     /**

@@ -1,5 +1,6 @@
 package cc.allio.turbo.modules.developer.code;
 
+import cc.allio.turbo.modules.developer.entity.DevCodeGenerate;
 import lombok.Data;
 
 /**
@@ -15,35 +16,52 @@ public class Module {
     /**
      * module name
      */
-    public String name;
+    private String name;
 
     /**
      * module key
      */
-    public String key;
+    private String key;
 
     /**
      * module packagePath
      */
-    public String packagePath;
+    private String packagePath;
 
     /**
      * module request path
      */
-    public String requestPath;
+    private String requestPath;
 
     /**
      * module belong to system
      */
-    public String system;
+    private String system;
 
     /**
      * module version
      */
-    public String version;
+    private String version;
 
     /**
      * author
      */
-    public String author;
+    private String author;
+
+    /**
+     * from {@link DevCodeGenerate} create new instance of {@link Module}
+     *
+     * @return the {@link Module} instance
+     */
+    public static Module from(DevCodeGenerate codeGenerate) {
+        Module module = new Module();
+        module.setName(codeGenerate.getModuleName());
+        module.setKey(codeGenerate.getModuleKey());
+        module.setPackagePath(codeGenerate.getModulePackagePath());
+        module.setRequestPath(codeGenerate.getModuleRequestPath());
+        module.setVersion(codeGenerate.getModuleVersion());
+        module.setSystem(codeGenerate.getSystem());
+        module.setAuthor(codeGenerate.getModuleAuthor());
+        return module;
+    }
 }

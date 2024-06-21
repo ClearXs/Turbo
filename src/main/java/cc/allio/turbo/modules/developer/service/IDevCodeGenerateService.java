@@ -2,7 +2,7 @@ package cc.allio.turbo.modules.developer.service;
 
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepositoryService;
 import cc.allio.turbo.common.exception.BizException;
-import cc.allio.turbo.modules.developer.dto.CodeFile;
+import cc.allio.turbo.modules.developer.vo.CodeContent;
 import cc.allio.turbo.modules.developer.entity.DevCodeGenerate;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -14,9 +14,9 @@ public interface IDevCodeGenerateService extends ITurboCrudRepositoryService<Dev
      * preview generative result
      *
      * @param id the {@link DevCodeGenerate} id
-     * @return list of {@link CodeFile}
+     * @return list of {@link CodeContent}
      */
-    List<CodeFile> preview(Long id) throws BizException;
+    List<CodeContent> preview(Long id) throws BizException;
 
     /**
      * generate zip code file, and user download it
@@ -24,5 +24,5 @@ public interface IDevCodeGenerateService extends ITurboCrudRepositoryService<Dev
      * @param id the {@link DevCodeGenerate} id
      * @param response the {@link HttpServletResponse} instance
      */
-    void generate(Long id, HttpServletResponse response);
+    void generate(Long id, HttpServletResponse response) throws BizException;
 }

@@ -17,7 +17,7 @@ import lombok.Getter;
 public enum CodeGenerateSource {
 
     DATATABLE("datatable", "实体表"),
-    DATASET("page", "数据页面");
+    PAGE("page", "数据页面");
 
     @JsonValue
     @EnumValue

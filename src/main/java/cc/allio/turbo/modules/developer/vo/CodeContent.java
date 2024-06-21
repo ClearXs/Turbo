@@ -1,4 +1,4 @@
-package cc.allio.turbo.modules.developer.dto;
+package cc.allio.turbo.modules.developer.vo;
 
 import cc.allio.turbo.modules.developer.entity.DevCodeGenerate;
 import cc.allio.turbo.modules.developer.entity.DevCodeGenerateTemplate;
@@ -12,7 +12,7 @@ import lombok.Data;
  * @since 0.1.1
  */
 @Data
-public class CodeFile {
+public class CodeContent {
 
     /**
      * the file name
@@ -25,8 +25,8 @@ public class CodeFile {
     private String content;
 
     /**
-     * refer to {@link DevCodeGenerateTemplate} id
+     * refer to {@link DevCodeGenerateTemplate}
      */
-    private Long templateId;
+    private DevCodeGenerateTemplate template;
 
 }

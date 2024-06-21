@@ -41,7 +41,6 @@ public class EntityTemplateParseTest extends BaseTestCase {
         module.setAuthor("j.x");
         module.setVersion("1.0.0");
         context.setModule(module);
-        context.setTableColumns(tableColumns);
     }
 
     @Test
@@ -79,7 +78,7 @@ public class EntityTemplateParseTest extends BaseTestCase {
                 "  @end{}\n" +
                 "}";
 
-        String parsed = TableTemplateParser.parse(template, context);
+        String parsed = CodeTemplateParser.parse(template, context);
 
         assertEquals("package cc.allio.turbo.modules.developer.entity;\n" +
                 "\n" +
@@ -131,7 +130,7 @@ public class EntityTemplateParseTest extends BaseTestCase {
                 "\n" +
                 "public interface I@{module.key}Service extends ITurboCrudRepositoryService<@{module.key}> {\n" +
                 "}";
-        String parsed = TableTemplateParser.parse(template, context);
+        String parsed = CodeTemplateParser.parse(template, context);
         assertEquals("package cc.allio.turbo.modules.developer.service;\n" +
                 "\n" +
                 "import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepositoryService;\n" +
@@ -153,7 +152,7 @@ public class EntityTemplateParseTest extends BaseTestCase {
                 "@Service\n" +
                 "public class @{module.key}ServiceImpl extends SimpleTurboCrudRepositoryServiceImpl<@{module.key}> implements I@{module.key}Service {\n" +
                 "}\n";
-        String parsed = TableTemplateParser.parse(template, context);
+        String parsed = CodeTemplateParser.parse(template, context);
 
         assertEquals("package cc.allio.turbo.modules.developer.service.impl;\n" +
                 "\n" +
@@ -184,7 +183,7 @@ public class EntityTemplateParseTest extends BaseTestCase {
                 "public class @{module.key}Controller extends GenericTurboCrudController<@{module.key}> {\n" +
                 "\n" +
                 "}\n";
-        String parsed = TableTemplateParser.parse(template, context);
+        String parsed = CodeTemplateParser.parse(template, context);
         assertEquals("package cc.allio.turbo.modules.developer.controller;\n" +
                 "\n" +
                 "import cc.allio.turbo.common.web.GenericTurboCrudController;\n" +
@@ -225,7 +224,7 @@ public class EntityTemplateParseTest extends BaseTestCase {
                 "  const request = useRequest();\n" +
                 "  return new @{module.key}ApiImpl('/api@{module.requestPath}', request);\n" +
                 "}\n";
-        String parsed = TableTemplateParser.parse(template, context);
+        String parsed = CodeTemplateParser.parse(template, context);
         System.out.println(parsed);
     }
 
@@ -263,7 +262,7 @@ public class EntityTemplateParseTest extends BaseTestCase {
                 "};\n" +
                 "\n" +
                 "export default @{module.key}Helper;\n";
-        String parsed = TableTemplateParser.parse(template, context);
+        String parsed = CodeTemplateParser.parse(template, context);
         assertEquals("import useTestApi, { Test, TestApi } from '@/api/null/test';\n" +
                 "import { TableColumnProps } from '@/components/TableCrud/interface';\n" +
                 "import { Helper } from '@/components/interface';\n" +

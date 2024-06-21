@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.developer.code;
 
-import cc.allio.turbo.modules.developer.domain.TableColumns;
+import cc.allio.turbo.modules.developer.domain.hybrid.HybridBoSchema;
 import cc.allio.uno.core.util.template.TemplateContext;
 import cc.allio.uno.data.orm.dsl.ColumnDef;
 import cc.allio.uno.data.orm.dsl.DSLName;
@@ -16,7 +16,7 @@ import cc.allio.uno.data.orm.dsl.type.DataType;
 public class CodeGenerateContext extends TemplateContext {
 
     static final String MODULE_NAME = "module";
-    static final String TABLE_NAME = "table";
+    static final String BO_SCHEMA = "boSchema";
 
 
     public CodeGenerateContext() {
@@ -24,9 +24,9 @@ public class CodeGenerateContext extends TemplateContext {
         // add mvel import class
         addImport(DSLName.class);
         addImport(ColumnDef.class);
-        addImport(TableInfo.class);
         addImport(Module.class);
         addImport(DataType.class);
+        addImport(HybridBoSchema.class);
     }
 
     /**
@@ -39,12 +39,11 @@ public class CodeGenerateContext extends TemplateContext {
     }
 
     /**
-     * set {@link TableColumns} to context
+     * set {@link HybridBoSchema} to context
      *
-     * @param tableColumns the {@link TableColumns} instance
+     * @param boSchema the {@link HybridBoSchema} instance
      */
-    public void setTableColumns(TableColumns tableColumns) {
-        TableInfo tableInfo = new TableInfo(tableColumns);
-        putAttribute(TABLE_NAME, tableInfo);
+    public void setBoSchema(HybridBoSchema boSchema) {
+        putAttribute(BO_SCHEMA, boSchema);
     }
 }
