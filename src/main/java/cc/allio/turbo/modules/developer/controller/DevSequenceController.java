@@ -19,7 +19,6 @@ import java.util.List;
 @Tag(name = "流水号")
 public class DevSequenceController extends TurboCrudController<DevSequence, DevSequence, IDevSequenceService> {
 
-
     @GetMapping("/rest/{id}")
     @Operation(summary = "重置")
     public R<Boolean> rest(@Validated @PathVariable("id") @NotNull Long id) {

@@ -36,9 +36,6 @@ import java.util.Base64;
 @Slf4j
 public class SecureUtil {
 
-    /**
-     * 数字和26个字母组成
-     */
     private static final String SYMBOLS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final SecureRandom secureRandom = new SecureRandom();
 

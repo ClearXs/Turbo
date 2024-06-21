@@ -5,6 +5,8 @@ import cc.allio.turbo.modules.developer.constant.AttributeType;
 import cc.allio.turbo.modules.developer.entity.DevBo;
 import cc.allio.turbo.modules.developer.entity.DevDataSource;
 import cc.allio.uno.core.util.JsonUtils;
+import cc.allio.uno.data.orm.dsl.ColumnDef;
+import cc.allio.uno.data.orm.dsl.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -73,6 +75,23 @@ public class BoSchema implements Serializable, Entity {
         boSchema.setMaterialize(bo.isMaterialize());
         List<BoAttrSchema> attrSchemas = BoAttrSchema.from(treeify);
         boSchema.setAttrs(attrSchemas);
+        return boSchema;
+    }
+
+    /**
+     * from {@link TableColumns} create new instance of {@link BoSchema}
+     *
+     * @param tableColumns the {@link TableColumns} instance
+     * @return the {@link BoSchema} instance
+     */
+    public static BoSchema from(TableColumns tableColumns) {
+        BoSchema boSchema = new BoSchema();
+        Table table = tableColumns.getTable();
+        boSchema.setCode(table.getName().format());
+        boSchema.setName(table.getAlias());
+        List<ColumnDef> columnDefs = tableColumns.getColumnDefs();
+        List<BoAttrSchema> attrs = columnDefs.stream().map(BoAttrSchema::from).toList();
+        boSchema.setAttrs(attrs);
         return boSchema;
     }
 

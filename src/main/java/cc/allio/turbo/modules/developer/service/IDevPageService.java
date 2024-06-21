@@ -1,9 +1,10 @@
 package cc.allio.turbo.modules.developer.service;
 
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
+import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepositoryService;
 import cc.allio.turbo.modules.developer.entity.DevPage;
 
-public interface IDevPageService extends ITurboCrudService<DevPage> {
+public interface IDevPageService extends ITurboCrudRepositoryService<DevPage> {
 
     /**
      * 页面发布

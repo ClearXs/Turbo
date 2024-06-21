@@ -1,6 +1,7 @@
 package cc.allio.turbo.common.db.constant;
 
 import cc.allio.uno.data.orm.dsl.type.DSLType;
+import cc.allio.uno.data.orm.dsl.type.DataType;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
@@ -51,4 +52,19 @@ public enum FieldType {
     private final String value;
     private final String label;
     private final DSLType dslType;
+
+    /**
+     * take {@link DataType} cast to {@link FieldType}
+     *
+     * @param dataType the {@link DataType}
+     * @return
+     */
+    public static FieldType castTo(DataType dataType) {
+        for (FieldType fieldType : values()) {
+            if (fieldType.getDslType() == dataType.getDslType()) {
+                return fieldType;
+            }
+        }
+        return null;
+    }
 }

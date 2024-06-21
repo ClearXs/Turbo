@@ -3,6 +3,7 @@ package cc.allio.turbo.common.db.mybatis.plugins.inner;
 import cc.allio.turbo.common.db.event.ThreadLocalWebDomainEventContext;
 import cc.allio.turbo.common.db.persistent.PersistentProperties;
 import cc.allio.turbo.common.util.WebUtil;
+import cc.allio.uno.core.util.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.StringValue;
@@ -29,6 +30,9 @@ public class TurboTenantLineHandler implements TenantLineHandler {
         String tenantId = WebUtil.getTenant();
         if (eventContext != null) {
             tenantId = eventContext.getTenantId().orElse(tenantId);
+        }
+        if (StringUtils.isBlank(tenantId)) {
+            return null;
         }
         return new StringValue(tenantId);
     }

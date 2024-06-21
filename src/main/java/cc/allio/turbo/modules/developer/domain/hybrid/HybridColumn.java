@@ -30,5 +30,4 @@ public class HybridColumn extends BoAttrSchema {
         column.setInternal(field);
         return column;
     }
-
 }

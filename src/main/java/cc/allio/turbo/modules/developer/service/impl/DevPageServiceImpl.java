@@ -1,6 +1,8 @@
 package cc.allio.turbo.modules.developer.service.impl;
 
 import cc.allio.turbo.common.db.mybatis.service.impl.TurboCrudServiceImpl;
+import cc.allio.turbo.common.db.uno.repository.impl.SimpleTurboCrudRepositoryServiceImpl;
+import cc.allio.turbo.common.db.uno.repository.impl.TurboCrudRepositoryServiceImpl;
 import cc.allio.turbo.modules.developer.entity.DevBo;
 import cc.allio.turbo.modules.developer.entity.DevForm;
 import cc.allio.turbo.modules.developer.entity.DevPage;
@@ -22,7 +24,7 @@ import reactor.util.function.Tuples;
 
 @Service
 @AllArgsConstructor
-public class DevPageServiceImpl extends TurboCrudServiceImpl<DevPageMapper, DevPage> implements IDevPageService {
+public class DevPageServiceImpl extends SimpleTurboCrudRepositoryServiceImpl<DevPage> implements IDevPageService {
 
     private final IDevFormService formService;
     private final IDevBoService boService;

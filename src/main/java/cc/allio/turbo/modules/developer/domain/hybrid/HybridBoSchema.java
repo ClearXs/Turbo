@@ -48,7 +48,6 @@ public class HybridBoSchema extends BoSchema {
         hybridBoSchema.setProps(boSchema.getProps());
         hybridBoSchema.setDataSourceId(boSchema.getDataSourceId());
         hybridBoSchema.internal = dataView;
-
         List<BoAttrSchema> attrs = boSchema.getAttrs();
         var keySchema = attrs.stream().collect(Collectors.toMap(BoAttrSchema::getKey, v -> v));
         FieldColumn[] fieldColumns = dataView.getColumns();

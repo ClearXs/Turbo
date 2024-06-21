@@ -39,7 +39,15 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
      * @throws NoSuchElementException value empty
      */
     public static String getTenant() {
-        return Optionals.firstNonEmpty(() -> getHeaderOpt(X_TENANT), () -> getAttributeOpt(X_TENANT)).orElse(null);
+        return Optionals.firstNonEmpty(
+                // from header
+                () -> getHeaderOpt(X_TENANT),
+                // from attribute
+                () -> getAttributeOpt(X_TENANT),
+                // from request parameter
+                () -> getParameterOpt(X_TENANT),
+                // from auth
+                () -> Optional.ofNullable(AuthUtil.getCurrentTenantId()).map(String::valueOf)).orElse(null);
     }
 
     /**
@@ -50,7 +58,13 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
      * @throws NoSuchElementException value empty
      */
     public static String getToken() {
-        return Optionals.firstNonEmpty(() -> getHeaderOpt(X_AUTHENTICATION), () -> getAttributeOpt(X_AUTHENTICATION)).orElse(StringPool.EMPTY);
+        return Optionals.firstNonEmpty(
+                // from header
+                () -> getHeaderOpt(X_AUTHENTICATION),
+                // from attribute
+                () -> getAttributeOpt(X_AUTHENTICATION),
+                // from request parameter
+                () -> getParameterOpt(X_AUTHENTICATION)).orElse(StringPool.EMPTY);
     }
 
     /**
