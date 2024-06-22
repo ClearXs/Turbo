@@ -93,11 +93,9 @@ public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachment
         }
 
         long filesize = file.getSize();
-        int indexOfType = originalFilename.lastIndexOf(StringPool.ORIGIN_DOT);
-        String filetype = originalFilename.substring(indexOfType + 1);
-        String filename = originalFilename.substring(0, indexOfType);
+        String filetype = originalFilename.substring(originalFilename.lastIndexOf(StringPool.ORIGIN_DOT) + 1);
         SysAttachment sysAttachment = new SysAttachment();
-        sysAttachment.setFilename(filename);
+        sysAttachment.setFilename(originalFilename);
         sysAttachment.setFilepath(filepath);
         sysAttachment.setProvider(ossExecutor.getProvider());
         sysAttachment.setFilesize(filesize);
