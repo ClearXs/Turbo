@@ -12,14 +12,18 @@ import cc.allio.turbo.modules.system.entity.SysAttachment;
 import cc.allio.turbo.modules.system.mapper.SysAttachmentMapper;
 import cc.allio.turbo.modules.system.service.ISysAttachmentService;
 import cc.allio.uno.core.StringPool;
+import cc.allio.uno.core.util.DateUtil;
 import cc.allio.uno.core.util.IoUtils;
+import cc.allio.uno.core.util.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -36,13 +40,21 @@ import java.nio.charset.StandardCharsets;
  */
 @Slf4j
 @Service
-@AllArgsConstructor
 public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachmentMapper, SysAttachment> implements ISysAttachmentService {
 
     private final FileProperties fileProperties;
 
+    public SysAttachmentServiceImpl(FileProperties fileProperties) {
+        this.fileProperties = fileProperties;
+    }
+
     @Override
     public SysAttachment upload(HttpServletRequest request, MultipartFile file) throws BizException {
+        String originalFilename = file.getOriginalFilename();
+        if (StringUtils.isBlank(originalFilename)) {
+            throw new BizException(ExceptionCodes.FILENAME_EMPTY);
+        }
+
         // check file size
         FileProperties.Upload upload = fileProperties.getUpload();
 
@@ -61,10 +73,12 @@ public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachment
         } catch (IOException e) {
             throw new BizException(ExceptionCodes.ATTACHMENT_UPLOAD_EXECUTOR_NOTFOUND);
         }
+        // /turbo/2024/06/22/test.txt
+        String filepath = DateUtil.getNowPart("/yyyy/MM/dd") + StringPool.SLASH + originalFilename;
         OssPutRequest ossPutRequest =
                 OssPutRequest.builder()
                         .inputStream(fileInputStream)
-                        .object(file.getOriginalFilename())
+                        .object(filepath)
                         .build();
 
         boolean hasUpload;
@@ -78,43 +92,30 @@ public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachment
             throw new BizException(ExceptionCodes.ATTACHMENT_UPLOAD_EXECUTOR_NOTFOUND);
         }
 
-        // http://localhost:8600/sys/attachment/download/test.txt
-        String originalFilename = file.getOriginalFilename();
-        String filepath = InetUtil.getHttpSelfAddress() + "/sys/attachment/download/" + originalFilename;
         long filesize = file.getSize();
-        String filetype = originalFilename.substring(originalFilename.lastIndexOf(StringPool.ORIGIN_DOT));
-
-        SysAttachment sysAttachment = getOne(Wrappers.<SysAttachment>lambdaQuery().eq(SysAttachment::getKey, ossPutRequest.getObject()));
-        if (sysAttachment == null) {
-            sysAttachment = new SysAttachment();
-            sysAttachment.setFilename(file.getOriginalFilename());
-            sysAttachment.setKey(ossPutRequest.getObject());
-            sysAttachment.setFilepath(filepath);
-            sysAttachment.setProvider(ossExecutor.getProvider());
-            sysAttachment.setFilesize(filesize);
-            sysAttachment.setFiletype(filetype);
-            save(sysAttachment);
-        } else {
-            sysAttachment.setProvider(ossExecutor.getProvider());
-            sysAttachment.setFilename(file.getOriginalFilename());
-            sysAttachment.setKey(ossPutRequest.getObject());
-            sysAttachment.setFilepath(filepath);
-            sysAttachment.setProvider(ossExecutor.getProvider());
-            sysAttachment.setFilesize(filesize);
-            sysAttachment.setFiletype(filetype);
-            updateById(sysAttachment);
-        }
+        int indexOfType = originalFilename.lastIndexOf(StringPool.ORIGIN_DOT);
+        String filetype = originalFilename.substring(indexOfType + 1);
+        String filename = originalFilename.substring(0, indexOfType);
+        SysAttachment sysAttachment = new SysAttachment();
+        sysAttachment.setFilename(filename);
+        sysAttachment.setFilepath(filepath);
+        sysAttachment.setProvider(ossExecutor.getProvider());
+        sysAttachment.setFilesize(filesize);
+        sysAttachment.setFiletype(filetype);
+        save(sysAttachment);
         return sysAttachment;
     }
 
     @Override
-    public void download(String object, HttpServletRequest request, HttpServletResponse response) throws BizException {
+    public void download(String path, HttpServletRequest request, HttpServletResponse response) throws BizException {
         OssExecutor ossExecutor = OssExecutorFactory.getCurrent();
-        OssGetRequest ossGetRequest = OssGetRequest.builder().object(object).build();
+        OssGetRequest ossGetRequest = OssGetRequest.builder().object(path).build();
         try {
             OssResponse ossResponse = ossExecutor.download(ossGetRequest);
             response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + convertToFileName(request, ossResponse.getObject()));
-            IoUtils.copy(ossResponse.getInputStream(), response.getOutputStream());
+            response.setContentType("application/force-download");
+            response.setCharacterEncoding("UTF-8");
+            StreamUtils.copy(ossResponse.getInputStream(), response.getOutputStream());
         } catch (Throwable ex) {
             throw new BizException(ExceptionCodes.ATTACHMENT_DOWNLOAD_ERROR);
         }
