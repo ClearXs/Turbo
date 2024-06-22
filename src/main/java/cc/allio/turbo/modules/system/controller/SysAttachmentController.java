@@ -24,9 +24,9 @@ public class SysAttachmentController extends TurboCrudController<SysAttachment, 
         return R.ok(getService().upload(request, file));
     }
 
-    @GetMapping("/download")
+    @GetMapping("/download/{id}")
     @Operation(summary = "下载")
-    public void download(@Parameter(description = "参数object可以为文件名称...") String path, HttpServletRequest request, HttpServletResponse response) throws BizException {
-        getService().download(path, request, response);
+    public void downloadById(@Parameter(description = "参数object可以为文件名称...") @PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response) throws BizException {
+        getService().download(id, request, response);
     }
 }

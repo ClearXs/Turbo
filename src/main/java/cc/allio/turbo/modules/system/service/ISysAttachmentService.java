@@ -22,7 +22,7 @@ public interface ISysAttachmentService extends ITurboCrudService<SysAttachment> 
     /**
      * 附件下载
      *
-     * @param object 附件名称
+     * @param id
      */
-    void download(String object, HttpServletRequest request, HttpServletResponse response) throws BizException;
+    void download(Long id, HttpServletRequest request, HttpServletResponse response) throws BizException;
 }

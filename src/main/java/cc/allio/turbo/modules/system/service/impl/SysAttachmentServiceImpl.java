@@ -7,20 +7,15 @@ import cc.allio.turbo.modules.system.properties.FileProperties;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.i18n.ExceptionCodes;
 import cc.allio.turbo.common.db.mybatis.service.impl.TurboCrudServiceImpl;
-import cc.allio.turbo.common.util.InetUtil;
 import cc.allio.turbo.modules.system.entity.SysAttachment;
 import cc.allio.turbo.modules.system.mapper.SysAttachmentMapper;
 import cc.allio.turbo.modules.system.service.ISysAttachmentService;
 import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.util.DateUtil;
-import cc.allio.uno.core.util.IoUtils;
 import cc.allio.uno.core.util.StringUtils;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
@@ -105,12 +100,18 @@ public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachment
     }
 
     @Override
-    public void download(String path, HttpServletRequest request, HttpServletResponse response) throws BizException {
+    public void download(Long id, HttpServletRequest request, HttpServletResponse response) throws BizException {
+        SysAttachment attachment = getById(id);
+        if (attachment == null) {
+            throw new BizException(ExceptionCodes.FILE_NOT_FOUND);
+        }
+        String filepath = attachment.getFilepath();
+        String filename = attachment.getFilename();
         OssExecutor ossExecutor = OssExecutorFactory.getCurrent();
-        OssGetRequest ossGetRequest = OssGetRequest.builder().object(path).build();
+        OssGetRequest ossGetRequest = OssGetRequest.builder().object(filepath).build();
         try {
             OssResponse ossResponse = ossExecutor.download(ossGetRequest);
-            response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + convertToFileName(request, ossResponse.getObject()));
+            response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + convertToFileName(request, filename));
             response.setContentType("application/force-download");
             response.setCharacterEncoding("UTF-8");
             StreamUtils.copy(ossResponse.getInputStream(), response.getOutputStream());
