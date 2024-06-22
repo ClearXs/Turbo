@@ -33,6 +33,7 @@ public final class ExceptionCodes {
     public static final I18nCode ATTACHMENT_DOWNLOAD_ERROR = I18nCode.of("error.attachment.download.error", "上传失败", GROUP, ATTACHMENT_GROUP);
     public static final I18nCode ATTACHMENT_UPLOAD_ERROR = I18nCode.of("error.attachment.upload.error", "上传失败", GROUP, ATTACHMENT_GROUP);
     public static final I18nCode FILENAME_EMPTY = I18nCode.of("error.attachment.upload.filename.empty", "文件名为空", GROUP, ATTACHMENT_GROUP);
+    public static final I18nCode FILE_NOT_FOUND = I18nCode.of("error.attachment.notfound", "文件未找到", GROUP, ATTACHMENT_GROUP);
     public static final I18nCode ATTACHMENT_UPLOAD_EXCEED_SIZE = I18nCode.of("error.attachment.upload.exceed.size", "", GROUP, ATTACHMENT_GROUP);
     public static final I18nCode ATTACHMENT_UPLOAD_EXECUTOR_NOTFOUND = I18nCode.of("error.attachment.upload.executor.notfound", "", GROUP, ATTACHMENT_GROUP);
 
