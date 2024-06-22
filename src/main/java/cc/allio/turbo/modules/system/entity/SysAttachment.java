@@ -43,13 +43,6 @@ public class SysAttachment extends TenantEntity {
     private String filetype;
 
     /**
-     * 关键附件标识
-     */
-    @TableField("key")
-    @Schema(description = "关键附件标识")
-    private String key;
-
-    /**
      * 存储供应商
      */
     @TableField("provider")
