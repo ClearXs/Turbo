@@ -1,0 +1,5 @@
+turbo:
+  file:
+    upload:
+      # 文件上传最大大小
+      max-size: 10485760

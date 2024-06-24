@@ -17,35 +17,35 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class BaseOssExecutor implements OssExecutor {
 
     @Override
-    public boolean upload(OssPutRequest ossPutRequest) {
+    public Path upload(OssPutRequest ossPutRequest, OssProperties ossProperties) {
         try {
-            boolean result = doUpload(ossPutRequest);
-            Printer.print("{} upload {}", getProvider().getValue(), ossPutRequest.getObject(), result);
-            return result;
+            Path path = doUpload(ossPutRequest, ossProperties);
+            Printer.print("{} upload", getProvider().getValue(), ossPutRequest.getPath());
+            return path;
         } catch (Throwable ex) {
-            log.error("{} oss upload {} failed", getProvider().getValue(), ossPutRequest.getObject(), ex);
-        }
-        return false;
-    }
-
-    @Override
-    public OssResponse download(OssGetRequest ossGetRequest) {
-        try {
-            OssResponse result = doDownload(ossGetRequest);
-            Printer.print("{} download {}", getProvider().getValue(), ossGetRequest, result.getObject());
-            return result;
-        } catch (Throwable ex) {
-            log.error("{} oss download {} failed", getProvider().getValue(), ossGetRequest.getObject(), ex);
+            log.error("{} oss upload {} failed", getProvider().getValue(), ossPutRequest.getPath(), ex);
         }
         return null;
     }
 
     @Override
-    public String copyObject(String src, String dest) {
+    public OssResponse download(OssGetRequest ossGetRequest, OssProperties ossProperties) {
         try {
-            String result = doCopyObject(src, dest);
-            Printer.print("{} copy object src {} to {}", getProvider().getValue(), src, dest);
+            OssResponse result = doDownload(ossGetRequest, ossProperties);
+            Printer.print("{} download {}", getProvider().getValue(), ossGetRequest, result.getObject());
             return result;
+        } catch (Throwable ex) {
+            log.error("{} oss download {} failed", getProvider().getValue(), ossGetRequest.getPath(), ex);
+        }
+        return null;
+    }
+
+    @Override
+    public Path copyObject(String src, String dest, OssProperties ossProperties) {
+        try {
+            Path path = doCopyObject(src, dest, ossProperties);
+            Printer.print("{} copy object src {} to {}", getProvider().getValue(), src, dest);
+            return path;
         } catch (Throwable ex) {
             log.error("{} oss copy object failed", getProvider().getValue(), ex);
         }
@@ -53,9 +53,9 @@ public abstract class BaseOssExecutor implements OssExecutor {
     }
 
     @Override
-    public boolean remove(OssRemoveRequest ossRemoveRequest) {
+    public boolean remove(OssRemoveRequest ossRemoveRequest, OssProperties ossProperties) {
         try {
-            boolean result = doRemove(ossRemoveRequest);
+            boolean result = doRemove(ossRemoveRequest, ossProperties);
             Printer.print("{} remove {}", getProvider().getValue(), ossRemoveRequest);
             return result;
         } catch (Throwable ex) {
@@ -67,21 +67,21 @@ public abstract class BaseOssExecutor implements OssExecutor {
     /**
      * 子类实现，不用关系异常处理
      */
-    protected abstract boolean doUpload(OssPutRequest ossPutRequest) throws Throwable;
+    protected abstract Path doUpload(OssPutRequest ossPutRequest, OssProperties ossProperties) throws Throwable;
 
     /**
      * 子类实现，不用关系异常处理
      */
-    protected abstract OssResponse doDownload(OssGetRequest ossGetRequest) throws Throwable;
+    protected abstract OssResponse doDownload(OssGetRequest ossGetRequest, OssProperties ossProperties) throws Throwable;
 
     /**
      * subclass implementation
      */
-    protected abstract boolean doRemove(OssRemoveRequest ossRemoveRequest) throws Throwable;
+    protected abstract boolean doRemove(OssRemoveRequest ossRemoveRequest, OssProperties ossProperties) throws Throwable;
 
     /**
      * subclass implementation
      */
-    protected abstract String doCopyObject(String src, String dest) throws Throwable;
+    protected abstract Path doCopyObject(String src, String dest, OssProperties ossProperties) throws Throwable;
 
 }

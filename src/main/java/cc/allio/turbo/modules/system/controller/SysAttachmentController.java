@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,7 +28,13 @@ public class SysAttachmentController extends TurboCrudController<SysAttachment, 
 
     @GetMapping("/download/{id}")
     @Operation(summary = "下载")
-    public void downloadById(@Parameter(description = "参数object可以为文件名称...") @PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response) throws BizException {
+    public void downloadById(@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response) throws BizException {
         getService().download(id, request, response);
+    }
+
+    @GetMapping("/download")
+    @Operation(summary = "下载")
+    public void downloadByPath(@Valid @NotNull String path, HttpServletRequest request, HttpServletResponse response) throws BizException {
+        getService().downloadByFilepath(path, request, response);
     }
 }
