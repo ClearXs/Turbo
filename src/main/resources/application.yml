@@ -5,11 +5,15 @@ server:
       io: 100
       worker: 10
 
+reactor:
+  schedulers:
+    defaultBoundedElasticOnVirtualThreads: true
+
 spring:
   application:
     name: turbo
   profiles:
-    active: dev,turbo,reactor,oauth2
+    active: dev,oauth2,oss,file,ob,secure,persistent
     # 开启虚拟线程
   threads:
     virtual:

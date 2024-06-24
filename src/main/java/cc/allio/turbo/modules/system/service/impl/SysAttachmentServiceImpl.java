@@ -11,10 +11,10 @@ import cc.allio.turbo.modules.system.entity.SysAttachment;
 import cc.allio.turbo.modules.system.mapper.SysAttachmentMapper;
 import cc.allio.turbo.modules.system.service.ISysAttachmentService;
 import cc.allio.uno.core.StringPool;
-import cc.allio.uno.core.util.DateUtil;
 import cc.allio.uno.core.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -35,13 +35,11 @@ import java.nio.charset.StandardCharsets;
  */
 @Slf4j
 @Service
+@AllArgsConstructor
 public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachmentMapper, SysAttachment> implements ISysAttachmentService {
 
     private final FileProperties fileProperties;
-
-    public SysAttachmentServiceImpl(FileProperties fileProperties) {
-        this.fileProperties = fileProperties;
-    }
+    private final OssProperties ossProperties;
 
     @Override
     public SysAttachment upload(HttpServletRequest request, MultipartFile file) throws BizException {
@@ -68,22 +66,14 @@ public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachment
         } catch (IOException e) {
             throw new BizException(ExceptionCodes.ATTACHMENT_UPLOAD_EXECUTOR_NOTFOUND);
         }
-        // /turbo/2024/06/22/test.txt
-        String filepath = DateUtil.getNowPart("/yyyy/MM/dd") + StringPool.SLASH + originalFilename;
         OssPutRequest ossPutRequest =
                 OssPutRequest.builder()
                         .inputStream(fileInputStream)
-                        .object(filepath)
+                        .path(Path.from(originalFilename, Path.AppendStrategy.Date))
                         .build();
 
-        boolean hasUpload;
-        try {
-            hasUpload = ossExecutor.upload(ossPutRequest);
-        } catch (Throwable ex) {
-            throw new BizException(ExceptionCodes.ATTACHMENT_UPLOAD_EXECUTOR_NOTFOUND);
-        }
-        // 未上传成功
-        if (!hasUpload) {
+        Path path = ossExecutor.upload(ossPutRequest, ossProperties);
+        if (path == null) {
             throw new BizException(ExceptionCodes.ATTACHMENT_UPLOAD_EXECUTOR_NOTFOUND);
         }
 
@@ -91,7 +81,7 @@ public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachment
         String filetype = originalFilename.substring(originalFilename.lastIndexOf(StringPool.ORIGIN_DOT) + 1);
         SysAttachment sysAttachment = new SysAttachment();
         sysAttachment.setFilename(originalFilename);
-        sysAttachment.setFilepath(filepath);
+        sysAttachment.setFilepath(path.compose());
         sysAttachment.setProvider(ossExecutor.getProvider());
         sysAttachment.setFilesize(filesize);
         sysAttachment.setFiletype(filetype);
@@ -107,10 +97,26 @@ public class SysAttachmentServiceImpl extends TurboCrudServiceImpl<SysAttachment
         }
         String filepath = attachment.getFilepath();
         String filename = attachment.getFilename();
+        doDownload(filepath, filename, request, response);
+    }
+
+    @Override
+    public void downloadByFilepath(String filepath, HttpServletRequest request, HttpServletResponse response) throws BizException {
+        String filename = filepath.substring(filepath.lastIndexOf(StringPool.SLASH) + 1);
+        doDownload(filepath, filename, request, response);
+    }
+
+    /**
+     * do download from oss
+     *
+     * @param filepath the filepath
+     * @param filename the filename
+     */
+    public void doDownload(String filepath, String filename, HttpServletRequest request, HttpServletResponse response) throws BizException {
         OssExecutor ossExecutor = OssExecutorFactory.getCurrent();
-        OssGetRequest ossGetRequest = OssGetRequest.builder().object(filepath).build();
+        OssGetRequest ossGetRequest = OssGetRequest.builder().path(Path.from(filepath)).build();
         try {
-            OssResponse ossResponse = ossExecutor.download(ossGetRequest);
+            OssResponse ossResponse = ossExecutor.download(ossGetRequest, ossProperties);
             response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + convertToFileName(request, filename));
             response.setContentType("application/force-download");
             response.setCharacterEncoding("UTF-8");

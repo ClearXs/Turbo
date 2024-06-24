@@ -17,35 +17,39 @@ public interface OssExecutor {
      * 对象上传
      *
      * @param ossPutRequest ossPutRequest
-     * @return true or false
+     * @param ossProperties
+     * @return the put result
      */
-    boolean upload(OssPutRequest ossPutRequest);
+    Path upload(OssPutRequest ossPutRequest, OssProperties ossProperties);
 
     /**
      * 对象下载
      *
      * @param ossGetRequest ossRequest
+     * @param ossProperties
      * @return OssResponse
      */
-    OssResponse download(OssGetRequest ossGetRequest);
+    OssResponse download(OssGetRequest ossGetRequest, OssProperties ossProperties);
 
     /**
      * object remove
      *
      * @param ossRemoveRequest the {@link OssRemoveRequest} instance
+     * @param ossProperties
      * @return true if success
      */
-    boolean remove(OssRemoveRequest ossRemoveRequest);
+    boolean remove(OssRemoveRequest ossRemoveRequest, OssProperties ossProperties);
 
     /**
      * copy source object dest to target
      * <p>like as /2024/xx.doc /2024/2/xx.doc</p>
      *
-     * @param src the source path
-     * @param dest the dest path
+     * @param src           the source path
+     * @param dest          the dest path
+     * @param ossProperties
      * @return the object result
      */
-    String copyObject(String src, String dest);
+    Path copyObject(String src, String dest, OssProperties ossProperties);
 
     /**
      * 获取存储商标识

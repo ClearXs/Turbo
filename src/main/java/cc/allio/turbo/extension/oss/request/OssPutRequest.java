@@ -1,5 +1,6 @@
 package cc.allio.turbo.extension.oss.request;
 
+import cc.allio.turbo.extension.oss.Path;
 import lombok.Builder;
 import lombok.Data;
 
@@ -20,7 +21,7 @@ public class OssPutRequest {
      * 对象标识。
      * <p>比如: test.txt</p>
      */
-    private String object;
+    private Path path;
 
     /**
      * 数据输入流

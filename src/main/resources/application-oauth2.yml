@@ -3,11 +3,11 @@ turbo:
     client:
       registration:
         github:
-          client-id: xxxxxxxxxxxxx
-          client-secret: xxxxxxxxxxxxx
+          client-id: id
+          client-secret: secret
         gitee:
-          client-id: xxxxxxxxxxxxx
-          client-secret: xxxxxxxxxxxxx
+          client-id: id
+          client-secret: secret
       domain: https://localhost:5673/
 spring:
   security:

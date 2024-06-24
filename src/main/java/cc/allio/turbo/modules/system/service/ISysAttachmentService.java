@@ -25,4 +25,9 @@ public interface ISysAttachmentService extends ITurboCrudService<SysAttachment> 
      * @param id
      */
     void download(Long id, HttpServletRequest request, HttpServletResponse response) throws BizException;
+
+    /**
+     * download attachment by filepath
+     */
+    void downloadByFilepath(String filepath, HttpServletRequest request, HttpServletResponse response) throws BizException;
 }

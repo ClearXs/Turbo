@@ -1,5 +1,0 @@
-# project reactor 配置
-# 开启虚拟线程
-reactor:
-  schedulers:
-    defaultBoundedElasticOnVirtualThreads: true

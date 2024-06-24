@@ -1,0 +1,4 @@
+turbo:
+  oss:
+    base-dir: /${spring.application.name}
+    strategy: date
