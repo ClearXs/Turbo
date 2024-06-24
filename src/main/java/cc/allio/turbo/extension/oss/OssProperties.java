@@ -17,10 +17,10 @@ public class OssProperties {
     /**
      * base
      */
-    private String baseDir = "turbo";
+    private String baseDir = "/turbo";
 
     /**
      * naming
      */
-    private Path.AppendStrategy strategy = Path.AppendStrategy.Date;
+    private Path.AppendStrategy strategy = Path.AppendStrategy.None;
 }
