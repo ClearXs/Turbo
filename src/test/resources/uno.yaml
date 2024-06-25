@@ -5,9 +5,9 @@ mybatis-plus:
 
 spring:
   datasource:
-    url: jdbc:postgresql://43.143.195.208:5432/turbo_test
+    url: jdbc:postgresql://localhost:5432/turbo_test
     username: postgres
-    password: allio@2022
+    password: postgres
     driver-class-name: org.postgresql.Driver
 
 persistent:

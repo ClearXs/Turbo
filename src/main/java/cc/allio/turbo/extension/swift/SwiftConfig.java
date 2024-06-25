@@ -134,7 +134,7 @@ public class SwiftConfig {
     }
 
     public void setInitNumber(int initNumber) {
-        if (initNumber > 0) {
+        if (initNumber >= 0) {
             this.initNumber = initNumber;
         } else {
             this.initNumber = 1;

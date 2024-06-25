@@ -5,11 +5,11 @@ turbo:
         # 是否启用日志
         enabled: false
         # 日志服务地址
-        endpoint: http://43.143.195.208:5080
+        endpoint: http://localhost:5080
         # 组织
         # 日志头
         headers:
-          Authorization: "Basic amlhbmd3MTAyN0BnbWFpbC5jb206RmExZFNhU1VaNXByZ3VVbQ=="
+          Authorization: ""
           stream-name: "default"
         # 日志发送超时时间
         timeout: 100000
