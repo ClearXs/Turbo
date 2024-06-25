@@ -157,13 +157,6 @@ public class Swift {
                 case DECR -> redisTemplate.opsForValue().decrement(incrementKey, step);
                 default -> redisTemplate.opsForValue().increment(incrementKey, 0);
             };
-            if (id == 0) {
-                id = minValue;
-            } else if (id == step) {
-                id = minValue;
-            } else {
-                id = minValue + id - step;
-            }
             if ((id + 99) >= Long.MAX_VALUE || id < minValue) {
                 redisTemplate.opsForValue().getAndSet(incrementKey, String.valueOf(minValue));
                 id = minValue;
