@@ -5,6 +5,7 @@ import cc.allio.uno.core.util.template.TemplateContext;
 import cc.allio.uno.data.orm.dsl.ColumnDef;
 import cc.allio.uno.data.orm.dsl.DSLName;
 import cc.allio.uno.data.orm.dsl.type.DataType;
+import cc.allio.uno.data.orm.dsl.type.TypeRegistry;
 
 /**
  * definition code generate context
@@ -16,7 +17,7 @@ import cc.allio.uno.data.orm.dsl.type.DataType;
 public class CodeGenerateContext extends TemplateContext {
 
     static final String MODULE_NAME = "module";
-    static final String BO_SCHEMA = "boSchema";
+    static final String BO_SCHEMA = "schema";
 
 
     public CodeGenerateContext() {
@@ -27,6 +28,7 @@ public class CodeGenerateContext extends TemplateContext {
         addImport(Module.class);
         addImport(DataType.class);
         addImport(HybridBoSchema.class);
+        addImport("helper", CodeGenerateHelper.class);
     }
 
     /**
@@ -46,4 +48,6 @@ public class CodeGenerateContext extends TemplateContext {
     public void setBoSchema(HybridBoSchema boSchema) {
         putAttribute(BO_SCHEMA, boSchema);
     }
+
+
 }

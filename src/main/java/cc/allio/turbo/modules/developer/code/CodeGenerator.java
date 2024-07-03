@@ -6,7 +6,6 @@ import cc.allio.turbo.modules.developer.domain.hybrid.HybridBoSchema;
 import cc.allio.turbo.modules.developer.vo.CodeContent;
 import cc.allio.turbo.modules.developer.entity.DevCodeGenerate;
 import cc.allio.turbo.modules.developer.entity.DevCodeGenerateTemplate;
-import com.baomidou.mybatisplus.core.toolkit.StringPool;
 
 import java.util.List;
 
@@ -46,6 +45,7 @@ public interface CodeGenerator {
                     String filename = template.getFileName();
                     codeContent.setFilename(filename);
                     codeContent.setTemplate(template);
+                    codeContent.setLanguage(template.getLanguage());
                     String templateContent = template.getContent();
                     String content = CodeTemplateParser.parse(templateContent, codeGenerateContext);
                     codeContent.setContent(content);

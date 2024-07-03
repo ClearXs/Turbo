@@ -3,7 +3,7 @@ package cc.allio.turbo.modules.developer.entity;
 import cc.allio.turbo.common.db.entity.CategoryEntity;
 import cc.allio.turbo.common.db.entity.TenantEntity;
 import cc.allio.turbo.modules.developer.constant.CodeTemplateDomain;
-import cc.allio.turbo.modules.developer.constant.CodeTemplateLanguage;
+import cc.allio.turbo.modules.developer.constant.CodeLanguage;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,7 +45,7 @@ public class DevCodeGenerateTemplate extends TenantEntity implements CategoryEnt
      */
     @TableField("language")
     @Schema(description = "模板语言")
-    private CodeTemplateLanguage language;
+    private CodeLanguage language;
 
     /**
      * 分类id

@@ -9,6 +9,7 @@ import cc.allio.uno.core.util.BeanUtils;
 import cc.allio.uno.core.util.CollectionUtils;
 import cc.allio.uno.data.orm.dsl.ColumnDef;
 import cc.allio.uno.data.orm.dsl.type.DataType;
+import cc.allio.uno.data.orm.dsl.type.TypeRegistry;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -62,6 +63,44 @@ public class BoAttrSchema implements Serializable, Entity {
     private List<BoAttrSchema> children = Collections.emptyList();
 
     /**
+     * 获取secondary schema
+     * <p>在{@link #children}中寻找是{@link AttributeType#TABLE}的数据</p>
+     *
+     * @return list schema
+     */
+    @JsonIgnore
+    public List<BoAttrSchema> obtainSecondarySchema() {
+        return children.stream()
+                .filter(child -> AttributeType.TABLE == child.attrType)
+                .toList();
+    }
+
+    /**
+     * 在{@link #children}中寻找是{@link AttributeType#FIELD}的数据
+     *
+     * @return list schema
+     */
+    @JsonIgnore
+    public List<BoAttrSchema> obtainFieldSchema() {
+        return children.stream()
+                .filter(child -> AttributeType.FIELD == child.attrType)
+                .toList();
+    }
+
+    /**
+     * transfer bo type to java type
+     *
+     * @return the java type
+     */
+    public Class<?> getJavaType() {
+        if (type == null) {
+            return Object.class;
+        }
+        int jdbcType = type.getDslType().getJdbcType();
+        return TypeRegistry.getInstance().findJavaType(jdbcType).getJavaType();
+    }
+
+    /**
      * 递归创建{@link BoAttrSchema}
      */
     public static List<BoAttrSchema> from(List<BoAttributeTree> treeify) {
@@ -79,6 +118,7 @@ public class BoAttrSchema implements Serializable, Entity {
                 .toList();
     }
 
+
     /**
      * from {@link ColumnDef} create new instance of {@link BoAttrSchema}
      *
@@ -87,6 +127,7 @@ public class BoAttrSchema implements Serializable, Entity {
      */
     public static BoAttrSchema from(ColumnDef columnDef) {
         BoAttrSchema boAttrSchema = new BoAttrSchema();
+        boAttrSchema.setId(columnDef.getDslName().format());
         boAttrSchema.setKey(columnDef.getDslName().format());
         boAttrSchema.setField(columnDef.getDslName().format());
         boAttrSchema.setName(columnDef.getComment());
@@ -131,30 +172,5 @@ public class BoAttrSchema implements Serializable, Entity {
                     tree.setId(Long.valueOf(o.id));
                     return tree;
                 });
-    }
-
-    /**
-     * 获取secondary schema
-     * <p>在{@link #children}中寻找是{@link AttributeType#TABLE}的数据</p>
-     *
-     * @return list schema
-     */
-    @JsonIgnore
-    public List<BoAttrSchema> obtainSecondarySchema() {
-        return children.stream()
-                .filter(child -> AttributeType.TABLE == child.attrType)
-                .toList();
-    }
-
-    /**
-     * 在{@link #children}中寻找是{@link AttributeType#FIELD}的数据
-     *
-     * @return list schema
-     */
-    @JsonIgnore
-    public List<BoAttrSchema> obtainFieldSchema() {
-        return children.stream()
-                .filter(child -> AttributeType.FIELD == child.attrType)
-                .toList();
     }
 }

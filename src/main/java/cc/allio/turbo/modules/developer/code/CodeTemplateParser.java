@@ -21,7 +21,7 @@ public class CodeTemplateParser {
      * @param tableColumns the parse template params
      * @return template
      */
-    public static String parse(String template, CodeGenerateContext context) {
+    public static synchronized String parse(String template, CodeGenerateContext context) {
         return expressionTemplate.parseTemplate(template, context);
     }
 }

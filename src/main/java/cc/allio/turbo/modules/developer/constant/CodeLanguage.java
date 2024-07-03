@@ -14,7 +14,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum CodeTemplateLanguage {
+public enum CodeLanguage {
 
     APL("apl", "apl"),
     ASCII_ARMOR("asciiArmor", "asciiArmor"),

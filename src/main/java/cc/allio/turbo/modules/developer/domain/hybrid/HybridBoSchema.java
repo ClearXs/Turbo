@@ -4,10 +4,12 @@ import cc.allio.turbo.modules.developer.domain.BoAttrSchema;
 import cc.allio.turbo.modules.developer.domain.BoSchema;
 import cc.allio.turbo.modules.developer.domain.view.DataView;
 import cc.allio.turbo.modules.developer.domain.view.FieldColumn;
+import cc.allio.uno.core.datastructure.tree.TreeSupport;
 import com.google.common.collect.Lists;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +51,8 @@ public class HybridBoSchema extends BoSchema {
         hybridBoSchema.setDataSourceId(boSchema.getDataSourceId());
         hybridBoSchema.internal = dataView;
         List<BoAttrSchema> attrs = boSchema.getAttrs();
-        var keySchema = attrs.stream().collect(Collectors.toMap(BoAttrSchema::getKey, v -> v));
+        Collection<BoAttrSchema> allAttr = TreeSupport.withExpandFn(attrs, BoAttrSchema::getChildren, t -> t);
+        var keySchema = allAttr.stream().collect(Collectors.toMap(BoAttrSchema::getKey, v -> v));
         FieldColumn[] fieldColumns = dataView.getColumns();
         for (FieldColumn field : fieldColumns) {
             BoAttrSchema boAttrSchema = keySchema.get(field.getField());

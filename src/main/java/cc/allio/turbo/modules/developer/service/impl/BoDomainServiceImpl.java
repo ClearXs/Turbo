@@ -3,7 +3,6 @@ package cc.allio.turbo.modules.developer.service.impl;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.modules.developer.api.GeneralDomainObject;
 import cc.allio.turbo.modules.developer.api.service.DomainServiceRegistry;
-import cc.allio.turbo.modules.developer.api.service.DomainServiceRegistryImpl;
 import cc.allio.turbo.modules.developer.api.service.IDomainService;
 import cc.allio.turbo.modules.developer.domain.BoSchema;
 import cc.allio.turbo.modules.developer.service.IBoDomainService;
