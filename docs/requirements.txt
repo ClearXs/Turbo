@@ -1,0 +1,7 @@
+# Copied from https://github.com/squidfunk/mkdocs-material/blob/b8cf7d7/requirements.txt
+
+mkdocs>=1.1
+Pygments>=2.4
+markdown>=3.2
+pymdown-extensions>=7.0
+mkdocs-material-extensions>=1.0b1
