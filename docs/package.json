@@ -4,7 +4,7 @@
   "description": "turbo documentation",
   "private": true,
   "scripts": {
-    "dev": "docker run --rm -it -p 8000:8000 -v ${PWD}:/docs squidfunk/mkdocs-material",
+    "dev": "mkdocs serve",
     "build": "mkdocs build -d public"
   }
 }
