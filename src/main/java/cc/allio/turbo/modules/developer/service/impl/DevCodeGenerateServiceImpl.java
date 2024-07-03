@@ -23,10 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Service
 @AllArgsConstructor
@@ -99,5 +96,4 @@ public class DevCodeGenerateServiceImpl extends SimpleTurboCrudRepositoryService
         CodeGenerator codeGenerator = codeGeneratorManager.obtainCodeGenerator(source);
         return codeGenerator.generate(codeGenerate, templates);
     }
-
 }

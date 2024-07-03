@@ -16,7 +16,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-/**
+    /**
  * 业务对象Schema，一个领域对象。用于描述业务对象
  *
  * @author j.x

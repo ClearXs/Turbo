@@ -26,7 +26,6 @@ public class CaptchaCodeAuthenticator implements LoginClaimAuthenticator<LoginCa
         if (captchaCode == null) {
             throw new AuthenticationServiceException("login mode 'CAPTCHA CODE' captcha content is null");
         }
-
         String captchaId = captchaCode.getCaptchaId();
         // 判断是否存在
         if (StringUtils.isBlank(captchaId) || !cache.hasKey(captchaId)) {

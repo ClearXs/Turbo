@@ -79,5 +79,4 @@ public class SecureProperties {
         private ExpireAt expireAt;
 
     }
-
 }

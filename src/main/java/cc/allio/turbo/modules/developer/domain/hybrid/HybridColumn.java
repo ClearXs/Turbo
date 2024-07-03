@@ -2,8 +2,10 @@ package cc.allio.turbo.modules.developer.domain.hybrid;
 
 import cc.allio.turbo.modules.developer.domain.BoAttrSchema;
 import cc.allio.turbo.modules.developer.domain.view.FieldColumn;
+import cc.allio.uno.core.datastructure.tree.Visitor;
 import cc.allio.uno.core.util.BeanUtils;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * aggregate {@link BoAttrSchema} and {@link FieldColumn} make it become new hybrid column
@@ -12,6 +14,7 @@ import lombok.Data;
  * @date 2024/6/18 21:51
  * @since 0.1.1
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class HybridColumn extends BoAttrSchema {
 
