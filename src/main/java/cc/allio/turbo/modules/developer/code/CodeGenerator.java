@@ -42,13 +42,19 @@ public interface CodeGenerator {
         return templates.stream()
                 .map(template -> {
                     CodeContent codeContent = new CodeContent();
-                    String filename = template.getFileName();
-                    codeContent.setFilename(filename);
+                    String templateFileName = template.getFileName();
+                    codeContent.setFilename(templateFileName);
                     codeContent.setTemplate(template);
                     codeContent.setLanguage(template.getLanguage());
                     String templateContent = template.getContent();
                     String content = CodeTemplateParser.parse(templateContent, codeGenerateContext);
                     codeContent.setContent(content);
+                    String filename = CodeTemplateParser.parse(templateFileName, codeGenerateContext);
+                    codeContent.setFilename(filename);
+                    String templateFilePath = template.getFilePath();
+                    String filepath = CodeTemplateParser.parse(templateFilePath, codeGenerateContext);
+                    codeContent.setFilepath(filepath);
+                    codeContent.setCodeDomain(template.getDomain());
                     return codeContent;
                 })
                 .toList();

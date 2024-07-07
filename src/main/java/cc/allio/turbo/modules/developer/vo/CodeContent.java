@@ -1,6 +1,7 @@
 package cc.allio.turbo.modules.developer.vo;
 
 import cc.allio.turbo.modules.developer.constant.CodeLanguage;
+import cc.allio.turbo.modules.developer.constant.CodeTemplateDomain;
 import cc.allio.turbo.modules.developer.entity.DevCodeGenerate;
 import cc.allio.turbo.modules.developer.entity.DevCodeGenerateTemplate;
 import lombok.Data;
@@ -21,7 +22,12 @@ public class CodeContent {
     private String filename;
 
     /**
-     * file content
+     * the file path
+     */
+    private String filepath;
+
+    /**
+     * the file content
      */
     private String content;
 
@@ -29,6 +35,11 @@ public class CodeContent {
      * code language
      */
     private CodeLanguage language;
+
+    /**
+     * code domain
+     */
+    private CodeTemplateDomain codeDomain;
 
     /**
      * refer to {@link DevCodeGenerateTemplate}
