@@ -144,7 +144,7 @@ public class BoDomainController {
                 return queryWrapper;
             }
             List<BoAttrSchema> attrSchemas = boAttrSchema.obtainFieldSchema();
-            Map<String, BoAttrSchema> keyBoSchemas = attrSchemas.stream().collect(Collectors.toMap(BoAttrSchema::getKey, attr -> attr));
+            Map<String, BoAttrSchema> keyBoSchemas = attrSchemas.stream().collect(Collectors.toMap(attr -> attr.getKey().get(), attr -> attr));
             // TODO 暂查询主表
             // query condition
             onQueryTerm(

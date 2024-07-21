@@ -1,9 +1,12 @@
 package cc.allio.turbo.modules.developer.domain;
 
+import cc.allio.turbo.common.api.Key;
 import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.domain.Domains;
 import cc.allio.turbo.modules.developer.constant.AttributeType;
 import cc.allio.turbo.common.db.constant.FieldType;
+import cc.allio.turbo.modules.developer.domain.view.ColumnType;
+import cc.allio.turbo.modules.developer.language.TypeScriptType;
 import cc.allio.uno.core.type.Types;
 import cc.allio.uno.core.util.BeanUtils;
 import cc.allio.uno.core.util.CollectionUtils;
@@ -24,7 +27,7 @@ public class BoAttrSchema implements Serializable, Entity {
     // bo attr id
     private String id;
     // bo attr key
-    private String key;
+    private Key key;
     // bo attr field
     private String field;
     // bo attr name
@@ -101,6 +104,41 @@ public class BoAttrSchema implements Serializable, Entity {
     }
 
     /**
+     * transfer to typescript type
+     *
+     * @return the typescript type
+     */
+    public String getTypeScriptType() {
+        if (type == null) {
+            return TypeScriptType.Any.getValue();
+        }
+        for (TypeScriptType typeScriptType : TypeScriptType.values()) {
+            if (typeScriptType.getFieldType() == type) {
+                return typeScriptType.getValue();
+            }
+        }
+        return TypeScriptType.Unknown.getValue();
+    }
+
+    /**
+     * from {@link FieldType} to {@link ColumnType}
+     *
+     * @return the column type
+     */
+    public String getColumnType() {
+        if (type == null) {
+            return ColumnType.Input.getValue();
+        }
+        // fetch match first one
+        for (ColumnType value : ColumnType.values()) {
+            if (value.getFieldType() == type) {
+                return value.getValue();
+            }
+        }
+        return ColumnType.Input.getValue();
+    }
+
+    /**
      * 递归创建{@link BoAttrSchema}
      */
     public static List<BoAttrSchema> from(List<BoAttributeTree> treeify) {
@@ -108,7 +146,7 @@ public class BoAttrSchema implements Serializable, Entity {
                 .map(tree -> {
                     BoAttrSchema attrSchema = BeanUtils.copy(tree, BoAttrSchema.class);
                     attrSchema.setId(Types.toString(tree.getId()));
-                    attrSchema.setKey(tree.getCode());
+                    attrSchema.setKey(new Key(tree.getCode()));
                     if (CollectionUtils.isNotEmpty(tree.getChildren())) {
                         List<BoAttrSchema> children = BoAttrSchema.from(tree.getChildren());
                         attrSchema.setChildren(children);
@@ -127,9 +165,10 @@ public class BoAttrSchema implements Serializable, Entity {
      */
     public static BoAttrSchema from(ColumnDef columnDef) {
         BoAttrSchema boAttrSchema = new BoAttrSchema();
-        boAttrSchema.setId(columnDef.getDslName().format());
-        boAttrSchema.setKey(columnDef.getDslName().format());
-        boAttrSchema.setField(columnDef.getDslName().format());
+        String dslName = columnDef.getDslName().format();
+        boAttrSchema.setId(dslName);
+        boAttrSchema.setKey(new Key(dslName));
+        boAttrSchema.setField(dslName);
         boAttrSchema.setName(columnDef.getComment());
         boAttrSchema.setAttrType(AttributeType.FIELD);
         DataType dataType = columnDef.getDataType();

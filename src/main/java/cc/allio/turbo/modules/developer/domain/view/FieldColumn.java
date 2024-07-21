@@ -3,6 +3,7 @@ package cc.allio.turbo.modules.developer.domain.view;
 import cc.allio.turbo.common.db.entity.MapEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.checkerframework.checker.units.qual.C;
 
 /**
  * 视图数据字段列定义
@@ -20,7 +21,7 @@ public class FieldColumn extends MapEntity {
     // 字段位置索引
     private Integer index;
     // 字段类型
-    private String type;
+    private ColumnType type;
     // 字段名称
     private String label;
     // 快捷的表单必填项，如果search = true，则默认 = false

@@ -11,6 +11,8 @@ import cc.allio.turbo.modules.developer.entity.DevCodeGenerateTemplate;
 import cc.allio.turbo.modules.developer.entity.DevPage;
 import cc.allio.turbo.modules.developer.service.IDevBoService;
 import cc.allio.turbo.modules.developer.service.IDevPageService;
+import cc.allio.turbo.modules.system.entity.SysCategory;
+import cc.allio.turbo.modules.system.service.ISysCategoryService;
 import cc.allio.uno.core.util.JsonUtils;
 
 import java.util.List;
@@ -26,10 +28,12 @@ public class PageCodeGenerator implements CodeGenerator {
 
     private final IDevPageService devPageService;
     private final IDevBoService devBoService;
+    private final ISysCategoryService categoryService;
 
-    public PageCodeGenerator(IDevPageService devPageService, IDevBoService devBoService) {
+    public PageCodeGenerator(IDevPageService devPageService, IDevBoService devBoService, ISysCategoryService categoryService) {
         this.devPageService = devPageService;
         this.devBoService = devBoService;
+        this.categoryService = categoryService;
     }
 
     @Override
@@ -46,9 +50,19 @@ public class PageCodeGenerator implements CodeGenerator {
         }
         String dataviewString = codeGenerate.getDataView();
         DataView dataView = JsonUtils.parse(dataviewString, DataView.class);
-        HybridBoSchema hybridBoSchema = HybridBoSchema.compose(boSchema, dataView);
-        Module module = Module.from(codeGenerate);
-        return doGenerate(hybridBoSchema, module, templates);
+        HybridBoSchema hybridBoSchema =
+                HybridBoSchema.composite(
+                        boSchema,
+                        dataView,
+                        new FilterFieldColumnStrategy(codeGenerate.getIgnoreDefaultField()));
+        SysCategory category = categoryService.getById(codeGenerate.getCategoryId());
+        Module module = Module.from(category);
+        Instance instance = Instance.from(codeGenerate);
+        CodeGenerateContext codeGenerateContext = new CodeGenerateContext();
+        codeGenerateContext.setModule(module);
+        codeGenerateContext.setBoSchema(hybridBoSchema);
+        codeGenerateContext.setInstance(instance);
+        return doGenerate(codeGenerateContext, templates);
     }
 
     @Override

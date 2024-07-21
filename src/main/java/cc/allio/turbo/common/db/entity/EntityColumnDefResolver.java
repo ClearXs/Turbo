@@ -44,7 +44,8 @@ public class EntityColumnDefResolver implements ColumnDefResolver {
             if (mybatisJdbcType != org.apache.ibatis.type.JdbcType.UNDEFINED) {
                 jdbcType = TypeRegistry.getInstance().getJdbcType(mybatisJdbcType.TYPE_CODE);
             } else {
-                Collection<JdbcType> jdbcTypes = TypeRegistry.getInstance().guessJdbcType(field.getType());
+                Class<?> filedJavaType = field.getType();
+                Collection<JdbcType> jdbcTypes = TypeRegistry.getInstance().guessJdbcType(filedJavaType);
                 jdbcType = Lists.newArrayList(jdbcTypes).getFirst();
             }
         } else {

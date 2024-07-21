@@ -32,51 +32,37 @@ public class DevCodeGenerate extends TenantEntity implements CategoryEntity {
     /**
      * 模块名称
      */
-    @TableField("module_name")
-    @Schema(description = "模块名称")
-    private String moduleName;
+    @TableField("instance_name")
+    @Schema(description = "实例名称")
+    private String instanceName;
 
     /**
      * 模块Key
      */
-    @TableField("module_key")
+    @TableField("instance_key")
     @Schema(description = "模块Key")
-    private String moduleKey;
-
-    /**
-     * 模块包路径
-     */
-    @TableField("module_package_path")
-    @Schema(description = "模块包路径")
-    private String modulePackagePath;
+    private String instanceKey;
 
     /**
      * 模块请求路径
      */
-    @TableField("module_request_path")
-    @Schema(description = "模块请求路径")
-    private String moduleRequestPath;
+    @TableField("request_path")
+    @Schema(description = "实例请求路径")
+    private String requestPath;
 
     /**
      * 作者
      */
-    @TableField("module_version")
-    @Schema(description = "模块版本号")
-    private String moduleVersion;
+    @TableField("instance_version")
+    @Schema(description = "实例版本号")
+    private String instanceVersion;
 
     /**
      * 作者
      */
-    @TableField("module_author")
+    @TableField("author")
     @Schema(description = "作者")
-    private String moduleAuthor;
-
-    /**
-     * 所属子系统KEY
-     */
-    @TableField("system")
-    @Schema(description = "所属子系统KEY")
-    private String system;
+    private String author;
 
     /**
      * 来源;实体表、数据集
@@ -112,4 +98,11 @@ public class DevCodeGenerate extends TenantEntity implements CategoryEntity {
     @TableField("category_id")
     @Schema(description = "分类ID")
     private Long categoryId;
+
+    /**
+     * 是否忽略常用字段
+     */
+    @TableField("ignore_default_field")
+    @Schema(description = "是否忽略常用字段")
+    private Boolean ignoreDefaultField;
 }

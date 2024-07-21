@@ -56,7 +56,7 @@ public class DevCodeGenerateServiceImpl extends SimpleTurboCrudRepositoryService
         LockContext.lock()
                 .then(() -> {
                     // create temp directory
-                    String tempDirPath = codeGenerate.getModuleName();
+                    String tempDirPath = codeGenerate.getInstanceName();
                     File tempFile = new File(tempDirPath);
                     if (!tempFile.exists()) {
                         boolean haveMake = tempFile.mkdir();
