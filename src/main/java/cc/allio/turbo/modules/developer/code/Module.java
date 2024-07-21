@@ -1,7 +1,11 @@
 package cc.allio.turbo.modules.developer.code;
 
-import cc.allio.turbo.modules.developer.entity.DevCodeGenerate;
+import cc.allio.turbo.common.api.Key;
+import cc.allio.turbo.modules.system.entity.SysCategory;
+import cc.allio.uno.core.StringPool;
 import lombok.Data;
+
+import java.util.Objects;
 
 /**
  * module model
@@ -21,47 +25,17 @@ public class Module {
     /**
      * module key
      */
-    private String key;
+    private Key key;
 
     /**
-     * module packagePath
-     */
-    private String packagePath;
-
-    /**
-     * module request path
-     */
-    private String requestPath;
-
-    /**
-     * module belong to system
-     */
-    private String system;
-
-    /**
-     * module version
-     */
-    private String version;
-
-    /**
-     * author
-     */
-    private String author;
-
-    /**
-     * from {@link DevCodeGenerate} create new instance of {@link Module}
+     * from {@link SysCategory} create new instance of {@link Module}
      *
-     * @return the {@link Module} instance
+     * @return the {@link SysCategory} instance
      */
-    public static Module from(DevCodeGenerate codeGenerate) {
+    public static Module from(SysCategory category) {
         Module module = new Module();
-        module.setName(codeGenerate.getModuleName());
-        module.setKey(codeGenerate.getModuleKey());
-        module.setPackagePath(codeGenerate.getModulePackagePath());
-        module.setRequestPath(codeGenerate.getModuleRequestPath());
-        module.setVersion(codeGenerate.getModuleVersion());
-        module.setSystem(codeGenerate.getSystem());
-        module.setAuthor(codeGenerate.getModuleAuthor());
+        module.setName(Objects.requireNonNullElse(category.getName(), StringPool.EMPTY));
+        module.setKey(new Key(category.getCode()));
         return module;
     }
 }

@@ -153,7 +153,7 @@ public class DevDataSourceServiceImpl
         if (CollectionUtils.isEmpty(tableColumns)) {
             throw new BizException(DevCodes.DATATABLE_NOT_FOUND);
         }
-        return tableColumns.get(0);
+        return tableColumns.getFirst();
     }
 
     @Override

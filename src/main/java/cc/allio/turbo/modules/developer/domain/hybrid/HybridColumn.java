@@ -2,7 +2,6 @@ package cc.allio.turbo.modules.developer.domain.hybrid;
 
 import cc.allio.turbo.modules.developer.domain.BoAttrSchema;
 import cc.allio.turbo.modules.developer.domain.view.FieldColumn;
-import cc.allio.uno.core.datastructure.tree.Visitor;
 import cc.allio.uno.core.util.BeanUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,13 +20,13 @@ public class HybridColumn extends BoAttrSchema {
     private FieldColumn internal;
 
     /**
-     * compose {@link BoAttrSchema} and {@link FieldColumn} become new type of {@link HybridColumn}
+     * composite {@link BoAttrSchema} and {@link FieldColumn} become new type of {@link HybridColumn}
      *
      * @param attrSchema the {@link BoAttrSchema} instance
      * @param field the {@link FieldColumn} instance
      * @return the {@link HybridColumn} instance
      */
-    public static HybridColumn compose(BoAttrSchema attrSchema, FieldColumn field) {
+    public static HybridColumn composite(BoAttrSchema attrSchema, FieldColumn field) {
         HybridColumn column = new HybridColumn();
         BeanUtils.copy(attrSchema, column);
         column.setInternal(field);

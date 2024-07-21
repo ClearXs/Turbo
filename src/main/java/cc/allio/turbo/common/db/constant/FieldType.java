@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.sql.Types;
+
 /**
  * attribute字段类型
  *
@@ -22,6 +24,7 @@ public enum FieldType {
     BIGINT(DSLType.BIGINT.getName(), DSLType.BIGINT.getName(), DSLType.BIGINT),
     SMALLINT(DSLType.SMALLINT.getName(), DSLType.SMALLINT.getName(), DSLType.SMALLINT),
     INTEGER(DSLType.INTEGER.getName(), DSLType.INTEGER.getName(), DSLType.INTEGER),
+    INT(DSLType.INT.getName(), DSLType.INT.getName(), DSLType.INT),
     BIT(DSLType.BIT.getName(), DSLType.BIT.getName(), DSLType.BIT),
     TINYINT(DSLType.TINYINT.getName(), DSLType.TINYINT.getName(), DSLType.TINYINT),
     NUMBER(DSLType.NUMBER.getName(), DSLType.NUMBER.getName(), DSLType.NUMBER),
@@ -33,6 +36,9 @@ public enum FieldType {
     TIME(DSLType.TIME.getName(), DSLType.TIME.getName(), DSLType.TIME),
     TIMESTAMP(DSLType.TIMESTAMP.getName(), DSLType.TIMESTAMP.getName(), DSLType.TIMESTAMP),
     DATE(DSLType.DATE.getName(), DSLType.DATE.getName(), DSLType.DATE),
+
+    // ====================== 其他类型 ======================
+    BOOLEAN(DSLType.BOOLEAN.getName(), DSLType.BOOLEAN.getName(), DSLType.BOOLEAN),
 
     // ====================== 字符型 ======================
     CHAR(DSLType.CHAR.getName(), DSLType.CHAR.getName(), DSLType.CHAR),
@@ -61,7 +67,7 @@ public enum FieldType {
      */
     public static FieldType castTo(DataType dataType) {
         for (FieldType fieldType : values()) {
-            if (fieldType.getDslType() == dataType.getDslType()) {
+            if (dataType.getDslType().equalsTo(fieldType.getDslType())) {
                 return fieldType;
             }
         }

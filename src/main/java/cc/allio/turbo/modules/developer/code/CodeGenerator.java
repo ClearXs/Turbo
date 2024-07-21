@@ -2,7 +2,6 @@ package cc.allio.turbo.modules.developer.code;
 
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.modules.developer.constant.CodeGenerateSource;
-import cc.allio.turbo.modules.developer.domain.hybrid.HybridBoSchema;
 import cc.allio.turbo.modules.developer.vo.CodeContent;
 import cc.allio.turbo.modules.developer.entity.DevCodeGenerate;
 import cc.allio.turbo.modules.developer.entity.DevCodeGenerateTemplate;
@@ -30,15 +29,11 @@ public interface CodeGenerator {
     /**
      * do generate code
      *
-     * @param boSchema the {@link HybridBoSchema} instance
-     * @param module the {@link Module} instance
-     * @param templates the list of {@link DevCodeGenerateTemplate}
+     * @param codeGenerateContext
+     * @param templates           the list of {@link DevCodeGenerateTemplate}
      * @return the list of {@link CodeContent}
      */
-    default List<CodeContent> doGenerate(HybridBoSchema boSchema, Module module, List<DevCodeGenerateTemplate> templates) {
-        CodeGenerateContext codeGenerateContext = new CodeGenerateContext();
-        codeGenerateContext.setModule(module);
-        codeGenerateContext.setBoSchema(boSchema);
+    default List<CodeContent> doGenerate(CodeGenerateContext codeGenerateContext, List<DevCodeGenerateTemplate> templates) {
         return templates.stream()
                 .map(template -> {
                     CodeContent codeContent = new CodeContent();
