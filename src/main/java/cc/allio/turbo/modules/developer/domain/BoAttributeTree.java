@@ -144,6 +144,7 @@ public class BoAttributeTree extends TreeDomain<DevBoAttribute, BoAttributeTree>
                 .isUnique(unique)
                 .isNonNull(nonNull)
                 .dataType(dataType)
+                .comment(name)
                 .build();
     }
 }
