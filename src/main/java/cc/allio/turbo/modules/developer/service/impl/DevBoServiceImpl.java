@@ -3,7 +3,6 @@ package cc.allio.turbo.modules.developer.service.impl;
 import cc.allio.turbo.common.db.event.Subscription;
 import cc.allio.turbo.common.db.mybatis.service.impl.TurboCacheCrudServiceImpl;
 import cc.allio.turbo.common.exception.BizException;
-import cc.allio.turbo.common.i18n.DevCodes;
 import cc.allio.turbo.common.util.VariationAnalyzer;
 import cc.allio.turbo.modules.developer.constant.AttributeType;
 import cc.allio.turbo.modules.developer.constant.DatasetSource;
@@ -98,7 +97,7 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
                             }
                         }));
         if (CollectionUtils.isEmpty(idMaterializeTables)) {
-            throw new BizException(DevCodes.BO_NONE_TABLES, schema.getName());
+            return false;
         }
         // 可进行物化的表
         Collection<TableColumns> materializableTables = idMaterializeTables.values();
@@ -194,9 +193,9 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
                                                 }
                                                 // 改变的
                                                 List<VariationAnalyzer.Result<ColumnDef, DSLName>> mutative = columnResultSet.getMutative();
-                                                ColumnDef[] alterativeColumns = mutative.stream().map(VariationAnalyzer.Result::getSource).toArray(ColumnDef[]::new);
-                                                if (alterativeColumns.length > 0) {
-                                                    f.alertColumns(alterativeColumns);
+                                                ColumnDef[] alternativeColumns = mutative.stream().map(VariationAnalyzer.Result::getSource).toArray(ColumnDef[]::new);
+                                                if (alternativeColumns.length > 0) {
+                                                    f.alertColumns(alternativeColumns);
                                                 }
                                                 // 减少的
                                                 List<VariationAnalyzer.Result<ColumnDef, DSLName>> reduction = columnResultSet.getReduction();
