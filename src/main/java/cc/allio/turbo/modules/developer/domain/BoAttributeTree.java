@@ -138,7 +138,7 @@ public class BoAttributeTree extends TreeDomain<DevBoAttribute, BoAttributeTree>
             dataType.setScale(scale);
         }
         return ColumnDef.builder()
-                .dslName(DSLName.of(field))
+                .dslName(DSLName.of(field, DSLName.LOWER_CASE_FEATURE, DSLName.UNDERLINE_FEATURE))
                 .isPk(pk)
                 .isFk(fk)
                 .isUnique(unique)
