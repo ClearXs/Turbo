@@ -67,7 +67,7 @@ public class Conditions {
             nameFields =
                     entityFields.computeIfAbsent(
                             entityType,
-                            _ -> {
+                            c -> {
                                 List<Field> fields = ReflectionKit.getFieldList(entityType);
                                 return fields.stream().collect(Collectors.toMap(Field::getName, f -> f));
                             });

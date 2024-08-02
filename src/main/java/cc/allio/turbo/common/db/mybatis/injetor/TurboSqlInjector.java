@@ -1,5 +1,6 @@
 package cc.allio.turbo.common.db.mybatis.injetor;
 
+import cc.allio.turbo.common.db.mybatis.injetor.methods.NonRecursiveTree;
 import cc.allio.turbo.common.db.mybatis.injetor.methods.Tree;
 import com.baomidou.mybatisplus.core.injector.AbstractMethod;
 import com.baomidou.mybatisplus.core.injector.DefaultSqlInjector;
@@ -20,6 +21,7 @@ public class TurboSqlInjector extends DefaultSqlInjector {
     public List<AbstractMethod> getMethodList(Class<?> mapperClass, TableInfo tableInfo) {
         var methodList = super.getMethodList(mapperClass, tableInfo);
         methodList.add(new Tree());
+        methodList.add(new NonRecursiveTree());
         return methodList;
     }
 }

@@ -1,7 +1,7 @@
 package cc.allio.turbo.common.db.mybatis.injetor.methods;
 
-import cc.allio.turbo.common.db.mybatis.mapper.TreeMapper;
 import cc.allio.turbo.common.db.entity.TreeEntity;
+import cc.allio.turbo.common.db.mybatis.mapper.TreeMapper;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.injector.AbstractMethod;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
@@ -11,23 +11,22 @@ import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlSource;
 
 /**
- * 树查询
+ * non-recursive tree select
  *
  * @author j.x
- * @date 2023/11/27 18:34
- * @see TreeEntity
- * @see TreeMapper#selectTree(Wrapper)
- * @since 0.1.0
+ * @date 2024/8/1 13:31
+ * @see TreeMapper#selectNonRecursiveTree(Wrapper)
+ * @since 0.1.1
  */
-public class Tree extends AbstractMethod {
+public class NonRecursiveTree extends AbstractMethod {
 
     // 1.%s 初始项
     // 2.%s 递归项
     // 3.%s 最后递归查询数据字典
-    private static final String TREE_SQL = "<script> WITH RECURSIVE biz_tree AS (%s UNION (SELECT sub.* FROM ((%s) sub INNER JOIN biz_tree P ON P.ID = sub.parent_id))) SELECT %s FROM biz_tree %s </script>";
+    private static final String TREE_SQL = "<script> WITH RECURSIVE biz_tree AS (%s) SELECT %s FROM biz_tree %s </script>";
 
-    public Tree() {
-        super("selectTree");
+    public NonRecursiveTree() {
+        super("selectNonRecursiveTree");
     }
 
     @Override
@@ -38,8 +37,7 @@ public class Tree extends AbstractMethod {
         }
         // select <columns> from dual where ... order ...
         String sqlList = String.format("SELECT %s FROM %s %s %s %s", sqlSelectColumns(tableInfo, true), tableInfo.getTableName(), sqlWhereEntityWrapper(true, tableInfo), sqlOrderBy(tableInfo), sqlComment());
-        String selectFrom = String.format("SELECT %s FROM %s", sqlSelectColumns(tableInfo, true), tableInfo.getTableName());
-        String sql = String.format(TREE_SQL, sqlList, selectFrom, sqlSelectColumns(tableInfo, true), treeWhere(tableInfo));
+        String sql = String.format(TREE_SQL, sqlList, sqlSelectColumns(tableInfo, true), treeWhere(tableInfo));
         SqlSource sqlSource = super.createSqlSource(configuration, sql, modelClass);
         return this.addSelectMappedStatementForTable(mapperClass, methodName, sqlSource, tableInfo);
     }

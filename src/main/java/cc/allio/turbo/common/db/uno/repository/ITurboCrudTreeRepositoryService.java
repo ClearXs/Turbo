@@ -20,7 +20,7 @@ import java.util.List;
 public interface ITurboCrudTreeRepositoryService<T extends TreeNodeEntity> extends ITurboCrudRepositoryService<T>, ITurboTreeCrudService<T> {
 
     @Override
-    default List<T> tree(Wrapper<T> queryWrapper) {
+    default List<T> tree(Wrapper<T> queryWrapper, Boolean recursive) {
         Class<T> entityClass = getEntityClass();
         if (queryWrapper instanceof AbstractWrapper abstractWrapper) {
             abstractWrapper.setEntityClass(entityClass);
@@ -30,15 +30,18 @@ public interface ITurboCrudTreeRepositoryService<T extends TreeNodeEntity> exten
                         entityClass,
                         o -> {
                             QueryOperator<?> baseQuery = WrapperAdapter.adapt(queryWrapper, getExecutor().getOperatorGroup().query());
-                            QueryOperator<?> newQuery = getExecutor().getOperatorGroup().query();
-                            QueryOperator<?> subQuery = newQuery.select(entityClass).from(entityClass);
-                            return o.tree(baseQuery, subQuery);
+                            if (Boolean.TRUE.equals(recursive)) {
+                                QueryOperator<?> newQuery = getExecutor().getOperatorGroup().query();
+                                QueryOperator<?> subQuery = newQuery.select(entityClass).from(entityClass);
+                                return o.tree(baseQuery, subQuery);
+                            }
+                            return o.tree(baseQuery);
                         });
     }
 
     @Override
-    default <Z extends TreeDomain<T, Z>> List<Z> tree(Wrapper<T> queryWrapper, Class<Z> treeType) {
-        List<T> tree = tree(queryWrapper);
+    default <Z extends TreeDomain<T, Z>> List<Z> tree(Wrapper<T> queryWrapper, Class<Z> treeType, Boolean recursive) {
+        List<T> tree = tree(queryWrapper, recursive);
         return treeify(tree, treeType);
     }
 }

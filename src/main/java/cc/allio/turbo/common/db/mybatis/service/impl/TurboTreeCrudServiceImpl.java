@@ -25,13 +25,17 @@ public abstract class TurboTreeCrudServiceImpl<M extends TreeMapper<T>, T extend
         implements ITurboTreeCrudService<T> {
 
     @Override
-    public List<T> tree(Wrapper<T> queryWrapper) {
-        return getBaseMapper().selectTree(queryWrapper);
+    public List<T> tree(Wrapper<T> queryWrapper, Boolean recursive) {
+        if (Boolean.TRUE.equals(recursive)) {
+            return getBaseMapper().selectTree(queryWrapper);
+        } else {
+            return getBaseMapper().selectNonRecursiveTree(queryWrapper);
+        }
     }
 
     @Override
-    public <Z extends TreeDomain<T, Z>> List<Z> tree(Wrapper<T> queryWrapper, Class<Z> treeType) {
-        List<T> tree = getBaseMapper().selectTree(queryWrapper);
+    public <Z extends TreeDomain<T, Z>> List<Z> tree(Wrapper<T> queryWrapper, Class<Z> treeType, Boolean recursive) {
+        List<T> tree = this.tree(queryWrapper, recursive);
         return treeify(tree, treeType);
     }
 
