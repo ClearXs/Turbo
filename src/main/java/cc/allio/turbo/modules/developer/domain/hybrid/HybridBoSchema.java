@@ -43,7 +43,7 @@ public class HybridBoSchema extends BoSchema {
      * @return the {@link HybridBoSchema} instance
      */
     public static HybridBoSchema composite(BoSchema boSchema, DataView dataView) {
-        return composite(boSchema, dataView, _ -> true);
+        return composite(boSchema, dataView, c -> true);
     }
 
     /**

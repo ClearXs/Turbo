@@ -19,6 +19,14 @@ import java.util.List;
 public interface TreeMapper<T extends TreeEntity> extends BaseMapper<T> {
 
     /**
+     * non contains children recursive tree select
+     *
+     * @param queryWrapper the {@link Wrapper}
+     * @return tree of list
+     */
+    List<T> selectNonRecursiveTree(@Param(Constants.WRAPPER) Wrapper<T> queryWrapper);
+
+    /**
      * 树型查找
      */
     List<T> selectTree(@Param(Constants.WRAPPER) Wrapper<T> queryWrapper);

@@ -1,8 +1,12 @@
 package cc.allio.turbo.modules.developer.controller;
 
+import cc.allio.turbo.common.db.mybatis.helper.Conditions;
+import cc.allio.turbo.common.db.mybatis.service.ITurboTreeCrudService;
 import cc.allio.turbo.common.domain.JsonDomain;
+import cc.allio.turbo.common.exception.BizException;
+import cc.allio.turbo.common.i18n.ExceptionCodes;
+import cc.allio.turbo.common.web.R;
 import cc.allio.turbo.common.web.TurboServiceTreeCrudController;
-import cc.allio.turbo.common.web.WebCrudInterceptor;
 import cc.allio.turbo.common.web.WebTreeCrudInterceptor;
 import cc.allio.turbo.common.web.params.QueryParam;
 import cc.allio.turbo.modules.developer.domain.BoAttributeTree;
@@ -10,6 +14,7 @@ import cc.allio.turbo.modules.developer.domain.DevAttributeProps;
 import cc.allio.turbo.modules.developer.entity.DevBoAttribute;
 import cc.allio.turbo.modules.developer.service.IDevBoAttributeService;
 import cc.allio.uno.core.util.BeanUtils;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +31,21 @@ import java.util.List;
 public class DevBoAttributeController extends TurboServiceTreeCrudController<DevBoAttribute, BoAttributeTree, IDevBoAttributeService> {
 
     private static final BoAttributeTreeInterceptor ATTRIBUTE_TREE_INTERCEPTOR = new BoAttributeTreeInterceptor();
+
+    @Override
+    public R<List<BoAttributeTree>> tree(QueryParam<DevBoAttribute> params) throws BizException {
+        WebTreeCrudInterceptor<DevBoAttribute, BoAttributeTree, IDevBoAttributeService> interceptor = getInterceptor();
+        interceptor.onTreeBefore(getService(), params);
+        Class<BoAttributeTree> treeType = getTreeType();
+        if (treeType == null) {
+            throw new BizException(ExceptionCodes.OPERATE_ERROR);
+        }
+        ITurboTreeCrudService<DevBoAttribute> service = getService();
+        QueryWrapper<DevBoAttribute> queryWrapper = Conditions.entityQuery(params, getEntityType());
+        List<BoAttributeTree> treeify = service.tree(queryWrapper, treeType, false);
+        List<BoAttributeTree> zs = interceptor.onTreeAfter(getService(), treeify);
+        return ok(zs);
+    }
 
     @Override
     public WebTreeCrudInterceptor<DevBoAttribute, BoAttributeTree, IDevBoAttributeService> getInterceptor() {

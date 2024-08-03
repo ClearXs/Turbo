@@ -40,7 +40,19 @@ public interface ITurboTreeCrudService<T extends TreeNodeEntity> extends ITurboC
      * @param queryWrapper 查询条件
      * @return 树展开结构
      */
-    List<T> tree(Wrapper<T> queryWrapper);
+    default List<T> tree(Wrapper<T> queryWrapper) {
+        return tree(queryWrapper, true);
+    }
+
+    /**
+     * 树查询
+     *
+     * @param queryWrapper 查询条件
+     * @param recursive    weather recursive
+     *
+     * @return 树展开结构
+     */
+    List<T> tree(Wrapper<T> queryWrapper, Boolean recursive);
 
     /**
      * 树查询
@@ -61,7 +73,20 @@ public interface ITurboTreeCrudService<T extends TreeNodeEntity> extends ITurboC
      * @param treeType     领域树类型
      * @return 领域树结构
      */
-    <Z extends TreeDomain<T, Z>> List<Z> tree(Wrapper<T> queryWrapper, Class<Z> treeType);
+    default <Z extends TreeDomain<T, Z>> List<Z> tree(Wrapper<T> queryWrapper, Class<Z> treeType) {
+        return tree(queryWrapper, treeType, true);
+    }
+
+    /**
+     * 树查询
+     *
+     * @param <Z>          领域树类型
+     * @param queryWrapper 查询条件
+     * @param treeType     领域树类型
+     * @param recursive    whether recursive
+     * @return 领域树结构
+     */
+    <Z extends TreeDomain<T, Z>> List<Z> tree(Wrapper<T> queryWrapper, Class<Z> treeType, Boolean recursive);
 
     /**
      * 平展树结构进行树化
