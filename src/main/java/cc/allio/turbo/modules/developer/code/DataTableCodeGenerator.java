@@ -14,9 +14,19 @@ import cc.allio.turbo.modules.developer.vo.DataTable;
 import cc.allio.turbo.modules.system.entity.SysCategory;
 import cc.allio.turbo.modules.system.service.ISysCategoryService;
 import cc.allio.uno.core.util.JsonUtils;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collections;
 import java.util.List;
 
+/**
+ * the {@link CodeGenerateSource#DATATABLE} implementation
+ *
+ * @author j.x
+ * @date 2024/8/4 19:26
+ * @since 0.1.1
+ */
+@Slf4j
 public class DataTableCodeGenerator implements CodeGenerator {
 
     private final IDevDataSourceService dataSourceService;
@@ -28,12 +38,18 @@ public class DataTableCodeGenerator implements CodeGenerator {
     }
 
     @Override
-    public List<CodeContent> generate(DevCodeGenerate codeGenerate, List<DevCodeGenerateTemplate> templates) throws BizException {
+    public List<CodeContent> generate(DevCodeGenerate codeGenerate, List<DevCodeGenerateTemplate> templates) {
         String datatable = codeGenerate.getDatatable();
         DataTable dataTable = JsonUtils.parse(datatable, DataTable.class);
         Long dataSource = dataTable.getDataSource();
         String table = dataTable.getTable();
-        TableColumns tableColumns = dataSourceService.showTable(dataSource, table);
+        TableColumns tableColumns;
+        try {
+            tableColumns = dataSourceService.showTable(dataSource, table);
+        } catch (BizException ex) {
+            log.error("incorrect show table command", ex);
+            return Collections.emptyList();
+        }
         String dataViewString = codeGenerate.getDataView();
         DataView dataView = JsonUtils.parse(dataViewString, DataView.class);
         BoSchema boSchema = BoSchema.from(tableColumns);

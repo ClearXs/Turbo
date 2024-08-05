@@ -1,15 +1,23 @@
 package cc.allio.turbo.common.util;
 
 import cc.allio.turbo.common.web.App;
+import cc.allio.turbo.modules.auth.oauth2.TenantSessionAuthorizationRequestRepository;
 import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jodd.io.IOUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Optionals;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -18,9 +26,10 @@ import java.util.Optional;
  *
  * @author j.x
  * @date 2023/10/27 15:24
- * @see cc.allio.turbo.modules.auth.oauth2.TenantSessionAuthorizationRequestRepository
+ * @see TenantSessionAuthorizationRequestRepository
  * @since 0.1.0
  */
+@Slf4j
 public final class WebUtil extends org.springframework.web.util.WebUtils {
 
     public static final String X_AUTHENTICATION = "X-AUTHENTICATION";
@@ -207,5 +216,25 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
     public static String getSessionId(HttpServletRequest request) {
         HttpSession session = request.getSession();
         return session.getId();
+    }
+
+    /**
+     * write to {@link HttpServletResponse} response from {@code io} and {@code filename}
+     *
+     * @param filename to write filename
+     * @param io       to write {@link InputStream}
+     * @param response the {@link HttpServletResponse} response
+     */
+    public static void writeToOutputStream(String filename, InputStream io, HttpServletResponse response) {
+        try {
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, StandardCharsets.UTF_8));
+            response.setContentType("application/force-download");
+            response.setCharacterEncoding("UTF-8");
+            IOUtil.copy(io, response.getOutputStream());
+        } catch (IOException ex) {
+            log.error("Failed to input stream to output stream", ex);
+        } finally {
+            IOUtil.close(io);
+        }
     }
 }
