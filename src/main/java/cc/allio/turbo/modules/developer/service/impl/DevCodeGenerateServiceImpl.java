@@ -2,6 +2,7 @@ package cc.allio.turbo.modules.developer.service.impl;
 
 import cc.allio.turbo.common.db.uno.repository.impl.SimpleTurboCrudRepositoryServiceImpl;
 import cc.allio.turbo.common.exception.BizException;
+import cc.allio.turbo.common.util.WebUtil;
 import cc.allio.turbo.modules.developer.code.CodeGenerator;
 import cc.allio.turbo.modules.developer.code.CodeGeneratorManager;
 import cc.allio.turbo.modules.developer.constant.CodeGenerateSource;
@@ -15,17 +16,13 @@ import cc.allio.uno.core.concurrent.LockContext;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import jakarta.servlet.http.HttpServletResponse;
-import jodd.io.FileUtil;
-import jodd.io.IOUtil;
-import jodd.io.ZipUtil;
+import jodd.io.ZipBuilder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.io.*;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,57 +49,22 @@ public class DevCodeGenerateServiceImpl extends SimpleTurboCrudRepositoryService
         if (codeGenerate == null) {
             throw new BizException("Not found code generate entity by id");
         }
+        List<CodeContent> codeContents = doGenerate(codeGenerate);
+        InputStream zipIO = withZip(codeContents);
+        WebUtil.writeToOutputStream(codeGenerate.getInstanceName() + ".zip", zipIO, response);
+    }
 
-        LockContext.lock()
-                .then(() -> {
-                    // create temp directory
-                    String tempDirPath = codeGenerate.getInstanceName();
-                    File tempFile = new File(tempDirPath);
-                    if (!tempFile.exists()) {
-                        boolean haveMake = tempFile.mkdir();
-                        if (!haveMake) {
-                            throw new BizException("Failed to create generate temp direction!");
-                        }
-                    }
-                    // create zip file
-                    List<CodeContent> codeContents = doGenerate(codeGenerate);
-                    for (CodeContent codeContent : codeContents) {
-                        // like as ./temp/backend/pages/controller/TestController.java
-                        String domain = Optional.ofNullable(codeContent.getCodeDomain()).orElse(CodeTemplateDomain.OTHER).getValue();
-                        String dir = codeContent.getFilepath();
-                        String filepath = tempDirPath + StringPool.SLASH + domain + dir + StringPool.SLASH + codeContent.getFilename();
-                        File codeFile = new File(filepath);
-
-                        // create directory from file path input to temp
-                        File codeDirectory = codeFile.getParentFile();
-                        if (!codeDirectory.exists()) {
-                            boolean newDirectory = codeDirectory.mkdirs();
-                            if (!newDirectory) {
-                                throw new BizException("Failed to create code directory!");
-                            }
-                        }
-                        // create file
-                        if (!codeFile.exists()) {
-                            boolean newFile = codeFile.createNewFile();
-                            if (!newFile) {
-                                throw new BizException("Failed to create code file!");
-                            }
-                        }
-                        FileUtil.writeBytes(codeFile, codeContent.getContent().getBytes());
-                    }
-
-                    File zipFile = ZipUtil.zip(tempFile);
-
-                    response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(zipFile.getName(), StandardCharsets.UTF_8));
-                    response.setContentType("application/force-download");
-                    response.setCharacterEncoding("UTF-8");
-                    var fileInputStream = new FileInputStream(zipFile);
-                    IOUtil.copy(fileInputStream, response.getOutputStream());
-                    FileUtil.delete(zipFile);
-                    FileUtil.delete(tempFile);
-                })
-                .release()
-                .unchecked();
+    @Override
+    public void batchGenerate(List<Long> id, HttpServletResponse response) {
+        List<DevCodeGenerate> devCodeGenerates = listByIds(id);
+        // loop for method of doGenerate and get list of CodeContent
+        List<CodeContent> codeContents =
+                devCodeGenerates.stream()
+                        .map(this::doGenerate)
+                        .flatMap(Collection::stream)
+                        .toList();
+        InputStream zipIO = withZip(codeContents);
+        WebUtil.writeToOutputStream("generation" + ".zip", zipIO, response);
     }
 
     /**
@@ -111,12 +73,37 @@ public class DevCodeGenerateServiceImpl extends SimpleTurboCrudRepositoryService
      * @param codeGenerate the {@link DevCodeGenerate} instance
      * @return list of {@link CodeContent}
      */
-    public List<CodeContent> doGenerate(DevCodeGenerate codeGenerate) throws BizException {
+    List<CodeContent> doGenerate(DevCodeGenerate codeGenerate) {
         Long templateCategoryId = codeGenerate.getTemplateCategoryId();
         List<DevCodeGenerateTemplate> templates =
                 codeGeneratorTemplateService.list(Wrappers.lambdaQuery(DevCodeGenerateTemplate.class).eq(DevCodeGenerateTemplate::getCategoryId, templateCategoryId));
         CodeGenerateSource source = codeGenerate.getSource();
         CodeGenerator codeGenerator = codeGeneratorManager.obtainCodeGenerator(source);
         return codeGenerator.generate(codeGenerate, templates);
+    }
+
+    /**
+     * zip all list of {@link CodeContent}
+     *
+     * @param codeContents the list of {@link CodeContent}
+     * @return return zip file {@link InputStream}
+     */
+    InputStream withZip(List<CodeContent> codeContents) {
+        return LockContext.lock()
+                .lockReturn(() -> {
+                    ZipBuilder zipBuilder = ZipBuilder.createZipInMemory();
+                    for (CodeContent codeContent : codeContents) {
+                        // file content
+                        String content = codeContent.getContent();
+                        // like as /backend/pages/controller/TestController.java
+                        String domain = Optional.ofNullable(codeContent.getCodeDomain()).orElse(CodeTemplateDomain.OTHER).getValue();
+                        String dir = codeContent.getFilepath();
+                        String filepath = domain + dir + StringPool.SLASH + codeContent.getFilename();
+                        // save the code content
+                        zipBuilder = zipBuilder.add(content).path(filepath).save();
+                    }
+                    return new ByteArrayInputStream(zipBuilder.toBytes());
+                })
+                .unchecked();
     }
 }

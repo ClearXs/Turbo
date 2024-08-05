@@ -5,12 +5,10 @@ import cc.allio.turbo.modules.developer.constant.CodeGenerateSource;
 import cc.allio.turbo.modules.developer.domain.BoSchema;
 import cc.allio.turbo.modules.developer.domain.hybrid.HybridBoSchema;
 import cc.allio.turbo.modules.developer.domain.view.DataView;
-import cc.allio.turbo.modules.developer.vo.CodeContent;
 import cc.allio.turbo.modules.developer.entity.DevCodeGenerate;
 import cc.allio.turbo.modules.developer.entity.DevCodeGenerateTemplate;
-import cc.allio.turbo.modules.developer.entity.DevPage;
 import cc.allio.turbo.modules.developer.service.IDevBoService;
-import cc.allio.turbo.modules.developer.service.IDevPageService;
+import cc.allio.turbo.modules.developer.vo.CodeContent;
 import cc.allio.turbo.modules.system.entity.SysCategory;
 import cc.allio.turbo.modules.system.service.ISysCategoryService;
 import cc.allio.uno.core.util.JsonUtils;
@@ -20,34 +18,26 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * the {@link CodeGenerateSource#PAGE} of {@link CodeGenerator} implementation. it will be use page bo schema
+ * the {@link CodeGenerateSource} implementation.
  *
  * @author j.x
- * @date 2024/6/20 22:21
+ * @date 2024/8/4 19:27
  * @since 0.1.1
  */
 @Slf4j
-public class PageCodeGenerator implements CodeGenerator {
+public class BoCodeGenerator implements CodeGenerator {
 
-    private final IDevPageService devPageService;
-    private final IDevBoService devBoService;
     private final ISysCategoryService categoryService;
+    private final IDevBoService devBoService;
 
-    public PageCodeGenerator(IDevPageService devPageService, IDevBoService devBoService, ISysCategoryService categoryService) {
-        this.devPageService = devPageService;
-        this.devBoService = devBoService;
+    public BoCodeGenerator(ISysCategoryService categoryService, IDevBoService devBoService) {
         this.categoryService = categoryService;
+        this.devBoService = devBoService;
     }
 
     @Override
     public List<CodeContent> generate(DevCodeGenerate codeGenerate, List<DevCodeGenerateTemplate> templates) {
-        Long pageId = codeGenerate.getPageId();
-        DevPage page = devPageService.getById(pageId);
-        if (page == null) {
-            log.error("code generator by 'page', but page is null");
-            return Collections.emptyList();
-        }
-        Long boId = page.getBoId();
+        Long boId = codeGenerate.getBoId();
         BoSchema boSchema;
         try {
             boSchema = devBoService.cacheToSchema(boId);
@@ -78,6 +68,6 @@ public class PageCodeGenerator implements CodeGenerator {
 
     @Override
     public CodeGenerateSource getSource() {
-        return CodeGenerateSource.PAGE;
+        return CodeGenerateSource.BO;
     }
 }

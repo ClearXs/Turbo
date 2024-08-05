@@ -21,8 +21,16 @@ public interface IDevCodeGenerateService extends ITurboCrudRepositoryService<Dev
     /**
      * generate zip code file, and user download it
      *
-     * @param id the {@link DevCodeGenerate} id
+     * @param id       the {@link DevCodeGenerate} id
      * @param response the {@link HttpServletResponse} instance
      */
     void generate(Long id, HttpServletResponse response) throws BizException;
+
+    /**
+     * batch generate zip code file, and user download it
+     *
+     * @param id       the {@link DevCodeGenerate} id
+     * @param response the {@link HttpServletResponse} instance
+     */
+    void batchGenerate(List<Long> id, HttpServletResponse response) throws BizException;
 }

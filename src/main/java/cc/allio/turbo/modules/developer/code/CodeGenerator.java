@@ -1,6 +1,5 @@
 package cc.allio.turbo.modules.developer.code;
 
-import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.modules.developer.constant.CodeGenerateSource;
 import cc.allio.turbo.modules.developer.vo.CodeContent;
 import cc.allio.turbo.modules.developer.entity.DevCodeGenerate;
@@ -21,10 +20,10 @@ public interface CodeGenerator {
      * generate code to list of {@link CodeContent}
      *
      * @param codeGenerate the {@link DevCodeGenerate} instance
-     * @param templates the list of {@link DevCodeGenerateTemplate}
+     * @param templates    the list of {@link DevCodeGenerateTemplate}
      * @return the list of {@link CodeContent}
      */
-    List<CodeContent> generate(DevCodeGenerate codeGenerate, List<DevCodeGenerateTemplate> templates) throws BizException;
+    List<CodeContent> generate(DevCodeGenerate codeGenerate, List<DevCodeGenerateTemplate> templates);
 
     /**
      * do generate code

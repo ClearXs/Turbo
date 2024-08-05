@@ -74,6 +74,13 @@ public class DevCodeGenerate extends TenantEntity implements CategoryEntity {
     /**
      * 数据集ID
      */
+    @TableField("bo_id")
+    @Schema(description = "BO对象id")
+    private Long boId;
+
+    /**
+     * 数据集ID
+     */
     @TableField("page_id")
     @Schema(description = "页面id")
     private Long pageId;

@@ -20,6 +20,11 @@ public class CodeGeneratorConfiguration {
     }
 
     @Bean
+    public BoCodeGenerator boCodeGenerator(IDevBoService devBoService, ISysCategoryService categoryService) {
+        return new BoCodeGenerator(categoryService, devBoService);
+    }
+
+    @Bean
     public DataTableCodeGenerator dataTableCodeGenerator(IDevDataSourceService dataSourceService, ISysCategoryService categoryService) {
         return new DataTableCodeGenerator(dataSourceService, categoryService);
     }

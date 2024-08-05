@@ -37,4 +37,11 @@ public class DevCodeGenerateController extends CategoryServiceTurboCrudControlle
     public void generate(@Validated @PathVariable("id") @NotNull Long id, HttpServletResponse response) throws BizException {
         getService().generate(id, response);
     }
+
+
+    @GetMapping("/batch-generate/{id}")
+    @Operation(summary = "生成代码")
+    public void batchGenerate(@Validated @PathVariable("id") @NotNull List<Long> id, HttpServletResponse response) throws BizException {
+        getService().batchGenerate(id, response);
+    }
 }
