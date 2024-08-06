@@ -1,5 +1,5 @@
 server:
-  port: 8700
+  port: 8600
   undertow:
     threads:
       io: 100
@@ -13,7 +13,7 @@ spring:
   application:
     name: turbo
   profiles:
-    active: dev,oauth2,oss,file,ob,secure,persistent,office
+    active: dev,oauth2,oss,file,ob,secure,persistent
     # 开启虚拟线程
   threads:
     virtual:

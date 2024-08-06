@@ -5,7 +5,7 @@ turbo:
         # 是否启用日志
         enabled: false
         # 日志服务地址
-        endpoint: http://110.42.33.81:5080/api/default/default/_json
+        endpoint: http://localhost:5080/api/default/default/_json
         # 组织
         # 日志头
         headers:
@@ -26,4 +26,4 @@ turbo:
         # 是否启用trace
         enabled: false
         # trace服务地址
-        endpoint: http://110.42.33.81:9411/api/v2/spans
+        endpoint: http://localhost:9411/api/v2/spans
