@@ -1,0 +1,64 @@
+turbo:
+  office:
+    document:
+      # onlyoffice访问地址
+      document-server-url: http://192.168.5.22:8600
+      onlyoffice-server-url: http://192.168.5.201:8890
+      storage:
+        path: document
+      docservice:
+        # 支持fillform的文件格式
+        fillforms-docs: .oform|.docx
+        # 支持预览的文件格式
+        viewed-docs: .pdf|.djvu|.xps|.oxps
+        # 支持编辑的文件格式
+        edited-docs: .docx|.xlsx|.csv|.pptx|.txt|.docxf
+        # 支持转换的文件格式
+        convert-docs: .docm|.dotx|.dotm|.dot|.doc|.odt|.fodt|.ott|.xlsm|.xlsb|.xltx|.xltm|.xlt|.xls|.ods|.fods|.ots|.pptm|.ppt|.ppsx|.ppsm|.pps|.potx|.potm|.pot|.odp|.fodp|.otp|.rtf|.mht|.html|.htm|.xml|.epub|.fb2
+        # 连接超时时间
+        timeout: 120000
+        # 请求onlyoffice密钥
+        secret: allio@2024
+        # 验证头部
+        header: Authorization
+        verify-peer-off: true
+        # 支持口语语言
+        languages: en:English|hy:Armenian|az:Azerbaijani|eu:Basque|be:Belarusian|bg:Bulgarian|ca:Catalan|zh:Chinese (People's Republic of China)|zh-TW:Chinese (Traditional, Taiwan)|cs:Czech|da:Danish|nl:Dutch|fi:Finnish|fr:French|gl:Galego|de:German|el:Greek|hu:Hungarian|id:Indonesian|it:Italian|ja:Japanese|ko:Korean|lv:Latvian|lo:Lao|ms:Malay (Malaysia)|nb:Norwegian|pl:Polish|pt:Portuguese (Brazil)|pt-PT:Portuguese (Portugal)|ro:Romanian|ru:Russian|sk:Slovak|sl:Slovenian|es:Spanish|sv:Swedish|tr:Turkish|uk:Ukrainian|vi:Vietnamese|aa-AA:Test Language
+        history:
+          postfix: -hist
+        url:
+          site: ${turbo.office.document.document-server-url}
+          converter: ConvertService.ashx
+          command: coauthoring/CommandService.ashx
+          api: /web-apps/apps/api/documents/api.js
+          preloader: /web-apps/apps/api/documents/cache-scripts.html
+          # 在线协作文档服务访问地址
+          example: ${turbo.office.document.document-server-url}
+      customization:
+        autosave: true
+        comments: true
+        compact-header: false
+        compact-toolbar: false
+        compatible-features: false
+        forcesave: false
+        help: false
+        hide-right-menu: false
+        submit-form: false
+        about: false
+        feedback: false
+      custom:
+        index: /index
+        # 创建文档地址
+        create: /file/create
+        # 转换地址
+        converter: /file/converter
+        # 编辑器地址
+        editor: /editor
+        # 回调地址
+        track: /office/callback/track
+        # 系统附件下载地址
+        download: ${turbo.office.document.document-server-url}/sys/attachment/download
+      logo:
+        image: test
+        image-embedded: test
+        url: https://api.onlyoffice.com/editors/react

@@ -1,0 +1,126 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.allio.turbo.modules.office.mapper.DocUserMapper">
+
+    <sql id="doc_collaborator">
+        SELECT doc.*, collaborator.*,customization.shared,customization.favor,customization.favorite
+        FROM (SELECT cooperator, permission_group_id, doc_id
+        FROM office_doc_cooperator
+        <where>
+            is_deleted = 0
+            <if test="params.collaborator != null">
+                AND cooperator = #{params.collaborator}
+            </if>
+        </where>
+        ) collaborator
+        LEFT JOIN (SELECT *
+        FROM office_doc
+        WHERE is_deleted = 0) doc ON collaborator.doc_id = doc.ID
+        LEFT JOIN ( SELECT shared, favorite, favor, doc_id ,user_id FROM office_doc_customization ) customization ON
+        collaborator.doc_id = customization.doc_id
+        AND collaborator.cooperator = customization.user_id
+    </sql>
+
+    <sql id="doc_creator">
+        SELECT doc.*, collaborator.*,customization.shared,customization.favor,customization.favorite
+        FROM (SELECT * FROM office_doc
+        <where>
+            is_deleted = 0
+            <if test="params.creator != null">
+                AND creator = #{params.creator}
+            </if>
+        </where>
+        ) doc
+        LEFT JOIN (SELECT cooperator, permission_group_id, doc_id
+        FROM office_doc_cooperator
+        <where>
+            is_deleted = 0
+            <if test="params.collaborator != null">
+                AND cooperator = #{params.collaborator}
+            </if>
+        </where>
+        )
+        collaborator ON doc.ID = collaborator.doc_id
+        LEFT JOIN ( SELECT shared, favorite, favor, doc_id, user_id FROM office_doc_customization ) customization ON
+        doc.id =
+        customization.doc_id
+        AND doc.creator = customization.user_id
+    </sql>
+
+    <select id="selectUserDocList" resultType="cc.allio.turbo.modules.office.vo.DocVO">
+        SELECT * FROM (
+        <include refid="doc_creator"/>
+        UNION
+        <include refid="doc_collaborator"/>) docUser
+        <where>
+            <if test="params.title != null and params.title != ''">
+                AND docUser.title LIKE concat('%', #{params.title},'%')
+            </if>
+            <if test="params.type != null and params.type != ''">
+                AND docUser.type = #{params.type}
+            </if>
+            <if test="params.shared != null ">
+                AND docUser.shared = #{params.shared}
+            </if>
+            <if test="params.favorite != null ">
+                AND docUser.favorite = #{params.favorite}
+            </if>
+            <if test="params.favor != null ">
+                AND docUser.favor = #{params.favor}
+            </if>
+        </where>
+        ORDER BY docUser.updated_time DESC
+    </select>
+
+    <select id="selectCreatorDocList" resultType="cc.allio.turbo.modules.office.vo.DocVO">
+        SELECT * FROM (<include refid="doc_creator"/>) docUser
+        <where>
+            <if test="params.title != null and params.title != ''">
+                AND docUser.title LIKE concat('%', #{params.title},'%')
+            </if>
+            <if test="params.type != null and params.type != ''">
+                AND docUser.type = #{params.type}
+            </if>
+            <if test="params.shared != null ">
+                AND docUser.shared = #{params.shared}
+            </if>
+            <if test="params.favorite != null ">
+                AND docUser.favorite = #{params.favorite}
+            </if>
+            <if test="params.favor != null ">
+                AND docUser.favor = #{params.favor}
+            </if>
+        </where>
+        ORDER BY docUser.updated_time DESC
+
+    </select>
+
+    <select id="selectCollaboratorDocList" resultType="cc.allio.turbo.modules.office.vo.DocVO">
+        SELECT * FROM (<include refid="doc_collaborator"/>) docUser
+        <where>
+            <if test="params.title != null and params.title != ''">
+                AND docUser.title LIKE concat('%', #{params.title},'%')
+            </if>
+            <if test="params.type != null and params.type != ''">
+                AND docUser.type = #{params.type}
+            </if>
+            <if test="params.shared != null ">
+                AND docUser.shared = #{params.shared}
+            </if>
+            <if test="params.favorite != null ">
+                AND docUser.favorite = #{params.favorite}
+            </if>
+            <if test="params.favor != null ">
+                AND docUser.favor = #{params.favor}
+            </if>
+        </where>
+        ORDER BY docUser.updated_time DESC
+    </select>
+
+    <select id="searchUserDocList" resultType="cc.allio.turbo.modules.office.vo.DocVO">
+        SELECT * FROM (
+        <include refid="doc_creator"/>
+        UNION
+        <include refid="doc_collaborator"/>) docUser
+    </select>
+</mapper>

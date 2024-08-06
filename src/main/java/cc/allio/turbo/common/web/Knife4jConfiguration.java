@@ -57,6 +57,15 @@ public class Knife4jConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
+    public GroupedOpenApi officeApi() {
+        return GroupedOpenApi.builder()
+                .group("office")
+                .displayName("在线协作模块")
+                .pathsToMatch("/office/**")
+                .build();
+    }
+
+    @Bean
     public OpenAPI customOpenAPI() {
         Contact contact = new Contact();
         contact.setName("j.x");

@@ -1,15 +1,15 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/turbo
+    url: jdbc:postgresql://43.139.180.60:5432/turbo_office
     username: postgres
-    password: postgres
+    password: allio@2024
     driver-class-name: org.postgresql.Driver
   data:
     redis:
-      host: localhost
+      host: 43.139.180.60
       port: 6379
-      password: redis
-      database: 0
+      password: allio@2024
+      database: 1
 
 logging:
   level:

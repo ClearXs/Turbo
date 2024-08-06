@@ -1,4 +1,4 @@
 turbo:
   oss:
-    base-dir: /${spring.application.name}
+    base-dir: /
     strategy: date
