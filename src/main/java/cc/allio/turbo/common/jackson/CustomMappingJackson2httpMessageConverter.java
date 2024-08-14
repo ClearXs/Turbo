@@ -1,5 +1,6 @@
 package cc.allio.turbo.common.jackson;
 
+import cc.allio.turbo.modules.developer.jackson.UtileModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 

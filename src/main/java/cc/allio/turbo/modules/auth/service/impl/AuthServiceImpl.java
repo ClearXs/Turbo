@@ -4,7 +4,6 @@ import cc.allio.turbo.modules.auth.authentication.TurboJwtAuthenticationToken;
 import cc.allio.turbo.modules.auth.constant.ExpireAt;
 import cc.allio.turbo.modules.auth.properties.SecureProperties;
 import cc.allio.turbo.modules.auth.provider.TurboUser;
-import cc.allio.turbo.modules.system.constant.UserSource;
 import cc.allio.turbo.modules.system.dto.ChangePasswordDTO;
 import cc.allio.turbo.modules.system.entity.*;
 import cc.allio.turbo.modules.system.service.*;
@@ -73,7 +72,7 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public List<SysMenuTree> currentUserMenus() {
-        TurboUser currentUser = AuthUtil.getCurrentUser();
+        TurboUser currentUser = AuthUtil.getUser();
         if (currentUser == null) {
             return Collections.emptyList();
         }
@@ -135,7 +134,7 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public SysOrg currentUserOrg() {
-        Long orgId = AuthUtil.getCurrentUserOrgId();
+        Long orgId = AuthUtil.getUserOrgId();
         if (orgId == null) {
             return null;
         }

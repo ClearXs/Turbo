@@ -27,7 +27,7 @@ public final class AuthUtil {
      * @return Long maybe null
      */
     public static Long getCurrentUserId() {
-        return Optional.ofNullable(getCurrentUser())
+        return Optional.ofNullable(getUser())
                 .map(TurboUser::getUserId)
                 .orElse(null);
     }
@@ -37,8 +37,8 @@ public final class AuthUtil {
      *
      * @return maybe null
      */
-    public static String getCurrentUsername() {
-        return Optional.ofNullable(getCurrentUser())
+    public static String getUsername() {
+        return Optional.ofNullable(getUser())
                 .map(TurboUser::getUsername)
                 .orElse(StringPool.EMPTY);
     }
@@ -48,8 +48,8 @@ public final class AuthUtil {
      *
      * @return orgid or null
      */
-    public static Long getCurrentUserOrgId() {
-        return Optional.ofNullable(getCurrentUser())
+    public static Long getUserOrgId() {
+        return Optional.ofNullable(getUser())
                 .map(TurboUser::getOrgId)
                 .orElse(null);
     }
@@ -59,8 +59,8 @@ public final class AuthUtil {
      *
      * @return tenant id or null
      */
-    public static Long getCurrentTenantId() {
-        return Optional.ofNullable(getCurrentUser())
+    public static Long getTenantId() {
+        return Optional.ofNullable(getUser())
                 .map(TurboUser::getTenantId)
                 .orElse(null);
     }
@@ -70,7 +70,7 @@ public final class AuthUtil {
      *
      * @return TurboUser or null
      */
-    public static TurboUser getCurrentUser() {
+    public static TurboUser getUser() {
         try {
             Jwt jwt = JwtUtil.decode(WebUtil.getToken());
             return Optional.ofNullable(jwt).map(TurboUser::new).orElse(null);
@@ -78,5 +78,14 @@ public final class AuthUtil {
             log.error("decode jwt token error", ex);
         }
         return null;
+    }
+
+    /**
+     * current user whether admin
+     *
+     * @return admin if true
+     */
+    public static Boolean isAdmin() {
+        return Optional.ofNullable(getUser()).map(TurboUser::getIsAdmin).orElse(false);
     }
 }
