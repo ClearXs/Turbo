@@ -36,7 +36,7 @@ public class ThreadLocalWebDomainEventContext extends DomainEventContext {
         Optional.ofNullable(WebUtil.getTenant()).ifPresent(tenantId -> putAttribute(TENANT_ID_KEY, tenantId));
         Optional.ofNullable(WebUtil.getToken()).ifPresent(token -> putAttribute(TOKEN_KEY, token));
         Optional.ofNullable(WebUtil.getRequest()).ifPresent(request -> putAttribute(REQUEST_KEY, request));
-        Optional.ofNullable(AuthUtil.getCurrentUser()).ifPresent(user -> putAttribute(CURRENT_USER_KEY, user));
+        Optional.ofNullable(AuthUtil.getUser()).ifPresent(user -> putAttribute(CURRENT_USER_KEY, user));
     }
 
     /**

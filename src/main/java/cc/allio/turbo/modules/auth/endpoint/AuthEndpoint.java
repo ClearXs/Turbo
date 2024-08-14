@@ -47,7 +47,7 @@ public class AuthEndpoint extends TurboController {
     @GetMapping("/current-user")
     @Operation(summary = "获取当前用户")
     public R<TurboUser> currentUser() {
-        return R.ok(AuthUtil.getCurrentUser());
+        return R.ok(AuthUtil.getUser());
     }
 
     @GetMapping("/menus")

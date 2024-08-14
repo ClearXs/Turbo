@@ -1,6 +1,6 @@
-package cc.allio.turbo.common.jackson;
+package cc.allio.turbo.modules.developer.jackson;
 
-import cc.allio.turbo.common.api.Key;
+import cc.allio.turbo.modules.developer.api.Key;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;

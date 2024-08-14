@@ -56,7 +56,7 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
                 // from request parameter
                 () -> getParameterOpt(X_TENANT),
                 // from auth
-                () -> Optional.ofNullable(AuthUtil.getCurrentTenantId()).map(String::valueOf)).orElse(null);
+                () -> Optional.ofNullable(AuthUtil.getTenantId()).map(String::valueOf)).orElse(null);
     }
 
     /**

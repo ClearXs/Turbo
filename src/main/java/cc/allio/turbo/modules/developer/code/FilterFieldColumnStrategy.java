@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.developer.code;
 
-import cc.allio.turbo.common.api.Key;
+import cc.allio.turbo.modules.developer.api.Key;
 import cc.allio.turbo.modules.developer.domain.view.FieldColumn;
 import cc.allio.turbo.modules.developer.entity.DomainEntity;
 import com.google.common.collect.Sets;
