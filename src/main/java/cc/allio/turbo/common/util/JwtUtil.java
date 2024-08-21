@@ -1,12 +1,12 @@
 package cc.allio.turbo.common.util;
 
+import cc.allio.turbo.modules.auth.authentication.TurboJwtAuthenticationToken;
+import cc.allio.turbo.modules.auth.properties.SecureProperties;
+import cc.allio.turbo.modules.auth.provider.TurboUser;
 import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.util.DateUtil;
 import cc.allio.uno.core.util.StringUtils;
 import cc.allio.uno.core.util.id.IdGenerator;
-import cc.allio.turbo.modules.auth.properties.SecureProperties;
-import cc.allio.turbo.modules.auth.authentication.TurboJwtAuthenticationToken;
-import cc.allio.turbo.modules.auth.provider.TurboUser;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.*;
 
@@ -51,19 +51,20 @@ public final class JwtUtil {
                 .subject(instance.secureProperties.getJwt().getSubject())
                 .expiresAt(expiresAt)
                 // 加密用户信息 jws
-                .claim("accountNonExpired", user.isAccountNonExpired())
-                .claim("accountNonLocked", user.isAccountNonLocked())
-                .claim("credentialsNonExpired", user.isCredentialsNonExpired())
-                .claim("enabled", user.isEnabled())
-                .claim("authorities", user.getAuthorities())
-                .claim("userId", user.getUserId())
-                .claim("username", user.getUsername())
-                .claim("password", user.getPassword())
-                .claim("email", Optional.ofNullable(user.getEmail()).orElse(StringPool.EMPTY))
-                .claim("phone", Optional.ofNullable(user.getPhone()).orElse(StringPool.EMPTY))
-                .claim("avatar", Optional.ofNullable(user.getAvatar()).orElse(StringPool.EMPTY))
-                .claim("nickname", Optional.ofNullable(user.getNickname()).orElse(StringPool.EMPTY))
-                .claim("tenantId", Optional.ofNullable(user.getTenantId()).orElse(0L))
+                .claim(TurboUser.ACCOUNT_NON_EXPIRED_FIELD, user.isAccountNonExpired())
+                .claim(TurboUser.ACCOUNT_NON_LOCKED_FIELD, user.isAccountNonLocked())
+                .claim(TurboUser.CREDENTIALS_NON_EXPIRED_FIELD, user.isCredentialsNonExpired())
+                .claim(TurboUser.ACCOUNT_ENABLED_FIELD, user.isEnabled())
+                .claim(TurboUser.AUTHORITIES_FIELD, user.getAuthorities())
+                .claim(TurboUser.USER_ID_FIELD, user.getUserId())
+                .claim(TurboUser.USERNAME_FIELD, user.getUsername())
+                .claim(TurboUser.PASSWORD_FIELD, user.getPassword())
+                .claim(TurboUser.EMAIL_FIELD, Optional.ofNullable(user.getEmail()).orElse(StringPool.EMPTY))
+                .claim(TurboUser.PHONE_FIELD, Optional.ofNullable(user.getPhone()).orElse(StringPool.EMPTY))
+                .claim(TurboUser.AVATAR_FIELD, Optional.ofNullable(user.getAvatar()).orElse(StringPool.EMPTY))
+                .claim(TurboUser.NICKNAME_FIELD, Optional.ofNullable(user.getNickname()).orElse(StringPool.EMPTY))
+                .claim(TurboUser.TENANT_ID_FIELD, Optional.ofNullable(user.getTenantId()).orElse(0L))
+                .claim(TurboUser.ADMINISTRATOR_FIELD, user.isAdministrator())
                 .build();
         Jwt jwt = instance.jwtEncoder.encode(JwtEncoderParameters.from(jwtClaimsSet));
         return new TurboJwtAuthenticationToken(jwt, user);

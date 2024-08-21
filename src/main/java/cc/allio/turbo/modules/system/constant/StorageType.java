@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 云存储类型
+ * 存储类型
  *
  * @author j.x
  * @date 2023/11/16 17:46
@@ -14,7 +14,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum CsType {
+public enum StorageType {
 
     /**
      * Object Storage Service 对象关系存储

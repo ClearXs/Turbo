@@ -3,9 +3,8 @@ package cc.allio.turbo.common.web;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.i18n.I18nCode;
 import cc.allio.turbo.common.i18n.LocaleFormatter;
-import cc.allio.turbo.extension.ob.log.Printer;
-import cc.allio.uno.core.util.StringUtils;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @date 2023/10/23 13:47
  * @since 0.1.0
  */
+@Slf4j
 @ControllerAdvice
 public class ExceptionHandlerController {
 
@@ -76,6 +76,6 @@ public class ExceptionHandlerController {
     }
 
     private void printError(Throwable ex) {
-        Printer.error(ex);
+        log.error("", ex);
     }
 }

@@ -1,6 +1,5 @@
 package cc.allio.turbo.extension.oss;
 
-import cc.allio.turbo.extension.ob.log.Printer;
 import cc.allio.turbo.extension.oss.request.OssGetRequest;
 import cc.allio.turbo.extension.oss.request.OssPutRequest;
 import cc.allio.turbo.extension.oss.request.OssRemoveRequest;
@@ -20,7 +19,9 @@ public abstract class BaseOssExecutor implements OssExecutor {
     public Path upload(OssPutRequest ossPutRequest, OssProperties ossProperties) {
         try {
             Path path = doUpload(ossPutRequest, ossProperties);
-            Printer.print("{} upload", getProvider().getValue(), ossPutRequest.getPath());
+            if (log.isDebugEnabled()) {
+                log.debug("{} upload {}", getProvider().getValue(), ossPutRequest.getPath());
+            }
             return path;
         } catch (Throwable ex) {
             log.error("{} oss upload {} failed", getProvider().getValue(), ossPutRequest.getPath(), ex);
@@ -32,7 +33,9 @@ public abstract class BaseOssExecutor implements OssExecutor {
     public OssResponse download(OssGetRequest ossGetRequest, OssProperties ossProperties) {
         try {
             OssResponse result = doDownload(ossGetRequest, ossProperties);
-            Printer.print("{} download {}", getProvider().getValue(), ossGetRequest, result.getObject());
+            if (log.isDebugEnabled()) {
+                log.debug("{} download {}", getProvider().getValue(), ossGetRequest, result.getObject());
+            }
             return result;
         } catch (Throwable ex) {
             log.error("{} oss download {} failed", getProvider().getValue(), ossGetRequest.getPath(), ex);
@@ -44,7 +47,9 @@ public abstract class BaseOssExecutor implements OssExecutor {
     public Path copyObject(String src, String dest, OssProperties ossProperties) {
         try {
             Path path = doCopyObject(src, dest, ossProperties);
-            Printer.print("{} copy object src {} to {}", getProvider().getValue(), src, dest);
+            if (log.isDebugEnabled()) {
+                log.debug("{} copy object src {} to {}", getProvider().getValue(), src, dest);
+            }
             return path;
         } catch (Throwable ex) {
             log.error("{} oss copy object failed", getProvider().getValue(), ex);
@@ -56,7 +61,9 @@ public abstract class BaseOssExecutor implements OssExecutor {
     public boolean remove(OssRemoveRequest ossRemoveRequest, OssProperties ossProperties) {
         try {
             boolean result = doRemove(ossRemoveRequest, ossProperties);
-            Printer.print("{} remove {}", getProvider().getValue(), ossRemoveRequest);
+            if (log.isDebugEnabled()) {
+                log.debug("{} remove {}", getProvider().getValue(), ossRemoveRequest);
+            }
             return result;
         } catch (Throwable ex) {
             log.error("{} oss remove {} failed", getProvider().getValue(), ossRemoveRequest, ex);

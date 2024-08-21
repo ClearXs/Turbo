@@ -22,7 +22,7 @@ public class MinioOssExecutor extends BaseOssExecutor {
     public MinioOssExecutor(OssTrait ossTrait) {
         this.minioClient = MinioClient.builder()
                 .endpoint(ossTrait.getEndpoint())
-                .credentials(ossTrait.getAccessId(), ossTrait.getAccessKey())
+                .credentials(ossTrait.getAccessKey(), ossTrait.getSecretKey())
                 .build();
         this.ossTrait = ossTrait;
     }

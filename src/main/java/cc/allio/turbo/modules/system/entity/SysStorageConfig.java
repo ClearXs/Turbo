@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.system.entity;
 
 import cc.allio.turbo.common.db.entity.BaseEntity;
-import cc.allio.turbo.modules.system.constant.CsType;
+import cc.allio.turbo.modules.system.constant.StorageType;
 import cc.allio.turbo.extension.oss.Provider;
 import cc.allio.turbo.common.constant.Enable;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -17,11 +17,11 @@ import lombok.EqualsAndHashCode;
  * @date 2023/11/18 10:24
  * @since 0.1.0
  */
-@TableName("sys_cloud_storage_config")
-@Schema(description = "系统附件")
+@TableName("sys_storage_config")
+@Schema(description = "系统存储配置")
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SysCloudStorageConfig extends BaseEntity {
+public class SysStorageConfig extends BaseEntity {
 
     /**
      * 文件名称
@@ -49,7 +49,7 @@ public class SysCloudStorageConfig extends BaseEntity {
      */
     @TableField("cs_type")
     @Schema(description = "云存储类型")
-    private CsType csType;
+    private StorageType csType;
 
     /**
      * 存储空间
@@ -61,16 +61,16 @@ public class SysCloudStorageConfig extends BaseEntity {
     /**
      * 访问ID
      */
-    @TableField("access_id")
-    @Schema(description = "访问ID")
-    private String accessId;
+    @TableField("access_key")
+    @Schema(description = "访问Key")
+    private String accessKey;
 
     /**
      * 访问密钥
      */
-    @TableField("access_key")
+    @TableField("secret_key")
     @Schema(description = "访问密钥")
-    private String accessKey;
+    private String secretKey;
 
     /**
      * 是否启用

@@ -1,6 +1,5 @@
 package cc.allio.turbo.modules.auth.oauth2;
 
-import cc.allio.uno.core.StringPool;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +8,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
-
-import java.util.stream.Collectors;
 
 /**
  * Reference {@link org.springframework.security.config.oauth2.client.CommonOAuth2Provider} idea.

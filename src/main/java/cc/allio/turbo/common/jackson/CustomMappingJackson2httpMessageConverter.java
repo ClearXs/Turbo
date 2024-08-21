@@ -1,6 +1,5 @@
 package cc.allio.turbo.common.jackson;
 
-import cc.allio.turbo.modules.developer.jackson.UtileModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
@@ -22,7 +21,6 @@ public class CustomMappingJackson2httpMessageConverter extends MappingJackson2Ht
         objectMapper.registerModule(new DateModule());
         objectMapper.registerModule(new DSLNameModule());
         objectMapper.registerModule(new MapEntityModule());
-        objectMapper.registerModule(new UtileModule());
         return objectMapper;
     }
 }

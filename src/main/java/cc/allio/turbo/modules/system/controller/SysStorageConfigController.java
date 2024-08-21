@@ -2,19 +2,19 @@ package cc.allio.turbo.modules.system.controller;
 
 import cc.allio.turbo.common.web.R;
 import cc.allio.turbo.common.web.TurboCrudController;
-import cc.allio.turbo.modules.system.entity.SysCloudStorageConfig;
-import cc.allio.turbo.modules.system.service.ISysCloudStorageConfigService;
+import cc.allio.turbo.modules.system.entity.SysStorageConfig;
+import cc.allio.turbo.modules.system.service.ISysStorageConfigService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/sys/cloud-storage-config")
+@RequestMapping("/sys/storage-config")
 @AllArgsConstructor
-@Tag(name = "云存储配置")
-public class SysCloudStorageConfigController
-        extends TurboCrudController<SysCloudStorageConfig, SysCloudStorageConfig, ISysCloudStorageConfigService> {
+@Tag(name = "存储配置")
+public class SysStorageConfigController
+        extends TurboCrudController<SysStorageConfig, SysStorageConfig, ISysStorageConfigService> {
 
     @PutMapping("/enable/{id}")
     @Operation(summary = "启用")
