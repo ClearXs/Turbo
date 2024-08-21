@@ -1,4 +1,10 @@
 turbo:
   oss:
+    fetch: false
+    provider: minio
+    endpoint: http://localhost:8800
+    access-key: admin
+    secret-key: admin
     base-dir: /${spring.application.name}
     strategy: date
+    bucket: turbo

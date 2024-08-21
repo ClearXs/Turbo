@@ -1,7 +1,7 @@
 package cc.allio.turbo.common.util;
 
-import cc.allio.uno.core.StringPool;
 import cc.allio.turbo.modules.auth.provider.TurboUser;
+import cc.allio.uno.core.StringPool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -86,6 +86,6 @@ public final class AuthUtil {
      * @return admin if true
      */
     public static Boolean isAdmin() {
-        return Optional.ofNullable(getUser()).map(TurboUser::getIsAdmin).orElse(false);
+        return Optional.ofNullable(getUser()).map(TurboUser::isAdministrator).orElse(false);
     }
 }

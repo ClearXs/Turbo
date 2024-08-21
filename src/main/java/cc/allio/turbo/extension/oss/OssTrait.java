@@ -13,6 +13,11 @@ import lombok.Data;
 public class OssTrait {
 
     /**
+     * oss provider
+     */
+    private Provider provider;
+
+    /**
      * 应用名称
      */
     private String application;
@@ -30,11 +35,11 @@ public class OssTrait {
     /**
      * 访问ID
      */
-    private String accessId;
+    private String accessKey;
 
     /**
      * 访问密钥
      */
-    private String accessKey;
+    private String secretKey;
 
 }

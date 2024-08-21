@@ -42,11 +42,6 @@
         </rollingPolicy>
     </appender>
 
-    <!-- 通过opentelemetry推送日志系统 -->
-    <appender name="OpenTelemetry"
-              class="io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender">
-    </appender>
-
     <!-- mybatis log configure -->
     <logger name="org.apache.ibatis" level="TRACE"/>
     <logger name="org.mybatis" level="DEBUG"/>
@@ -60,14 +55,12 @@
 
     <springProfile name="dev">
         <root level="INFO">
-            <appender-ref ref="OpenTelemetry"/>
             <appender-ref ref="AsyncConsoleAppender"/>
         </root>
     </springProfile>
 
     <springProfile name="test">
         <root level="WARN">
-            <appender-ref ref="OpenTelemetry"/>
             <appender-ref ref="AsyncConsoleAppender"/>
             <appender-ref ref="FILE"/>
         </root>
@@ -75,7 +68,6 @@
 
     <springProfile name="prod">
         <root level="WARN">
-            <appender-ref ref="OpenTelemetry"/>
             <appender-ref ref="AsyncConsoleAppender"/>
             <appender-ref ref="FILE"/>
         </root>

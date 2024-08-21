@@ -1,9 +1,9 @@
 package cc.allio.turbo.modules.auth.provider;
 
+import cc.allio.turbo.modules.auth.authority.TurboGrantedAuthority;
 import cc.allio.turbo.modules.system.constant.UserStatus;
 import cc.allio.turbo.modules.system.domain.SysUserVO;
 import cc.allio.uno.core.bean.MapWrapper;
-import cc.allio.turbo.modules.auth.authority.TurboGrantedAuthority;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +29,7 @@ public class TurboUser implements UserDetails {
     public static final String ACCOUNT_NON_EXPIRED_FIELD = "accountNonExpired";
     public static final String ACCOUNT_NON_LOCKED_FIELD = "accountNonLocked";
     public static final String CREDENTIALS_NON_EXPIRED_FIELD = "credentialsNonExpired";
-    public static final String ACCOUNT_DISABLED_FIELD = "enabled";
+    public static final String ACCOUNT_ENABLED_FIELD = "enabled";
     public static final String USER_ID_FIELD = "userId";
     public static final String AUTHORITIES_FIELD = "authorities";
     public static final String ROLE_ID_FIELD = "roleId";
@@ -43,7 +43,7 @@ public class TurboUser implements UserDetails {
     public static final String NICKNAME_FIELD = "nickname";
     public static final String TENANT_ID_FIELD = "tenantId";
     public static final String ORG_ID_FIELD = "orgId";
-    public static final String IS_ADMIN_FIELD = "isAdmin";
+    public static final String ADMINISTRATOR_FIELD = "administrator";
 
     public static final String ROLE_OF_ADMINISTRATOR = "administrator";
 
@@ -105,7 +105,7 @@ public class TurboUser implements UserDetails {
     /**
      * whether admin
      */
-    private Boolean isAdmin;
+    private boolean administrator;
 
     public TurboUser(SysUserVO user) {
         this.authorities =
@@ -128,14 +128,14 @@ public class TurboUser implements UserDetails {
         this.tenantId = user.getTenantId();
         this.orgId = user.getOrgId();
         // determinate authority has administrator
-        this.isAdmin = authorities.stream().anyMatch(authorities -> authorities.getAuthority().equals(ROLE_OF_ADMINISTRATOR));
+        this.administrator = authorities.stream().anyMatch(authorities -> authorities.getAuthority().equals(ROLE_OF_ADMINISTRATOR));
     }
 
     public TurboUser(Jwt jwt) {
         this.accountNonExpired = jwt.getClaimAsBoolean(ACCOUNT_NON_EXPIRED_FIELD);
         this.accountNonLocked = jwt.getClaimAsBoolean(ACCOUNT_NON_LOCKED_FIELD);
         this.credentialsNonExpired = jwt.getClaimAsBoolean(CREDENTIALS_NON_EXPIRED_FIELD);
-        this.enabled = jwt.getClaimAsBoolean(ACCOUNT_DISABLED_FIELD);
+        this.enabled = jwt.getClaimAsBoolean(ACCOUNT_ENABLED_FIELD);
         this.userId = jwt.getClaim(USER_ID_FIELD);
         List<Map<String, Object>> claimAuthorities = jwt.getClaim(AUTHORITIES_FIELD);
         this.authorities =
@@ -156,7 +156,7 @@ public class TurboUser implements UserDetails {
         this.nickname = jwt.getClaimAsString(NICKNAME_FIELD);
         this.tenantId = jwt.getClaim(TENANT_ID_FIELD);
         this.orgId = jwt.getClaim(ORG_ID_FIELD);
-        this.isAdmin = jwt.getClaimAsBoolean(IS_ADMIN_FIELD);
+        this.administrator = Optional.ofNullable(jwt.getClaimAsBoolean(ADMINISTRATOR_FIELD)).map(Boolean::booleanValue).orElse(false);
     }
 
     @Override

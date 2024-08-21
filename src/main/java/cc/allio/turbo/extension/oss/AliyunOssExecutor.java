@@ -26,9 +26,9 @@ public class AliyunOssExecutor extends BaseOssExecutor {
 
     public AliyunOssExecutor(OssTrait ossTrait) {
         String endpoint = ossTrait.getEndpoint();
-        String accessKeyId = ossTrait.getAccessId();
-        String accessKeySecret = ossTrait.getAccessKey();
-        DefaultCredentialProvider credentialsProvider = CredentialsProviderFactory.newDefaultCredentialProvider(accessKeyId, accessKeySecret);
+        String accessKey = ossTrait.getAccessKey();
+        String secretKey = ossTrait.getSecretKey();
+        DefaultCredentialProvider credentialsProvider = CredentialsProviderFactory.newDefaultCredentialProvider(accessKey, secretKey);
         this.ossClient = new OSSClientBuilder().build(endpoint, credentialsProvider);
         this.ossTrait = ossTrait;
     }
