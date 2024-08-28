@@ -10,6 +10,7 @@ import cc.allio.turbo.modules.system.entity.SysUser;
 import cc.allio.turbo.modules.system.domain.SysMenuTree;
 import cc.allio.turbo.modules.auth.dto.CaptchaDTO;
 import cc.allio.turbo.common.exception.BizException;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -31,18 +32,13 @@ public interface IAuthService {
     TurboJwtAuthenticationToken register(SysUser sysUser) throws BizException;
 
     /**
-     * 获取当前用户的
-     *
-     * @return
-     */
-    List<SysMenuTree> currentUserMenus();
-
-    /**
      * 更改密码
      *
-     * @param changePassword@return 重新生成的jwt token
+     * @param user the current {@link TurboUser}
+     * @param changePassword the {@link ChangePasswordDTO} instance
+     * @return 重新生成的jwt token
      */
-    TurboJwtAuthenticationToken changePassword(ChangePasswordDTO changePassword) throws BizException;
+    TurboJwtAuthenticationToken changePassword(@NotNull TurboUser user, ChangePasswordDTO changePassword) throws BizException;
 
     /**
      * 修改个人信息
@@ -61,17 +57,34 @@ public interface IAuthService {
     String encryptPassword(String rawPassword);
 
     /**
-     * 获取当前用户组织
+     * from the {@link TurboUser} get user menus
+     *
+     * @param user the current {@link TurboUser}
+     * @return the {@link SysMenuTree} list
      */
-    SysOrg currentUserOrg();
+    List<SysMenuTree> getUserMenus(@NotNull TurboUser user);
+
+    /**
+     * from the {@link TurboUser} get user org
+     *
+     * @param user the current {@link TurboUser}
+     * @return get {@link SysOrg}
+     */
+    SysOrg getUserOrg(@NotNull TurboUser user);
 
     /**
      * 获取当前用户角色
+     *
+     * @param user the current {@link TurboUser}
+     * @return the {@link SysRole} list
      */
-    List<SysRole> currentUserRole();
+    List<SysRole> getUserRole(@NotNull TurboUser user);
 
     /**
      * 获取当前用户岗位
+     *
+     * @param user the current {@link TurboUser}
+     * @return the {@link SysPost} list
      */
-    List<SysPost> currentUserPost();
+    List<SysPost> getUserPost(@NotNull TurboUser user);
 }

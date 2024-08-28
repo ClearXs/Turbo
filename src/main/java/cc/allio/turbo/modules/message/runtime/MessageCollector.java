@@ -115,7 +115,7 @@ public class MessageCollector implements SourceCollector<ReceiveMetadata> {
                                         sysMessage.setMessageStatus(Status.UNREAD);
                                         sysMessage.setMessageSource(Source.SYSTEM);
                                         // 发送人、接收人
-                                        sysMessage.setSendUser(AuthUtil.getCurrentUserId());
+                                        sysMessage.setSendUser(AuthUtil.getUserId());
                                         sysMessage.setSendTime(DateUtil.parse(String.valueOf(variables
                                                 .getOrDefault("sendTime", DateUtil.format(DateUtil.now(), DateUtil.PATTERN_DATETIME))), DateUtil.PATTERN_DATETIME));
                                         sysMessage.setReceiver(target);

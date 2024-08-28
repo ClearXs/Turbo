@@ -42,14 +42,16 @@ public interface WrapperAdaptor<T> {
             return null;
         }
         AtomicReference<Object> valueRef = new AtomicReference<>(null);
-        HASH_BRACE_TOKEN_PARSER.parse(placeholder, token -> {
-            String symbolise = token.substring(token.lastIndexOf(StringPool.ORIGIN_DOT) + 1);
-            Object v = paramNameValuePairs.get(symbolise);
-            if (v != null) {
-                valueRef.set(v);
-            }
-            return token;
-        });
+        HASH_BRACE_TOKEN_PARSER.parse(
+                placeholder,
+                token -> {
+                    String symbolise = token.substring(token.lastIndexOf(StringPool.ORIGIN_DOT) + 1);
+                    Object v = paramNameValuePairs.get(symbolise);
+                    if (v != null) {
+                        valueRef.set(v);
+                    }
+                    return token;
+                });
         return valueRef.get();
     }
 }

@@ -1,5 +1,6 @@
 package cc.allio.turbo.modules.developer.service.impl;
 
+import cc.allio.turbo.common.db.event.DomainEventBus;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.modules.developer.api.GeneralDomainObject;
 import cc.allio.turbo.modules.developer.api.service.DomainServiceRegistry;
@@ -21,6 +22,7 @@ public class BoDomainServiceImpl implements IBoDomainService {
 
     private final DomainServiceRegistry domainServiceRegistry;
     private final IDevBoService devBoService;
+    private DomainEventBus eventBus;
 
     public BoDomainServiceImpl(DomainServiceRegistry domainServiceRegistry, IDevBoService devBoService) {
         this.domainServiceRegistry = domainServiceRegistry;
@@ -34,5 +36,15 @@ public class BoDomainServiceImpl implements IBoDomainService {
             return domainServiceRegistry.getDomainService(boSchema.getCode());
         }
         return null;
+    }
+
+    @Override
+    public void setDomainEventBus(DomainEventBus eventBus) {
+        this.eventBus = eventBus;
+    }
+
+    @Override
+    public DomainEventBus getDomainEventBus() {
+        return eventBus;
     }
 }

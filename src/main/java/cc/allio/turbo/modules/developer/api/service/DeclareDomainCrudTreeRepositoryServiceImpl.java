@@ -1,5 +1,6 @@
 package cc.allio.turbo.modules.developer.api.service;
 
+import cc.allio.turbo.common.db.event.DomainEventBus;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepository;
 import cc.allio.turbo.common.db.uno.repository.impl.SimpleTurboCurdRepositoryImpl;
 import cc.allio.turbo.modules.developer.api.DomainObject;
@@ -30,8 +31,10 @@ public class DeclareDomainCrudTreeRepositoryServiceImpl<T extends DomainObject> 
 
     @Override
     public ITurboCrudRepository<T> getRepository() {
-        if (actualRepository == null) {
-            actualRepository = new SimpleTurboCurdRepositoryImpl<>(actual.getExecutor(), domainObjectClass);
+        synchronized (this) {
+            if (actualRepository == null) {
+                actualRepository = new SimpleTurboCurdRepositoryImpl<>(actual.getExecutor(), domainObjectClass);
+            }
         }
         return actualRepository;
     }
@@ -54,5 +57,15 @@ public class DeclareDomainCrudTreeRepositoryServiceImpl<T extends DomainObject> 
     @Override
     public Class<T> getEntityType() {
         return domainObjectClass;
+    }
+
+    @Override
+    public void setDomainEventBus(DomainEventBus eventBus) {
+        getRepository().setDomainEventBus(eventBus);
+    }
+
+    @Override
+    public DomainEventBus getDomainEventBus() {
+        return getRepository().getDomainEventBus();
     }
 }

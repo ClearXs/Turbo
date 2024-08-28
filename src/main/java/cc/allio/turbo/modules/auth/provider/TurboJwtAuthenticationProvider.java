@@ -1,10 +1,10 @@
 package cc.allio.turbo.modules.auth.provider;
 
 import cc.allio.turbo.modules.auth.authentication.TurboJwtAuthenticationToken;
+import cc.allio.turbo.modules.auth.jwt.JwtAuthentication;
 import cc.allio.turbo.modules.auth.params.*;
 import cc.allio.uno.core.util.IoUtils;
 import cc.allio.uno.core.util.JsonUtils;
-import cc.allio.turbo.common.util.JwtUtil;
 import cc.allio.turbo.common.util.WebUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
@@ -40,9 +40,14 @@ public class TurboJwtAuthenticationProvider extends DaoAuthenticationProvider {
 
     private static final String LOGIN_PATH = "/auth/login";
 
-    public TurboJwtAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    private final JwtAuthentication jwtAuthentication;
+
+    public TurboJwtAuthenticationProvider(UserDetailsService userDetailsService,
+                                          PasswordEncoder passwordEncoder,
+                                          JwtAuthentication jwtAuthentication) {
         setUserDetailsService(userDetailsService);
         setPasswordEncoder(passwordEncoder);
+        this.jwtAuthentication = jwtAuthentication;
     }
 
     @Override
@@ -77,7 +82,7 @@ public class TurboJwtAuthenticationProvider extends DaoAuthenticationProvider {
 
     @Override
     protected Authentication createSuccessAuthentication(Object principal, Authentication authentication, UserDetails user) {
-        return JwtUtil.encode((TurboUser) user);
+        return jwtAuthentication.encode((TurboUser) user);
     }
 
     /**

@@ -235,8 +235,8 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
         boAttributeService.subscribeOn("saveBatch").observe(this::onPushToSchema);
         boAttributeService.subscribeOn(boAttributeService::updateById).observe(this::onPushToSchema);
 
-        getProxy().subscribeOn("removeByIds").observe(this::onRemove);
-        getProxy().subscribeOn(IDevBoService::materialize)
+        subscribeOn("removeByIds").observe(this::onRemove);
+        subscribeOn(IDevBoService::materialize)
                 .observe(
                         subscription ->
                                 subscription.getParameter("boId", Long.class)

@@ -1,9 +1,10 @@
-package cc.allio.turbo.modules.auth.config;
+package cc.allio.turbo.modules.auth.configuration;
 
 import cc.allio.turbo.modules.auth.exception.AccessDeniedExceptionHandler;
 import cc.allio.turbo.modules.auth.exception.AuthenticationExceptionHandler;
 import cc.allio.turbo.modules.auth.filter.JwtTokenFilter;
 import cc.allio.turbo.modules.auth.handler.JwtAuthenticationSuccessHandler;
+import cc.allio.turbo.modules.auth.jwt.JwtAuthentication;
 import cc.allio.turbo.modules.auth.properties.SecureProperties;
 import cc.allio.turbo.modules.auth.provider.TurboJwtAuthenticationProvider;
 import cc.allio.turbo.modules.auth.provider.TurboPasswordEncoder;
@@ -34,7 +35,8 @@ public class SecurityConfiguration {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http,
                                                           SecureProperties secureProperties,
                                                           AuthenticationExceptionHandler authenticationExceptionHandler,
-                                                          ISysUserService userService) throws Exception {
+                                                          ISysUserService userService,
+                                                          JwtAuthentication jwtAuthentication) throws Exception {
         UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.addAllowedOrigin("*");
@@ -43,8 +45,8 @@ public class SecurityConfiguration {
         corsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
         TurboUserDetailsService userDetailsService = new TurboUserDetailsService(userService);
         TurboPasswordEncoder passwordEncoder = new TurboPasswordEncoder(secureProperties);
-        TurboJwtAuthenticationProvider jwtAuthenticationProvider = new TurboJwtAuthenticationProvider(userDetailsService, passwordEncoder);
-        JwtTokenFilter jwtTokenFilter = new JwtTokenFilter();
+        TurboJwtAuthenticationProvider jwtAuthenticationProvider = new TurboJwtAuthenticationProvider(userDetailsService, passwordEncoder, jwtAuthentication);
+        JwtTokenFilter jwtTokenFilter = new JwtTokenFilter(jwtAuthentication);
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
                         // 忽略放行请求路径

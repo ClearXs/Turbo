@@ -32,6 +32,7 @@ public class SysUserServiceImpl extends TurboCrudServiceImpl<SysUserMapper, SysU
     private final ISysOrgService orgService;
     private final ISysPostService postService;
     private final ISysUserPostService userPostService;
+    private final ISysThirdUserService thirdUserService;
 
     @Override
     @Transactional
@@ -140,5 +141,16 @@ public class SysUserServiceImpl extends TurboCrudServiceImpl<SysUserMapper, SysU
         List<SysRole> sysRoles = roleService.findRolesByUserId(sysUser.getId());
         userVO.setRoles(sysRoles);
         return userVO;
+    }
+
+    @Override
+    public SysUserVO findThirdUserDetails(String thirdUserId) {
+        SysThirdUser thirdUser = thirdUserService.getOne(Wrappers.<SysThirdUser>lambdaQuery().eq(SysThirdUser::getUserId, thirdUserId));
+        if (thirdUser != null) {
+            Long userId = thirdUser.getUserId();
+            SysUser sysUser = getById(userId);
+            return findUserDetails(sysUser);
+        }
+        return null;
     }
 }

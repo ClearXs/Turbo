@@ -212,6 +212,7 @@ public final class DomainServiceRegistryImpl implements DomainServiceRegistry, S
             generalDomainService = registerDirectly(boKey);
         }
         DeclareDomainCrudTreeRepositoryServiceImpl<T> declareDomainRepository = new DeclareDomainCrudTreeRepositoryServiceImpl<>(generalDomainService, domainObjectClass);
+        declareDomainRepository.setDomainEventBus(domainEventBus);
         IDomainService<T> aopifyDomainService = aopify(declareDomainRepository, DeclareDomainCrudTreeRepositoryServiceImpl.class);
         return registerDeclarative(boKey, domainObjectClass, aopifyDomainService);
     }
@@ -277,6 +278,7 @@ public final class DomainServiceRegistryImpl implements DomainServiceRegistry, S
         Supplier<S> defaultCreator =
                 () -> {
                     DeclareDomainCrudTreeRepositoryServiceImpl<T> declareDomainRepository = new DeclareDomainCrudTreeRepositoryServiceImpl<>(generalDomainService, domainObjectClass);
+                    declareDomainRepository.setDomainEventBus(domainEventBus);
                     IDomainService<T> aopifyDomainService = aopify(declareDomainRepository, domainServiceClass);
                     return (S) aopifyDomainService;
                 };

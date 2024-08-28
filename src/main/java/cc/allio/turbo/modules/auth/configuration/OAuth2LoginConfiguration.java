@@ -1,5 +1,6 @@
-package cc.allio.turbo.modules.auth.config;
+package cc.allio.turbo.modules.auth.configuration;
 
+import cc.allio.turbo.modules.auth.jwt.JwtAuthentication;
 import cc.allio.turbo.modules.auth.oauth2.*;
 import cc.allio.turbo.modules.auth.oauth2.extractor.OAuth2UserExtractor;
 import cc.allio.turbo.modules.auth.service.IAuthService;
@@ -69,10 +70,11 @@ public class OAuth2LoginConfiguration {
     public OAuth2TokenGenerator oAuth2TokenGenerator(ISysUserService sysUserService,
                                                      ISysThirdUserService sysThirdUserService,
                                                      IAuthService authService,
+                                                     JwtAuthentication jwtAuthentication,
                                                      ObjectProvider<List<OAuth2UserExtractor>> extractorList) {
         List<OAuth2UserExtractor> extractors = extractorList.getIfAvailable(Collections::emptyList);
         Map<String, OAuth2UserExtractor> extractorMap = extractors.stream().collect(Collectors.toMap(OAuth2UserExtractor::getRegistrationId, o -> o));
-        return new OAuth2TokenGenerator(sysUserService, sysThirdUserService, authService, extractorMap);
+        return new OAuth2TokenGenerator(sysUserService, sysThirdUserService, authService, jwtAuthentication, extractorMap);
     }
 
     @Bean

@@ -1,6 +1,7 @@
 package cc.allio.turbo.common.db.uno.repository.impl;
 
 import cc.allio.turbo.common.db.entity.Entity;
+import cc.allio.turbo.common.db.event.DomainEventBus;
 import cc.allio.turbo.common.db.event.Subscriber;
 import cc.allio.turbo.common.db.uno.repository.DSExtractor;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepository;
@@ -22,7 +23,6 @@ public abstract class TurboCrudRepositoryServiceImpl<T extends Entity> implement
 
     private final ITurboCrudRepository<T> repository;
     private Class<T> entityClass;
-    private Subscriber<T> proxySubscriber;
 
     protected TurboCrudRepositoryServiceImpl(AggregateCommandExecutor commandExecutor) {
         this(commandExecutor, null);
@@ -52,16 +52,6 @@ public abstract class TurboCrudRepositoryServiceImpl<T extends Entity> implement
     }
 
     @Override
-    public void setProxy(Subscriber<T> subscriber) {
-        this.proxySubscriber = subscriber;
-    }
-
-    @Override
-    public Subscriber<T> getProxy() {
-        return proxySubscriber;
-    }
-
-    @Override
     public Class<T> getEntityClass() {
         if (entityClass == null) {
             return (Class<T>) ReflectTools.getGenericType(this, TurboCrudRepositoryServiceImpl.class, 0);
@@ -72,5 +62,15 @@ public abstract class TurboCrudRepositoryServiceImpl<T extends Entity> implement
     @Override
     public void setEntityType(Class<T> entityType) {
         this.entityClass = entityType;
+    }
+
+    @Override
+    public void setDomainEventBus(DomainEventBus eventBus) {
+        repository.setDomainEventBus(eventBus);
+    }
+
+    @Override
+    public DomainEventBus getDomainEventBus() {
+        return repository.getDomainEventBus();
     }
 }

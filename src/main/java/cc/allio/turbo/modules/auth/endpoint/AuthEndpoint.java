@@ -11,11 +11,12 @@ import cc.allio.turbo.modules.system.domain.SysMenuTree;
 import cc.allio.turbo.modules.auth.dto.CaptchaDTO;
 import cc.allio.turbo.modules.auth.service.IAuthService;
 import cc.allio.turbo.common.exception.BizException;
-import cc.allio.turbo.common.util.AuthUtil;
 import cc.allio.turbo.common.web.R;
 import cc.allio.turbo.common.web.TurboController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -46,35 +47,35 @@ public class AuthEndpoint extends TurboController {
 
     @GetMapping("/current-user")
     @Operation(summary = "获取当前用户")
-    public R<TurboUser> currentUser() {
-        return R.ok(AuthUtil.getUser());
+    public R<TurboUser> currentUser(@Valid @NotNull TurboUser user) {
+        return R.ok(user);
     }
 
-    @GetMapping("/menus")
+    @GetMapping("/current-user-menus")
     @Operation(summary = "获取当前用户菜单")
-    public R<List<SysMenuTree>> currentUserMenus() {
-        List<SysMenuTree> sysMenuTrees = authService.currentUserMenus();
+    public R<List<SysMenuTree>> currentUserMenus(@Valid @NotNull TurboUser user) {
+        List<SysMenuTree> sysMenuTrees = authService.getUserMenus(user);
         return ok(sysMenuTrees);
     }
 
     @GetMapping("/current-user-org")
     @Operation(summary = "获取当前用户组织")
-    public R<SysOrg> currentUserOrg() {
-        SysOrg sysOrg = authService.currentUserOrg();
+    public R<SysOrg> currentUserOrg(@Valid @NotNull TurboUser user) {
+        SysOrg sysOrg = authService.getUserOrg(user);
         return ok(sysOrg);
     }
 
     @GetMapping("/current-user-role")
     @Operation(summary = "获取当前用户角色")
-    public R<List<SysRole>> currentUserRole() {
-        List<SysRole> sysRoles = authService.currentUserRole();
+    public R<List<SysRole>> currentUserRole(@Valid @NotNull TurboUser user) {
+        List<SysRole> sysRoles = authService.getUserRole(user);
         return ok(sysRoles);
     }
 
     @GetMapping("/current-user-post")
     @Operation(summary = "获取当前用户岗位")
-    public R<List<SysPost>> currentUserPost() {
-        List<SysPost> sysPosts = authService.currentUserPost();
+    public R<List<SysPost>> currentUserPost(@Valid @NotNull TurboUser user) {
+        List<SysPost> sysPosts = authService.getUserPost(user);
         return ok(sysPosts);
     }
 
@@ -87,8 +88,8 @@ public class AuthEndpoint extends TurboController {
 
     @PutMapping("/changePassword")
     @Operation(summary = "修改密码")
-    public R<TurboJwtAuthenticationToken> changePassword(@RequestBody @Validated ChangePasswordDTO changePassword) throws BizException {
-        TurboJwtAuthenticationToken newToken = authService.changePassword(changePassword);
+    public R<TurboJwtAuthenticationToken> changePassword(@Valid @NotNull TurboUser user, @RequestBody @Validated ChangePasswordDTO changePassword) throws BizException {
+        TurboJwtAuthenticationToken newToken = authService.changePassword(user, changePassword);
         return ok(newToken);
     }
 

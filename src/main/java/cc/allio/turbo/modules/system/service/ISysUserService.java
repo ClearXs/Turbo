@@ -33,6 +33,14 @@ public interface ISysUserService extends ITurboCrudService<SysUser> {
     SysUserVO findUserDetails(SysUser sysUser);
 
     /**
+     * find third user by third user id
+     *
+     * @param thirdUserId the third user id
+     * @return the {@link SysUserVO} instance or null
+     */
+    SysUserVO findThirdUserDetails(String thirdUserId);
+
+    /**
      * 用户绑定角色
      *
      * @param bindingRole bindingRole

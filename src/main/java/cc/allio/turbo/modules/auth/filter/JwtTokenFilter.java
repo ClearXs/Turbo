@@ -1,14 +1,13 @@
 package cc.allio.turbo.modules.auth.filter;
 
+import cc.allio.turbo.modules.auth.jwt.JwtAuthentication;
 import cc.allio.uno.core.util.DateUtil;
 import cc.allio.uno.core.util.StringUtils;
-import cc.allio.turbo.common.util.JwtUtil;
 import cc.allio.turbo.common.util.WebUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -52,6 +51,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final AuthenticationFailureHandler failureHandler = new AuthenticationEntryPointFailureHandler(
             new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
 
+    private final JwtAuthentication jwtAuthentication;
+
+    public JwtTokenFilter(JwtAuthentication jwtAuthentication) {
+        this.jwtAuthentication = jwtAuthentication;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 1.验证请求头
@@ -63,7 +68,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         // 2.验签
         Jwt jwt;
         try {
-            jwt = JwtUtil.decode(token);
+            jwt = jwtAuthentication.decode(token);
         } catch (JwtValidationException ex) {
             unsuccessfulAuthentication(request, response, new AuthenticationServiceException(ex.getMessage()));
             return;
@@ -76,18 +81,21 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         if (expiresAt != null && expiresAt.isBefore(DateUtil.now().toInstant())) {
             unsuccessfulAuthentication(request, response, new CredentialsExpiredException("token expired"));
         } else {
-            AbstractAuthenticationToken newAuthentication = converter.convert(jwt);
+            Authentication newAuthentication = converter.convert(jwt);
             successfulAuthentication(request, response, filterChain, newAuthentication);
         }
     }
 
-    private void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+    private void unsuccessfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
                                             AuthenticationException failed) throws IOException, ServletException {
         this.securityContextHolderStrategy.clearContext();
         this.failureHandler.onAuthenticationFailure(request, response, failed);
     }
 
-    private void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+    private void successfulAuthentication(HttpServletRequest request,
+                                          HttpServletResponse response,
+                                          FilterChain chain,
                                           Authentication authentication) throws IOException, ServletException {
         SecurityContext context = securityContextHolderStrategy.getContext();
         if (context == null) {

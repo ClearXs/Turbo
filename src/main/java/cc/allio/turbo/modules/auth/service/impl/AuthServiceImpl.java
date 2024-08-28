@@ -1,7 +1,9 @@
 package cc.allio.turbo.modules.auth.service.impl;
 
 import cc.allio.turbo.modules.auth.authentication.TurboJwtAuthenticationToken;
+import cc.allio.turbo.modules.auth.authority.TurboGrantedAuthority;
 import cc.allio.turbo.modules.auth.constant.ExpireAt;
+import cc.allio.turbo.modules.auth.jwt.JwtAuthentication;
 import cc.allio.turbo.modules.auth.properties.SecureProperties;
 import cc.allio.turbo.modules.auth.provider.TurboUser;
 import cc.allio.turbo.modules.system.dto.ChangePasswordDTO;
@@ -16,8 +18,6 @@ import cc.allio.turbo.modules.auth.dto.CaptchaDTO;
 import cc.allio.turbo.modules.auth.service.IAuthService;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.i18n.ExceptionCodes;
-import cc.allio.turbo.common.util.AuthUtil;
-import cc.allio.turbo.common.util.JwtUtil;
 import cc.allio.turbo.common.cache.CacheHelper;
 import cc.allio.turbo.common.cache.TurboCache;
 import cc.allio.turbo.common.util.SecureUtil;
@@ -29,7 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -42,6 +44,7 @@ public class AuthServiceImpl implements IAuthService {
     private final ISysMenuService menuService;
     private final ISysOrgService orgService;
     private final ISysPostService postService;
+    private final JwtAuthentication jwtAuthentication;
 
     @Override
     public CaptchaDTO captcha() {
@@ -66,35 +69,18 @@ public class AuthServiceImpl implements IAuthService {
         userService.save(sysUser);
         // 2.获取新创建用户详细
         SysUserVO user = userService.findByUsername(sysUser.getUsername());
+        List<SysRole> roles = user.getRoles();
+        Set<TurboGrantedAuthority> authorities =
+                roles.stream()
+                        .map(role -> new TurboGrantedAuthority(role.getId(), role.getCode(), role.getName()))
+                        .collect(Collectors.toSet());
         // 3.生成jwt
-        return JwtUtil.encode(new TurboUser(user));
+        return jwtAuthentication.encode(new TurboUser(user, authorities));
     }
 
     @Override
-    public List<SysMenuTree> currentUserMenus() {
-        TurboUser currentUser = AuthUtil.getUser();
-        if (currentUser == null) {
-            return Collections.emptyList();
-        }
-        long userId = currentUser.getUserId();
-        // TODO 需要优化该接口的查询逻辑
-        List<SysRole> roles = roleService.findRolesByUserId(userId);
-        if (CollectionUtils.isEmpty(roles)) {
-            return Collections.emptyList();
-        }
-        List<Long> roleIds = roles.stream().map(SysRole::getId).toList();
-        List<SysRoleMenu> sysRoleMenus = roleMenuService.list(Wrappers.<SysRoleMenu>lambdaQuery().in(SysRoleMenu::getRoleId, roleIds));
-        List<Long> menuIds = sysRoleMenus.stream().map(SysRoleMenu::getMenuId).toList();
-        // 获取菜单树
-        return menuService.tree(Wrappers.<SysMenu>lambdaQuery().in(SysMenu::getId, menuIds), SysMenuTree.class);
-    }
-
-    @Override
-    public TurboJwtAuthenticationToken changePassword(ChangePasswordDTO changePassword) throws BizException {
-        Long currentUserId = AuthUtil.getCurrentUserId();
-        if (currentUserId == null) {
-            throw new BizException(ExceptionCodes.ACCESS_DENIED);
-        }
+    public TurboJwtAuthenticationToken changePassword(TurboUser user, ChangePasswordDTO changePassword) throws BizException {
+        Long currentUserId = user.getUserId();
         SecureUtil.SecureCipher secureCipher = SecureUtil.getSystemSecureCipher();
         // 1.查询旧密码是否与当前数据库存储一致
         String rawEncryptPassword = secureCipher.encrypt(changePassword.getRawPassword(), SecureUtil.getSystemSecretKey(), null);
@@ -108,8 +94,13 @@ public class AuthServiceImpl implements IAuthService {
             throw new BizException(ExceptionCodes.OPERATE_ERROR);
         }
         // 生成新的jwt
-        SysUserVO user = userService.details(currentUserId);
-        return JwtUtil.encode(new TurboUser(user));
+        SysUserVO detailsUser = userService.details(currentUserId);
+        List<SysRole> roles = detailsUser.getRoles();
+        Set<TurboGrantedAuthority> authorities =
+                roles.stream()
+                        .map(role -> new TurboGrantedAuthority(role.getId(), role.getCode(), role.getName()))
+                        .collect(Collectors.toSet());
+        return jwtAuthentication.encode(new TurboUser(detailsUser, authorities));
     }
 
     @Override
@@ -123,7 +114,12 @@ public class AuthServiceImpl implements IAuthService {
         userService.updateById(sysUser);
         // 生成新的jwt
         SysUserVO newUserInfo = userService.findByUsername(user.getUsername());
-        return JwtUtil.encode(new TurboUser(newUserInfo));
+        List<SysRole> roles = newUserInfo.getRoles();
+        Set<TurboGrantedAuthority> authorities =
+                roles.stream()
+                        .map(role -> new TurboGrantedAuthority(role.getId(), role.getCode(), role.getName()))
+                        .collect(Collectors.toSet());
+        return jwtAuthentication.encode(new TurboUser(newUserInfo, authorities));
     }
 
     @Override
@@ -133,29 +129,38 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     @Override
-    public SysOrg currentUserOrg() {
-        Long orgId = AuthUtil.getUserOrgId();
-        if (orgId == null) {
-            return null;
+    public List<SysMenuTree> getUserMenus(TurboUser user) {
+        long userId = user.getUserId();
+        List<SysRole> roles = roleService.findRolesByUserId(userId);
+        if (CollectionUtils.isEmpty(roles)) {
+            return Collections.emptyList();
         }
-        return orgService.getById(orgId);
+        List<Long> roleIds = roles.stream().map(SysRole::getId).toList();
+        List<SysRoleMenu> sysRoleMenus = roleMenuService.list(Wrappers.<SysRoleMenu>lambdaQuery().in(SysRoleMenu::getRoleId, roleIds));
+        List<Long> menuIds = sysRoleMenus.stream().map(SysRoleMenu::getMenuId).toList();
+        // 获取菜单树
+        return menuService.tree(Wrappers.<SysMenu>lambdaQuery().in(SysMenu::getId, menuIds), SysMenuTree.class);
     }
 
     @Override
-    public List<SysRole> currentUserRole() {
-        Long currentUserId = AuthUtil.getCurrentUserId();
-        if (currentUserId == null) {
-            return Collections.emptyList();
+    public SysOrg getUserOrg(TurboUser user) {
+        SysUser sysUser = userService.getById(user.getUserId());
+        if (sysUser != null) {
+            Long orgId = sysUser.getOrgId();
+            return orgService.getById(orgId);
         }
+        return null;
+    }
+
+    @Override
+    public List<SysRole> getUserRole(TurboUser user) {
+        Long currentUserId = user.getUserId();
         return roleService.findRolesByUserId(currentUserId);
     }
 
     @Override
-    public List<SysPost> currentUserPost() {
-        Long currentUserId = AuthUtil.getCurrentUserId();
-        if (currentUserId == null) {
-            return Collections.emptyList();
-        }
+    public List<SysPost> getUserPost(TurboUser user) {
+        Long currentUserId = user.getUserId();
         return postService.findPostByUserId(currentUserId);
     }
 }

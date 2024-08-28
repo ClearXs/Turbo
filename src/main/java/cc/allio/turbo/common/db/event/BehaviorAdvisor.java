@@ -33,11 +33,6 @@ public class BehaviorAdvisor extends TurboAdvisor {
         setAdvice(methodInterceptor);
     }
 
-    @Override
-    public void postProxyProcess(Object proxy, Object bean) {
-        ((Subscriber<?>) bean).setProxy((Subscriber) proxy);
-    }
-
     /**
      * BehaviorAdvisor 构建
      */

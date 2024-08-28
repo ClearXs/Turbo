@@ -4,8 +4,8 @@ import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.function.lambda.*;
 import cc.allio.uno.core.reflect.ReflectTools;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * 领域事件订阅者
@@ -14,16 +14,22 @@ import org.springframework.context.ApplicationListener;
  * @author j.x
  * @date 2024/1/26 17:12
  * @since 0.1.0
+ * @see BehaviorMethodInterceptor
  */
-public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent> {
+public interface Subscriber<D> extends InitializingBean, DisposableBean,
+        DomainEventBusAware, DomainEventBusGetter {
 
     String INITIALIZE_BEHAVIOR = "initialize";
     String BEFORE = "before";
+    String AFTER = "after";
+    String DESTROY_BEHAVIOR = "destroy";
+
+    // =================== subscribe method ===================
 
     /**
      * @see #subscribeOn(String)
      */
-    default <T> Observable<D> subscribeOnBefore(ThrowingMethodConsumer<T> eventMethod) {
+    default <T> SingleObservable<D> subscribeOnBefore(ThrowingMethodConsumer<T> eventMethod) {
         String eventName = eventMethod.getMethodName() + StringPool.DASH + BEFORE;
         return subscribeOn(eventName);
     }
@@ -31,7 +37,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T> Observable<D> subscribeOnBefore(ThrowingMethodSupplier<T> eventMethod) {
+    default <T> SingleObservable<D> subscribeOnBefore(ThrowingMethodSupplier<T> eventMethod) {
         String eventName = eventMethod.getMethodName() + StringPool.DASH + BEFORE;
         return subscribeOn(eventName);
     }
@@ -39,7 +45,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T, R> Observable<D> subscribeOnBefore(ThrowingMethodFunction<T, R> eventMethod) {
+    default <T, R> SingleObservable<D> subscribeOnBefore(ThrowingMethodFunction<T, R> eventMethod) {
         String eventName = eventMethod.getMethodName() + StringPool.DASH + BEFORE;
         return subscribeOn(eventName);
     }
@@ -47,7 +53,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T1, T2> Observable<D> subscribeOnBefore(ThrowingMethodBiConsumer<T1, T2> eventMethod) {
+    default <T1, T2> SingleObservable<D> subscribeOnBefore(ThrowingMethodBiConsumer<T1, T2> eventMethod) {
         String eventName = eventMethod.getMethodName() + StringPool.DASH + BEFORE;
         return subscribeOn(eventName);
     }
@@ -55,7 +61,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T1, T2, R> Observable<D> subscribeOnBefore(ThrowingMethodBiFunction<T1, T2, R> eventMethod) {
+    default <T1, T2, R> SingleObservable<D> subscribeOnBefore(ThrowingMethodBiFunction<T1, T2, R> eventMethod) {
         String eventName = eventMethod.getMethodName() + StringPool.DASH + BEFORE;
         return subscribeOn(eventName);
     }
@@ -63,7 +69,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T1, T2, T3> Observable<D> subscribeOnBefore(ThrowingMethodTerConsumer<T1, T2, T3> eventMethod) {
+    default <T1, T2, T3> SingleObservable<D> subscribeOnBefore(ThrowingMethodTerConsumer<T1, T2, T3> eventMethod) {
         String eventName = eventMethod.getMethodName() + StringPool.DASH + BEFORE;
         return subscribeOn(eventName);
     }
@@ -71,7 +77,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T1, T2, T3, R> Observable<D> subscribeOnBefore(ThrowingMethodTerFunction<T1, T2, T3, R> eventMethod) {
+    default <T1, T2, T3, R> SingleObservable<D> subscribeOnBefore(ThrowingMethodTerFunction<T1, T2, T3, R> eventMethod) {
         String eventName = eventMethod.getMethodName() + StringPool.DASH + BEFORE;
         return subscribeOn(eventName);
     }
@@ -79,7 +85,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T1, T2, T3, T4> Observable<D> subscribeOnBefore(ThrowingMethodQueConsumer<T1, T2, T3, T4> eventMethod) {
+    default <T1, T2, T3, T4> SingleObservable<D> subscribeOnBefore(ThrowingMethodQueConsumer<T1, T2, T3, T4> eventMethod) {
         String eventName = eventMethod.getMethodName() + StringPool.DASH + BEFORE;
         return subscribeOn(eventName);
     }
@@ -87,7 +93,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T1, T2, T3, T4, R> Observable<D> subscribeOnBefore(ThrowingMethodQueFunction<T1, T2, T3, T4, R> eventMethod) {
+    default <T1, T2, T3, T4, R> SingleObservable<D> subscribeOnBefore(ThrowingMethodQueFunction<T1, T2, T3, T4, R> eventMethod) {
         String eventName = eventMethod.getMethodName() + StringPool.DASH + BEFORE;
         return subscribeOn(eventName);
     }
@@ -95,7 +101,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default Observable<D> subscribeOnBefore(String eventMethod) {
+    default SingleObservable<D> subscribeOnBefore(String eventMethod) {
         String eventName = eventMethod + StringPool.DASH + BEFORE;
         return subscribeOn(eventName);
     }
@@ -103,7 +109,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T> Observable<D> subscribeOn(ThrowingMethodConsumer<T> eventMethod) {
+    default <T> SingleObservable<D> subscribeOn(ThrowingMethodConsumer<T> eventMethod) {
         String eventName = eventMethod.getMethodName();
         return subscribeOn(eventName);
     }
@@ -111,7 +117,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T> Observable<D> subscribeOn(ThrowingMethodSupplier<T> eventMethod) {
+    default <T> SingleObservable<D> subscribeOn(ThrowingMethodSupplier<T> eventMethod) {
         String eventName = eventMethod.getMethodName();
         return subscribeOn(eventName);
     }
@@ -119,7 +125,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T, R> Observable<D> subscribeOn(ThrowingMethodFunction<T, R> eventMethod) {
+    default <T, R> SingleObservable<D> subscribeOn(ThrowingMethodFunction<T, R> eventMethod) {
         String eventName = eventMethod.getMethodName();
         return subscribeOn(eventName);
     }
@@ -127,7 +133,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T1, T2> Observable<D> subscribeOn(ThrowingMethodBiConsumer<T1, T2> eventMethod) {
+    default <T1, T2> SingleObservable<D> subscribeOn(ThrowingMethodBiConsumer<T1, T2> eventMethod) {
         String eventName = eventMethod.getMethodName();
         return subscribeOn(eventName);
     }
@@ -135,7 +141,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T1, T2, R> Observable<D> subscribeOn(ThrowingMethodBiFunction<T1, T2, R> eventMethod) {
+    default <T1, T2, R> SingleObservable<D> subscribeOn(ThrowingMethodBiFunction<T1, T2, R> eventMethod) {
         String eventName = eventMethod.getMethodName();
         return subscribeOn(eventName);
     }
@@ -143,7 +149,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T1, T2, T3> Observable<D> subscribeOn(ThrowingMethodTerConsumer<T1, T2, T3> eventMethod) {
+    default <T1, T2, T3> SingleObservable<D> subscribeOn(ThrowingMethodTerConsumer<T1, T2, T3> eventMethod) {
         String eventName = eventMethod.getMethodName();
         return subscribeOn(eventName);
     }
@@ -151,7 +157,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T1, T2, T3, R> Observable<D> subscribeOn(ThrowingMethodTerFunction<T1, T2, T3, R> eventMethod) {
+    default <T1, T2, T3, R> SingleObservable<D> subscribeOn(ThrowingMethodTerFunction<T1, T2, T3, R> eventMethod) {
         String eventName = eventMethod.getMethodName();
         return subscribeOn(eventName);
     }
@@ -159,7 +165,7 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T1, T2, T3, T4> Observable<D> subscribeOn(ThrowingMethodQueConsumer<T1, T2, T3, T4> eventMethod) {
+    default <T1, T2, T3, T4> SingleObservable<D> subscribeOn(ThrowingMethodQueConsumer<T1, T2, T3, T4> eventMethod) {
         String eventName = eventMethod.getMethodName();
         return subscribeOn(eventName);
     }
@@ -167,27 +173,115 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
     /**
      * @see #subscribeOn(String)
      */
-    default <T1, T2, T3, T4, R> Observable<D> subscribeOn(ThrowingMethodQueFunction<T1, T2, T3, T4, R> eventMethod) {
+    default <T1, T2, T3, T4, R> SingleObservable<D> subscribeOn(ThrowingMethodQueFunction<T1, T2, T3, T4, R> eventMethod) {
         String eventName = eventMethod.getMethodName();
+        return subscribeOn(eventName);
+    }
+
+    /**
+     * @see #subscribeOn(String)
+     */
+    default <T> SingleObservable<D> subscribeOnAfter(ThrowingMethodConsumer<T> eventMethod) {
+        String eventName = eventMethod.getMethodName() + StringPool.DASH + AFTER;
+        return subscribeOn(eventName);
+    }
+
+    /**
+     * @see #subscribeOn(String)
+     */
+    default <T> SingleObservable<D> subscribeOnAfter(ThrowingMethodSupplier<T> eventMethod) {
+        String eventName = eventMethod.getMethodName() + StringPool.DASH + AFTER;
+        return subscribeOn(eventName);
+    }
+
+    /**
+     * @see #subscribeOn(String)
+     */
+    default <T, R> SingleObservable<D> subscribeOnAfter(ThrowingMethodFunction<T, R> eventMethod) {
+        String eventName = eventMethod.getMethodName() + StringPool.DASH + AFTER;
+        return subscribeOn(eventName);
+    }
+
+    /**
+     * @see #subscribeOn(String)
+     */
+    default <T1, T2> SingleObservable<D> subscribeOnAfter(ThrowingMethodBiConsumer<T1, T2> eventMethod) {
+        String eventName = eventMethod.getMethodName() + StringPool.DASH + AFTER;
+        return subscribeOn(eventName);
+    }
+
+    /**
+     * @see #subscribeOn(String)
+     */
+    default <T1, T2, R> SingleObservable<D> subscribeOnAfter(ThrowingMethodBiFunction<T1, T2, R> eventMethod) {
+        String eventName = eventMethod.getMethodName() + StringPool.DASH + AFTER;
+        return subscribeOn(eventName);
+    }
+
+    /**
+     * @see #subscribeOn(String)
+     */
+    default <T1, T2, T3> SingleObservable<D> subscribeOnAfter(ThrowingMethodTerConsumer<T1, T2, T3> eventMethod) {
+        String eventName = eventMethod.getMethodName() + StringPool.DASH + AFTER;
+        return subscribeOn(eventName);
+    }
+
+    /**
+     * @see #subscribeOn(String)
+     */
+    default <T1, T2, T3, R> SingleObservable<D> subscribeOnAfter(ThrowingMethodTerFunction<T1, T2, T3, R> eventMethod) {
+        String eventName = eventMethod.getMethodName() + StringPool.DASH + AFTER;
+        return subscribeOn(eventName);
+    }
+
+    /**
+     * @see #subscribeOn(String)
+     */
+    default <T1, T2, T3, T4> SingleObservable<D> subscribeOnAfter(ThrowingMethodQueConsumer<T1, T2, T3, T4> eventMethod) {
+        String eventName = eventMethod.getMethodName() + StringPool.DASH + AFTER;
+        return subscribeOn(eventName);
+    }
+
+    /**
+     * @see #subscribeOn(String)
+     */
+    default <T1, T2, T3, T4, R> SingleObservable<D> subscribeOnAfter(ThrowingMethodQueFunction<T1, T2, T3, T4, R> eventMethod) {
+        String eventName = eventMethod.getMethodName() + StringPool.DASH + AFTER;
         return subscribeOn(eventName);
     }
 
     /**
      * 基于事件方法的订阅
      *
-     * @param eventMethod eventMethod
+     * @param event eventMethod
      */
-    default Observable<D> subscribeOn(String eventMethod) {
-        String path = getDomainName() + StringPool.SLASH + eventMethod;
-        return new Observable<>(this, path);
+    default SingleObservable<D> subscribeOn(String event) {
+        // like DomainName/event
+        String path = getDomainName() + StringPool.SLASH + event;
+        return new SingleObservable<>(this, path, getDomainEventBus());
     }
 
     /**
-     * 初始化
+     * bean initialization
      */
-    default Observable<D> subscribeOnInitialize() {
+    default SingleObservable<D> subscribeOnInitialize() {
         String path = getDomainName() + StringPool.SLASH + INITIALIZE_BEHAVIOR;
-        return new Observable<>(this, path);
+        return new SingleObservable<>(this, path, getDomainEventBus());
+    }
+
+    /**
+     * bean destroy
+     */
+    default SingleObservable<D> subscribeOnDestroy() {
+        String path = getDomainName() + StringPool.SLASH + DESTROY_BEHAVIOR;
+        return new SingleObservable<>(this, path, getDomainEventBus());
+    }
+
+    /**
+     * support to subscribe multi {@link SingleObservable}
+     */
+    default MultiObservable<D> subscribeOnMultiple(SingleObservable<D>... observable) {
+        return new MultiObservable<>(observable);
     }
 
     /**
@@ -211,44 +305,51 @@ public interface Subscriber<D> extends ApplicationListener<ApplicationReadyEvent
         }
     }
 
-    /**
-     * 设置{@link Subscriber}的代理对象
-     * <p>为什么会存在Proxy方法，因为在Subscriber内部无法使用{@link #subscribeOn(ThrowingMethodConsumer)}等方法，
-     * <p>原因是其实现是通过Cglib代理进行实现，故其内部并不是代理类实例，所以无法使用相对的增强。所以通过该方式，在实现类进行实现</p>
-     *
-     * @param subscriber subscriber
-     */
-    default void setProxy(Subscriber<D> subscriber) {
-
-    }
-
-    /**
-     * 获取{@link Subscriber}代理对象
-     *
-     * @return Subscriber
-     */
-    default Subscriber<D> getProxy() {
-        return this;
-    }
-
+    // =================== lifecycle method ===================
 
     @Override
-    default void onApplicationEvent(ApplicationReadyEvent event) {
+    default void afterPropertiesSet() throws Exception {
         try {
             doOnSubscribe();
-            DomainEventBus eventBus = event.getApplicationContext().getBean(DomainEventBus.class);
+        } catch (Throwable ex) {
+            LoggerFactory.getLogger(this.getClass()).error("subscriber init has error", ex);
+            throw new Exception(ex);
+        }
+        DomainEventBus eventBus = getDomainEventBus();
+        if (eventBus != null) {
+            // publish
             String path = getDomainName() + StringPool.SLASH + INITIALIZE_BEHAVIOR;
             DomainEventContext eventContext = new DomainEventContext(this, null);
             eventBus.publish(path, eventContext);
+        }
+    }
+
+    @Override
+    default void destroy() throws Exception {
+        try {
+            doOnDestroy();
         } catch (Throwable ex) {
-            LoggerFactory.getLogger(this.getClass()).error("subscriber init has error", ex);
+            LoggerFactory.getLogger(this.getClass()).error("destroy subscriber has error", ex);
+            throw new Exception(ex);
+        }
+        DomainEventBus eventBus = getDomainEventBus();
+        if (eventBus != null) {
+            // publish
+            String path = getDomainName() + StringPool.SLASH + DESTROY_BEHAVIOR;
+            DomainEventContext eventContext = new DomainEventContext(this, null);
+            eventBus.publish(path, eventContext);
         }
     }
 
     /**
-     * 该方法内部进行订阅
+     * when bean initialization invoke method
      */
     default void doOnSubscribe() throws Throwable {
+    }
 
+    /**
+     * when bean destroyed invoke method
+     */
+    default void doOnDestroy() throws Throwable {
     }
 }

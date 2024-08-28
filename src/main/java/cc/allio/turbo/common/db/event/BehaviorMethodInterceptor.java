@@ -1,6 +1,8 @@
 package cc.allio.turbo.common.db.event;
 
 import cc.allio.uno.core.StringPool;
+import com.google.common.collect.Maps;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -10,8 +12,10 @@ import org.springframework.aop.support.AopUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * 领域方法拦截器，对非{@link Subscriber}的外一切方法进行发布领域事件（如果存在）
@@ -26,6 +30,16 @@ public class BehaviorMethodInterceptor implements MethodInterceptor {
     private final Subscriber<?> bean;
     private final DomainEventBus eventBus;
 
+    private static final List<String> DIRECTLY_INVOKE_NAMES =
+            List.of("onApplicationEvent",
+                    "getDomainType",
+                    "subscribeOnBefore",
+                    "subscribeOn",
+                    "subscribeOnInitialize",
+                    "subscribeOnAfter",
+                    "subscribeOnMultiple",
+                    "setDomainEventBus");
+
     public BehaviorMethodInterceptor(Subscriber<?> bean, DomainEventBus eventBus) {
         this.bean = bean;
         this.eventBus = eventBus;
@@ -37,62 +51,34 @@ public class BehaviorMethodInterceptor implements MethodInterceptor {
         Method method = invocation.getMethod();
         String methodName = method.getName();
         String subscriberName = AopUtils.getTargetClass(bean).getSimpleName();
-        switch (methodName) {
-            case "getDomainName" -> {
-                return subscriberName;
-            }
-            case "getEventBus" -> {
-                return eventBus;
-            }
-            case "onApplicationEvent", "getDomainType" -> {
-                return invocation.proceed();
-            }
-            case "subscribeOnBefore", "subscribeOn", "subscribeOnInitialize" -> {
-                Object result = invocation.proceed();
-                if (result instanceof Observable<?> observer) {
-                    observer.setEventBus(eventBus);
-                    observer.setBehavior(method);
-                    return observer;
-                }
-                return result;
-            }
-            default -> {
-                publishOnBehaviorBefore(bean, method, invocation);
-                Object result = invocation.proceed();
-                publishOnBehaviorAfter(bean, method, invocation, result);
-                return result;
-            }
+        if ("getDomainName".equals(methodName)) {
+            return subscriberName;
+        } else if (DIRECTLY_INVOKE_NAMES.contains(methodName)) {
+            return invocation.proceed();
+        } else {
+            publishOnBehaviorBefore(bean, method, invocation);
+            Object result = invocation.proceed();
+            publishOnBehavior(bean, method, invocation, result);
+            return result;
         }
     }
 
     /**
      * 在执行领域行为之前发布领域事件
      *
-     * @param bean       领域对象
-     * @param method     行为
+     * @param bean       the {@link Subscriber} instance
+     * @param method     the domain behavior method
      * @param invocation aop invocation
      */
-    private void publishOnBehaviorBefore(Subscriber<?> bean, Method method, MethodInvocation invocation) {
+    void publishOnBehaviorBefore(Subscriber<?> bean, Method method, MethodInvocation invocation) {
         String subscriberName = AopUtils.getTargetClass(bean).getSimpleName();
         String methodName = method.getName();
         // DomainBehavior/methodName-before
         String beforePath = subscriberName + StringPool.SLASH + methodName + StringPool.DASH + Subscriber.BEFORE;
         if (eventBus != null && eventBus.hasTopic(beforePath)) {
-            // 构建事件上下文
-            DomainEventContext eventContext = new ThreadLocalWebDomainEventContext(bean, method);
-            Object[] arguments = invocation.getArguments();
-            MethodParameterMap methodParameterMap = new MethodParameterMap(method, arguments);
-            Class<?> domainType = bean.getDomainType();
-            // 存放所有参数
-            eventContext.putAll(methodParameterMap);
-            if (domainType != null) {
-                Object parameterDomain = methodParameterMap.getDomain(domainType);
-                if (parameterDomain != null) {
-                    eventContext.putAttribute(DomainEventContext.DOMAIN_KEY, parameterDomain);
-                }
-            }
+            DomainEventContext eventContext = buildEventContext(bean, method, invocation);
             try {
-                eventBus.publishOnFlux(beforePath, eventContext).subscribe();
+                eventBus.publish(beforePath, eventContext);
             } catch (Throwable ex) {
                 log.warn("behavior event path {} subscribe execute has err", beforePath, ex);
             }
@@ -102,12 +88,12 @@ public class BehaviorMethodInterceptor implements MethodInterceptor {
     /**
      * 在执行领域行为之后发布领域事件
      *
-     * @param bean       领域对象
-     * @param method     行为
+     * @param bean       the {@link Subscriber} instance
+     * @param method     the domain behavior method
      * @param invocation aop invocation
-     * @param result     result
+     * @param result     behavior result
      */
-    private void publishOnBehaviorAfter(Subscriber<?> bean, Method method, MethodInvocation invocation, Object result) {
+    void publishOnBehavior(Subscriber<?> bean, Method method, MethodInvocation invocation, Object result) {
         String subscriberName = AopUtils.getTargetClass(bean).getSimpleName();
         String methodName = method.getName();
         // DomainBehavior/methodName
@@ -120,34 +106,109 @@ public class BehaviorMethodInterceptor implements MethodInterceptor {
             MethodParameterMap methodParameterMap = new MethodParameterMap(method, arguments);
             Class<?> domainType = bean.getDomainType();
             if (domainType != null) {
+                // find parameter domain type
                 Object parameterDomain = methodParameterMap.getDomain(domainType);
+                // if result equals domain type, then put domain
                 if (result != null && domainType.isAssignableFrom(result.getClass())) {
                     eventContext.putAttribute(DomainEventContext.DOMAIN_KEY, result);
                 } else if (parameterDomain != null) {
+                    // else set domain
                     eventContext.putAttribute(DomainEventContext.DOMAIN_KEY, parameterDomain);
                 }
             }
             if (result != null) {
-                // result
+                // set result
                 eventContext.putAttribute(DomainEventContext.BEHAVIOR_RESULT_KEY, result);
             }
             // put all arguments
-            eventContext.putAll(methodParameterMap);
-            // publish domain event context in event bus
-            eventBus.publish(path, eventContext);
+            eventContext.putAll(methodParameterMap.getInternalParameters());
+            try {
+                // publish domain event context in event bus
+                eventBus.publish(path, eventContext);
+            } catch (Throwable ex) {
+                log.warn("behavior event path {} subscribe execute has err", path, ex);
+            } finally {
+                // trigger after behavior
+                publishOnBehaviorAfter(bean, method, invocation);
+            }
         }
     }
 
-    public static class MethodParameterMap extends HashMap<String, Object> {
+    /**
+     * do on domain behavior after execute publish event to event bus
+     *
+     * @param bean       the {@link Subscriber} instance
+     * @param method     the domain behavior method
+     * @param invocation aop invocation
+     */
+    void publishOnBehaviorAfter(Subscriber<?> bean, Method method, MethodInvocation invocation) {
+        String subscriberName = AopUtils.getTargetClass(bean).getSimpleName();
+        String methodName = method.getName();
+        // DomainBehavior/methodName-after
+        String afterPath = subscriberName + StringPool.SLASH + methodName + StringPool.DASH + Subscriber.AFTER;
+        if (eventBus != null && eventBus.hasTopic(afterPath)) {
+            DomainEventContext eventContext = buildEventContext(bean, method, invocation);
+            try {
+                eventBus.publish(afterPath, eventContext);
+            } catch (Throwable ex) {
+                log.warn("behavior event path {} subscribe execute has err", afterPath, ex);
+            }
+        }
+    }
+
+    /**
+     * build newly {@link DomainEventContext}.
+     * <p>inject {@link MethodInvocation#getArguments()} set in Context</p>
+     * <p>set default key to context. like as  </p>
+     *
+     * @param bean          the {@link Subscriber} instance
+     * @param method        the domain behavior method
+     * @param additional    the
+     * @return the {@link DomainEventContext} instance
+     */
+    DomainEventContext buildEventContext(Subscriber<?> bean, Method method, MethodInvocation invocation, Consumer<DomainEventContext>... additional) {
+        DomainEventContext eventContext = new ThreadLocalWebDomainEventContext(bean, method);
+        Object[] arguments = invocation.getArguments();
+        MethodParameterMap methodParameterMap = new MethodParameterMap(method, arguments);
+        Class<?> domainType = bean.getDomainType();
+        // 存放所有参数
+        eventContext.putAll(methodParameterMap.getInternalParameters());
+        if (domainType != null) {
+            Object parameterDomain = methodParameterMap.getDomain(domainType);
+            if (parameterDomain != null) {
+                eventContext.putAttribute(DomainEventContext.DOMAIN_KEY, parameterDomain);
+            }
+        }
+        if (additional != null) {
+            for (Consumer<DomainEventContext> extra : additional) {
+                extra.accept(eventContext);
+            }
+        }
+        return eventContext;
+    }
+
+    static class MethodParameterMap {
+        @Getter
+        private final Map<String, Object> internalParameters;
+        private final Method method;
+        private final Object[] arguments;
+
 
         public MethodParameterMap(Method method, Object[] arguments) {
+            this.internalParameters = Maps.newHashMap();
+            this.method = method;
+            this.arguments = arguments;
+            setupArgument();
+        }
+
+        public void setupArgument() {
             if (arguments != null && arguments.length > 0) {
                 Parameter[] parameters = method.getParameters();
                 for (int i = 0; i < parameters.length; i++) {
                     Parameter parameter = parameters[i];
                     Object argument = arguments[i];
                     if (argument != null) {
-                        put(parameter.getName(), argument);
+                        internalParameters.put(parameter.getName(), argument);
                     }
                 }
             }
@@ -160,7 +221,8 @@ public class BehaviorMethodInterceptor implements MethodInterceptor {
          * @return domain instance or null
          */
         public Object getDomain(Class<?> domainType) {
-            return values().stream()
+            return internalParameters.values()
+                    .stream()
                     .filter(Objects::nonNull)
                     .filter(v -> domainType.isAssignableFrom(v.getClass()))
                     .findFirst()
