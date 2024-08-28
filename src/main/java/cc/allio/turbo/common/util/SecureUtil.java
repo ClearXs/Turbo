@@ -191,6 +191,24 @@ public class SecureUtil {
     public interface SecureCipher {
 
         /**
+         * encrypt specific text
+         *
+         * @see #encrypt(String, String, String)
+         */
+        default String encrypt(String plainText) {
+            return encrypt(plainText, getSystemSecretKey(), null);
+        }
+
+        /**
+         * encrypt specific text
+         *
+         * @see #encrypt(String, String, String)
+         */
+        default String encrypt(String plainText, String secretKeyText) {
+            return encrypt(plainText, secretKeyText, null);
+        }
+
+        /**
          * <p>加密步骤:</p>
          * <ol>
          *  <li>明文</li>
@@ -204,6 +222,24 @@ public class SecureUtil {
          * @return 密文 or empty
          */
         String encrypt(String plainText, String secretKeyText, String salt);
+
+        /**
+         * decrypt cipher text
+         *
+         * @see #decrypt(String, String, String)
+         */
+        default String decrypt(String cipherText) {
+            return decrypt(cipherText, getSystemSecretKey(), null);
+        }
+
+        /**
+         * decrypt cipher text
+         *
+         * @see #decrypt(String, String, String)
+         */
+        default String decrypt(String cipherText, String secretKeyText) {
+            return decrypt(cipherText, secretKeyText, null);
+        }
 
         /**
          * <p>解密步骤</p>

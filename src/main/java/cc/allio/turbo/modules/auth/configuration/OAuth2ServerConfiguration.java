@@ -1,4 +1,4 @@
-package cc.allio.turbo.modules.auth.config;
+package cc.allio.turbo.modules.auth.configuration;
 
 import cc.allio.turbo.modules.auth.exception.AccessDeniedExceptionHandler;
 import cc.allio.turbo.modules.auth.exception.AuthenticationExceptionHandler;

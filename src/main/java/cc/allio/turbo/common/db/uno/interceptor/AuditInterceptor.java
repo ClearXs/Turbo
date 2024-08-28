@@ -2,7 +2,6 @@ package cc.allio.turbo.common.db.uno.interceptor;
 
 import cc.allio.turbo.common.util.AuthUtil;
 import cc.allio.uno.core.util.DateUtil;
-import cc.allio.uno.core.util.id.IdGenerator;
 import cc.allio.uno.data.orm.dsl.Operator;
 import cc.allio.uno.data.orm.dsl.dml.InsertOperator;
 import cc.allio.uno.data.orm.dsl.dml.UpdateOperator;
@@ -24,7 +23,7 @@ public class AuditInterceptor implements Interceptor {
     public void onSaveBefore(CommandExecutor commandExecutor, Operator<?> operator) {
         if (operator instanceof InsertOperator insertOperator) {
             Date now = DateUtil.now();
-            Long currentUserId = AuthUtil.getCurrentUserId();
+            Long currentUserId = AuthUtil.getUserId();
             insertOperator.strictFill("created_by", currentUserId);
             insertOperator.strictFill("created_time", now);
             insertOperator.strictFill("updated_by", currentUserId);
@@ -37,7 +36,7 @@ public class AuditInterceptor implements Interceptor {
     public void onUpdateBefore(CommandExecutor commandExecutor, Operator<?> operator) {
         if (operator instanceof UpdateOperator updateOperator) {
             Date now = DateUtil.now();
-            Long currentUserId = AuthUtil.getCurrentUserId();
+            Long currentUserId = AuthUtil.getUserId();
             updateOperator.strictFill("updated_by", currentUserId);
             updateOperator.strictFill("updated_time", now);
             updateOperator.strictFill("is_deleted", 0);

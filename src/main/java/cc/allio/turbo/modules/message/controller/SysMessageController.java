@@ -34,7 +34,7 @@ public class SysMessageController extends TurboCrudController<SysMessage, SysMes
     @Operation(summary = "当前用户消息")
     @PostMapping("/current-user/all")
     public R<IPage<SysMessage>> currentUser(@RequestBody QueryParam<SysMessage> params) {
-        Long currentUserId = AuthUtil.getCurrentUserId();
+        Long currentUserId = AuthUtil.getUserId();
         SysMessage sysMessage = new SysMessage();
         params.addTerm(sysMessage::getReceiver, currentUserId);
         QueryWrapper<SysMessage> queryWrapper = Conditions.entityQuery(params, getEntityType());
@@ -45,7 +45,7 @@ public class SysMessageController extends TurboCrudController<SysMessage, SysMes
     @Operation(summary = "当前用户消息数量消息")
     @PostMapping("/current-user/count")
     public R<Long> currentUserCount(@RequestBody QueryParam<SysMessage> params) {
-        Long currentUserId = AuthUtil.getCurrentUserId();
+        Long currentUserId = AuthUtil.getUserId();
         SysMessage sysMessage = new SysMessage();
         params.addTerm(sysMessage::getReceiver, currentUserId);
         QueryWrapper<SysMessage> queryWrapper = Conditions.entityQuery(params, getEntityType());

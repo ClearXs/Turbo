@@ -1,13 +1,15 @@
 package cc.allio.turbo.modules.auth.oauth2;
 
 import cc.allio.turbo.common.exception.BizException;
-import cc.allio.turbo.common.util.JwtUtil;
 import cc.allio.turbo.modules.auth.authentication.TurboJwtAuthenticationToken;
+import cc.allio.turbo.modules.auth.authority.TurboGrantedAuthority;
+import cc.allio.turbo.modules.auth.jwt.JwtAuthentication;
 import cc.allio.turbo.modules.auth.oauth2.extractor.OAuth2UserExtractor;
 import cc.allio.turbo.modules.auth.provider.TurboUser;
 import cc.allio.turbo.modules.auth.service.IAuthService;
 import cc.allio.turbo.modules.system.constant.UserSource;
 import cc.allio.turbo.modules.system.domain.SysUserVO;
+import cc.allio.turbo.modules.system.entity.SysRole;
 import cc.allio.turbo.modules.system.entity.SysThirdUser;
 import cc.allio.turbo.modules.system.entity.SysUser;
 import cc.allio.turbo.modules.system.service.ISysThirdUserService;
@@ -21,7 +23,10 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * generate oauth token base on jwt token.
@@ -37,6 +42,7 @@ public class OAuth2TokenGenerator {
     private final ISysUserService sysUserService;
     private final ISysThirdUserService sysThirdUserService;
     private final IAuthService authService;
+    private final JwtAuthentication jwtAuthentication;
     private final Map<String, OAuth2UserExtractor> extractorMap;
 
     /**
@@ -76,9 +82,13 @@ public class OAuth2TokenGenerator {
             TurboJwtAuthenticationToken authenticationToken = registerSysUser(extractor, oAuth2User);
             return authenticationToken.getToken();
         }
-
         SysUserVO userDetails = sysUserService.findUserDetails(sysUser);
-        TurboJwtAuthenticationToken token = JwtUtil.encode(new TurboUser(userDetails));
+        List<SysRole> roles = userDetails.getRoles();
+        Set<TurboGrantedAuthority> authorities =
+                roles.stream()
+                        .map(role -> new TurboGrantedAuthority(role.getId(), role.getCode(), role.getName()))
+                        .collect(Collectors.toSet());
+        TurboJwtAuthenticationToken token = jwtAuthentication.encode(new TurboUser(userDetails, authorities));
         return token.getToken();
     }
 
@@ -92,18 +102,17 @@ public class OAuth2TokenGenerator {
     TurboJwtAuthenticationToken registerThirdUser(OAuth2UserExtractor extractor, OAuth2User oAuth2User) {
         // create third user
         String uuid = extractor.withUUID(oAuth2User);
-
         var thirdUser = new SysThirdUser();
         thirdUser.setUuid(uuid);
         thirdUser.setCode(extractor.getRegistrationId());
-
-        return TransactionContext.execute(() -> {
-            TurboJwtAuthenticationToken token = registerSysUser(extractor, oAuth2User);
-            Long id = token.getUserId();
-            thirdUser.setUserId(id);
-            sysThirdUserService.saveOrUpdate(thirdUser);
-            return token;
-        });
+        return TransactionContext.execute(
+                () -> {
+                    TurboJwtAuthenticationToken token = registerSysUser(extractor, oAuth2User);
+                    Long id = token.getUserId();
+                    thirdUser.setUserId(id);
+                    sysThirdUserService.saveOrUpdate(thirdUser);
+                    return token;
+                });
     }
 
     /**

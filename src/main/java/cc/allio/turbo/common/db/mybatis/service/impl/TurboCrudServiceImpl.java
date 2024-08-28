@@ -1,6 +1,7 @@
 package cc.allio.turbo.common.db.mybatis.service.impl;
 
 import cc.allio.turbo.common.db.entity.IdEntity;
+import cc.allio.turbo.common.db.event.DomainEventBus;
 import cc.allio.turbo.common.db.event.Subscriber;
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
 import cc.allio.uno.core.reflect.ReflectTools;
@@ -13,7 +14,7 @@ public abstract class TurboCrudServiceImpl<M extends BaseMapper<T>, T extends Id
         extends ServiceImpl<M, T>
         implements ITurboCrudService<T> {
 
-    private Subscriber<T> proxySubscriber;
+    private DomainEventBus eventBus;
 
     @Override
     public <V extends T> V details(Serializable id) {
@@ -31,12 +32,12 @@ public abstract class TurboCrudServiceImpl<M extends BaseMapper<T>, T extends Id
     }
 
     @Override
-    public void setProxy(Subscriber<T> subscriber) {
-        this.proxySubscriber = subscriber;
+    public void setDomainEventBus(DomainEventBus eventBus) {
+        this.eventBus = eventBus;
     }
 
     @Override
-    public Subscriber<T> getProxy() {
-        return proxySubscriber;
+    public DomainEventBus getDomainEventBus() {
+        return eventBus;
     }
 }

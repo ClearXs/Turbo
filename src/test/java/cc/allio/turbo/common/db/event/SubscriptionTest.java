@@ -1,5 +1,6 @@
 package cc.allio.turbo.common.db.event;
 
+import cc.allio.turbo.common.aop.TurboAspectConfiguration;
 import cc.allio.uno.test.BaseTestCase;
 import cc.allio.uno.test.Inject;
 import cc.allio.uno.test.RunTest;
@@ -7,7 +8,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-@RunTest(components = {DomainEventConfiguration.class, OrgServiceImpl.class})
+@RunTest(components = {
+        DomainEventConfiguration.class,
+        OrgServiceImpl.class,
+        TurboAspectConfiguration.class})
 public class SubscriptionTest extends BaseTestCase {
 
     @Inject

@@ -263,17 +263,14 @@ public class WhereWrapperAdaptor<T extends WhereOperator<T>> implements WrapperA
         }
     }
 
-    @Getter
-    static class MultiSqlSegment implements ISqlSegment {
+    record MultiSqlSegment(ISqlSegment... segments) implements ISqlSegment {
 
-        private final ISqlSegment[] segments;
-
-        public MultiSqlSegment(ISqlSegment... segments) {
+        MultiSqlSegment(ISqlSegment... segments) {
             this.segments =
                     Arrays.stream(segments)
                             .flatMap(segment -> {
                                 if (segment instanceof MultiSqlSegment multiSqlSegment) {
-                                    return Arrays.stream(multiSqlSegment.getSegments());
+                                    return Arrays.stream(multiSqlSegment.segments());
                                 }
                                 return Stream.of(segment);
                             })

@@ -54,9 +54,7 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
                 // from attribute
                 () -> getAttributeOpt(X_TENANT),
                 // from request parameter
-                () -> getParameterOpt(X_TENANT),
-                // from auth
-                () -> Optional.ofNullable(AuthUtil.getTenantId()).map(String::valueOf)).orElse(null);
+                () -> getParameterOpt(X_TENANT)).orElse(null);
     }
 
     /**
@@ -80,14 +78,18 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
      * get login mode
      */
     public static String getLoginMode() {
-        return Optionals.firstNonEmpty(() -> getHeaderOpt(X_LOGIN_MODE), () -> getAttributeOpt(X_LOGIN_MODE)).orElse(StringPool.EMPTY);
+        return Optionals.firstNonEmpty(
+                () -> getHeaderOpt(X_LOGIN_MODE),
+                () -> getAttributeOpt(X_LOGIN_MODE)).orElse(StringPool.EMPTY);
     }
 
     /**
      * get app
      */
     public static App getApp() {
-        String app = Optionals.firstNonEmpty(() -> getHeaderOpt(X_APP), () -> getAttributeOpt(X_APP)).orElse(StringPool.EMPTY);
+        String app = Optionals.firstNonEmpty(
+                () -> getHeaderOpt(X_APP),
+                () -> getAttributeOpt(X_APP)).orElse(StringPool.EMPTY);
         if (StringUtils.isNotBlank(app)) {
             return App.valueOf(app);
         }

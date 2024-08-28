@@ -1,6 +1,7 @@
 package cc.allio.turbo.common.db.uno.repository.impl;
 
 import cc.allio.turbo.common.db.entity.Entity;
+import cc.allio.turbo.common.db.event.DomainEventBus;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepository;
 
 /**
@@ -11,4 +12,16 @@ import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepository;
  * @since 0.1.1
  */
 public abstract class TurboCrudRepositoryImpl<T extends Entity> implements ITurboCrudRepository<T> {
+
+    private DomainEventBus eventBus;
+
+    @Override
+    public DomainEventBus getDomainEventBus() {
+        return eventBus;
+    }
+
+    @Override
+    public void setDomainEventBus(DomainEventBus eventBus) {
+        this.eventBus = eventBus;
+    }
 }

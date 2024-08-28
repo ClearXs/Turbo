@@ -1,8 +1,6 @@
 package cc.allio.turbo.common.db.event;
 
-import cc.allio.turbo.common.util.AuthUtil;
 import cc.allio.turbo.common.util.WebUtil;
-import cc.allio.turbo.modules.auth.provider.TurboUser;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.lang.reflect.Method;
@@ -24,7 +22,6 @@ public class ThreadLocalWebDomainEventContext extends DomainEventContext {
     private static final String TENANT_ID_KEY = "tenant_id_key";
     private static final String TOKEN_KEY = "token_key";
     private static final String REQUEST_KEY = "request_key";
-    private static final String CURRENT_USER_KEY = "current_user_key";
 
     public ThreadLocalWebDomainEventContext(DomainEventContext domainEventContext) {
         super(domainEventContext.subscription, domainEventContext.behavior);
@@ -36,7 +33,6 @@ public class ThreadLocalWebDomainEventContext extends DomainEventContext {
         Optional.ofNullable(WebUtil.getTenant()).ifPresent(tenantId -> putAttribute(TENANT_ID_KEY, tenantId));
         Optional.ofNullable(WebUtil.getToken()).ifPresent(token -> putAttribute(TOKEN_KEY, token));
         Optional.ofNullable(WebUtil.getRequest()).ifPresent(request -> putAttribute(REQUEST_KEY, request));
-        Optional.ofNullable(AuthUtil.getUser()).ifPresent(user -> putAttribute(CURRENT_USER_KEY, user));
     }
 
     /**
@@ -64,15 +60,6 @@ public class ThreadLocalWebDomainEventContext extends DomainEventContext {
      */
     public Optional<HttpServletRequest> getRequest() {
         return get(REQUEST_KEY, HttpServletRequest.class);
-    }
-
-    /**
-     * 获取web域的用户信息
-     *
-     * @return user
-     */
-    public Optional<TurboUser> getCurrentUser() {
-        return get(CURRENT_USER_KEY, TurboUser.class);
     }
 
     /**
