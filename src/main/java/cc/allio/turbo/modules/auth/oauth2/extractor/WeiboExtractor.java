@@ -31,6 +31,11 @@ public class WeiboExtractor implements OAuth2UserExtractor {
     }
 
     @Override
+    public String withNickname(OAuth2User oAuth2User) {
+        return oAuth2User.getAttribute("nickname");
+    }
+
+    @Override
     public String getRegistrationId() {
         return OAuth2Provider.WEIBO.getRegistrationId();
     }

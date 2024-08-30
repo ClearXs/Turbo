@@ -3,6 +3,8 @@ turbo:
     tenant:
       # 租户字段
       field: tenant_id
+      # 默认租户id
+      default-tenant-id: 0
       # 租户拼接忽略的表
       ignore-list:
         - sys_tenant

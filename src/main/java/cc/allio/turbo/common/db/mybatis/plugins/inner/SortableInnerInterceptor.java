@@ -43,7 +43,7 @@ public class SortableInnerInterceptor extends PaginationInnerInterceptor {
         Class<?> entityType = null;
         List<ResultMap> resultMaps = ms.getResultMaps();
         if (CollectionUtils.isNotEmpty(resultMaps)) {
-            ResultMap resultMap = resultMaps.get(0);
+            ResultMap resultMap = resultMaps.getFirst();
             entityType = resultMap.getType();
         }
         if (entityType != null) {

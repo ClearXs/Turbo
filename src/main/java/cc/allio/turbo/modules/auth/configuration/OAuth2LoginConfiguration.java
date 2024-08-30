@@ -1,5 +1,6 @@
 package cc.allio.turbo.modules.auth.configuration;
 
+import cc.allio.turbo.common.db.persistent.PersistentProperties;
 import cc.allio.turbo.modules.auth.jwt.JwtAuthentication;
 import cc.allio.turbo.modules.auth.oauth2.*;
 import cc.allio.turbo.modules.auth.oauth2.extractor.OAuth2UserExtractor;
@@ -43,7 +44,8 @@ public class OAuth2LoginConfiguration {
     @Order(0)
     public SecurityFilterChain oauth2loginFilterChain(HttpSecurity http,
                                                       OAuth2TokenGenerator oAuth2TokenGenerator,
-                                                      TurboOAuth2ClientProperties oAuth2ClientProperties) throws Exception {
+                                                      TurboOAuth2ClientProperties oAuth2ClientProperties,
+                                                      PersistentProperties persistentProperties) throws Exception {
         http.authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/oauth2/**")
@@ -56,7 +58,7 @@ public class OAuth2LoginConfiguration {
                                 .failureHandler(new OAuth2LoginFailureHandler())
                                 .successHandler(new OAuth2LoginSuccessHandler(oAuth2TokenGenerator, oAuth2ClientProperties))
                                 .authorizationEndpoint(e ->
-                                        e.authorizationRequestRepository(new TenantSessionAuthorizationRequestRepository())
+                                        e.authorizationRequestRepository(new TenantSessionAuthorizationRequestRepository(persistentProperties))
                                                 .authorizationRedirectStrategy(new CORSAuthorizationRedirectStrategy()))
                 )
                 .sessionManagement(sessionManager -> {

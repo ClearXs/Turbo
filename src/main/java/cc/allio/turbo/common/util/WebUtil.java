@@ -3,6 +3,8 @@ package cc.allio.turbo.common.util;
 import cc.allio.turbo.common.web.App;
 import cc.allio.turbo.modules.auth.oauth2.TenantSessionAuthorizationRequestRepository;
 import cc.allio.uno.core.StringPool;
+import cc.allio.uno.core.env.Env;
+import cc.allio.uno.core.env.Envs;
 import cc.allio.uno.core.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,8 +38,20 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
     public static final String X_TENANT = "X-TENANT";
     public static final String X_LOGIN_MODE = "X-LOGIN-MODE";
     public static final String X_APP = "X-APP";
+    public static final String X_USER_IDENTIFIER = "X-USER";
 
-    private WebUtil() {
+    /**
+     * from {@link HttpServletRequest} header to get {@link #X_USER_IDENTIFIER}
+     *
+     * @return the user identifier or null
+     */
+    public static String getUserIdentifier() {
+        return Optionals.firstNonEmpty(
+                        () -> getHeaderOpt(X_USER_IDENTIFIER),
+                        () -> getParameterOpt(X_USER_IDENTIFIER),
+                        () -> getAttributeOpt(X_USER_IDENTIFIER)
+                )
+                .orElse(StringPool.EMPTY);
     }
 
     /**
@@ -45,16 +59,17 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
      * <p>follow header, attribute get tenant</p>
      *
      * @return tenant or null
-     * @throws NoSuchElementException value empty
      */
     public static String getTenant() {
         return Optionals.firstNonEmpty(
-                // from header
-                () -> getHeaderOpt(X_TENANT),
-                // from attribute
-                () -> getAttributeOpt(X_TENANT),
-                // from request parameter
-                () -> getParameterOpt(X_TENANT)).orElse(null);
+                        // from header
+                        () -> getHeaderOpt(X_TENANT),
+                        // from attribute
+                        () -> getAttributeOpt(X_TENANT),
+                        // from request parameter
+                        () -> getParameterOpt(X_TENANT)
+                )
+                .orElseGet(() -> Envs.getProperty("turbo.persistent.tenant.default-tenant-id"));
     }
 
     /**
@@ -66,34 +81,41 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
      */
     public static String getToken() {
         return Optionals.firstNonEmpty(
-                // from header
-                () -> getHeaderOpt(X_AUTHENTICATION),
-                // from attribute
-                () -> getAttributeOpt(X_AUTHENTICATION),
-                // from request parameter
-                () -> getParameterOpt(X_AUTHENTICATION)).orElse(StringPool.EMPTY);
+                        // from header
+                        () -> getHeaderOpt(X_AUTHENTICATION),
+                        // from attribute
+                        () -> getAttributeOpt(X_AUTHENTICATION),
+                        // from request parameter
+                        () -> getParameterOpt(X_AUTHENTICATION)
+                )
+                .orElse(StringPool.EMPTY);
     }
 
     /**
      * get login mode
+     *
+     * @return the login mode or null
      */
     public static String getLoginMode() {
         return Optionals.firstNonEmpty(
-                () -> getHeaderOpt(X_LOGIN_MODE),
-                () -> getAttributeOpt(X_LOGIN_MODE)).orElse(StringPool.EMPTY);
+                        () -> getHeaderOpt(X_LOGIN_MODE),
+                        () -> getAttributeOpt(X_LOGIN_MODE)
+                )
+                .orElse(StringPool.EMPTY);
     }
 
     /**
      * get app
+     *
+     * @return the {@link App} or null
      */
     public static App getApp() {
-        String app = Optionals.firstNonEmpty(
-                () -> getHeaderOpt(X_APP),
-                () -> getAttributeOpt(X_APP)).orElse(StringPool.EMPTY);
-        if (StringUtils.isNotBlank(app)) {
-            return App.valueOf(app);
-        }
-        return null;
+        return Optionals.firstNonEmpty(
+                        () -> getHeaderOpt(X_APP),
+                        () -> getAttributeOpt(X_APP)
+                )
+                .map(App::valueOf)
+                .orElse(null);
     }
 
     /**

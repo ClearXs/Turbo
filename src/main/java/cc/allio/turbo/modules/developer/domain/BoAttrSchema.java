@@ -206,8 +206,10 @@ public class BoAttrSchema implements Serializable, Entity {
      * @return BoAttributeTree
      */
     public static BoAttributeTree to(BoAttrSchema schema) {
-        return Domains
-                .toEntity(schema, BoAttributeTree.class, (o, tree) -> {
+        return Domains.toEntity(
+                schema,
+                BoAttributeTree.class,
+                (o, tree) -> {
                     tree.setId(Long.valueOf(o.id));
                     return tree;
                 });

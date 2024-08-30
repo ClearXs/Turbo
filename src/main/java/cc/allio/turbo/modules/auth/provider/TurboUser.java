@@ -97,7 +97,7 @@ public class TurboUser implements UserDetails {
         this.credentialsNonExpired = jwt.getClaimAsBoolean(CREDENTIALS_NON_EXPIRED_FIELD);
         this.enabled = jwt.getClaimAsBoolean(ACCOUNT_ENABLED_FIELD);
         this.userId = jwt.getClaim(USER_ID_FIELD);
-        List<Map<String, Object>> claimAuthorities = jwt.getClaim(AUTHORITIES_FIELD);
+        Collection<Map<String, Object>> claimAuthorities = jwt.getClaim(AUTHORITIES_FIELD);
         this.authorities =
                 claimAuthorities.stream()
                         .map(auth -> {

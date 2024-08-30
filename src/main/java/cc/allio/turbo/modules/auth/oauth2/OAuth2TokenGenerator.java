@@ -129,7 +129,8 @@ public class OAuth2TokenGenerator {
         sysUser.setSource(UserSource.THIRD);
         String username = extractor.withUsername(oAuth2User);
         sysUser.setUsername(username);
-        sysUser.setNickname(username);
+        String nickname = extractor.withNickname(oAuth2User);
+        sysUser.setNickname(nickname);
 
         String email = extractor.withEmail(oAuth2User);
         sysUser.setEmail(email);

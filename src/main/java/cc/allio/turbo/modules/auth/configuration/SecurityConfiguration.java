@@ -2,9 +2,11 @@ package cc.allio.turbo.modules.auth.configuration;
 
 import cc.allio.turbo.modules.auth.exception.AccessDeniedExceptionHandler;
 import cc.allio.turbo.modules.auth.exception.AuthenticationExceptionHandler;
+import cc.allio.turbo.modules.auth.filter.InternalOAuth2AuthenticationFilter;
 import cc.allio.turbo.modules.auth.filter.JwtTokenFilter;
 import cc.allio.turbo.modules.auth.handler.JwtAuthenticationSuccessHandler;
 import cc.allio.turbo.modules.auth.jwt.JwtAuthentication;
+import cc.allio.turbo.modules.auth.oauth2.OAuth2TokenGenerator;
 import cc.allio.turbo.modules.auth.properties.SecureProperties;
 import cc.allio.turbo.modules.auth.provider.TurboJwtAuthenticationProvider;
 import cc.allio.turbo.modules.auth.provider.TurboPasswordEncoder;
@@ -36,7 +38,8 @@ public class SecurityConfiguration {
                                                           SecureProperties secureProperties,
                                                           AuthenticationExceptionHandler authenticationExceptionHandler,
                                                           ISysUserService userService,
-                                                          JwtAuthentication jwtAuthentication) throws Exception {
+                                                          JwtAuthentication jwtAuthentication,
+                                                          OAuth2TokenGenerator tokenGenerator) throws Exception {
         UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.addAllowedOrigin("*");
@@ -46,6 +49,7 @@ public class SecurityConfiguration {
         TurboUserDetailsService userDetailsService = new TurboUserDetailsService(userService);
         TurboPasswordEncoder passwordEncoder = new TurboPasswordEncoder(secureProperties);
         TurboJwtAuthenticationProvider jwtAuthenticationProvider = new TurboJwtAuthenticationProvider(userDetailsService, passwordEncoder, jwtAuthentication);
+        InternalOAuth2AuthenticationFilter internalOAuth2AuthenticationFilter = new InternalOAuth2AuthenticationFilter(tokenGenerator);
         JwtTokenFilter jwtTokenFilter = new JwtTokenFilter(jwtAuthentication);
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
@@ -57,6 +61,7 @@ public class SecurityConfiguration {
                                 .authenticated())
                 // jwt token验证
                 .addFilterBefore(jwtTokenFilter, AuthorizationFilter.class)
+                .addFilterBefore(internalOAuth2AuthenticationFilter, JwtTokenFilter.class)
                 .exceptionHandling(ex ->
                         // 异常处理器
                         ex.authenticationEntryPoint(authenticationExceptionHandler)

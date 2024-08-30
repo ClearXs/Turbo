@@ -5,23 +5,23 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
 /**
- * wechat enterprise web login
+ * customize
  *
  * @author j.x
- * @date 2024/4/10 19:50
+ * @date 2024/8/29 14:49
  * @since 0.1.1
  */
 @Component
-public class WechatEnterpriseWebExtractor implements OAuth2UserExtractor {
+public class CustomExtractor implements OAuth2UserExtractor {
 
     @Override
     public String withUUID(OAuth2User oAuth2User) {
-        return oAuth2User.getAttribute("UserId");
+        return oAuth2User.getAttribute("userId");
     }
 
     @Override
     public String withUsername(OAuth2User oAuth2User) {
-        return oAuth2User.getAttribute("name");
+        return oAuth2User.getAttribute("username");
     }
 
     @Override
@@ -36,6 +36,6 @@ public class WechatEnterpriseWebExtractor implements OAuth2UserExtractor {
 
     @Override
     public String getRegistrationId() {
-        return OAuth2Provider.WECHAT_ENTERPRISE_WEB.getRegistrationId();
+        return OAuth2Provider.CUSTOM.getRegistrationId();
     }
 }
