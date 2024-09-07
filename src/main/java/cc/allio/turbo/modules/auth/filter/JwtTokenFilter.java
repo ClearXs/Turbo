@@ -8,6 +8,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -16,6 +17,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtValidationException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -62,7 +64,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         SecurityContext context = securityContextHolderStrategy.getContext();
         // if previous authenticated. skip
         Authentication authentication = context.getAuthentication();
-        if (authentication != null) {
+
+        if (authentication != null && !(
+                AnonymousAuthenticationToken.class.isAssignableFrom(authentication.getClass())
+                        || OAuth2AuthenticationToken.class.isAssignableFrom(authentication.getClass()))) {
             filterChain.doFilter(request, response);
             return;
         }

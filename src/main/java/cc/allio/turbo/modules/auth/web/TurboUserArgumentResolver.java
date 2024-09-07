@@ -13,8 +13,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import java.util.Optional;
-
 /**
  * resolve the {@link TurboUser}.
  * <p></p>
@@ -39,9 +37,9 @@ public class TurboUserArgumentResolver implements HandlerMethodArgumentResolver 
         // try to request get user and then from token
         SecurityContext context = securityContextHolderStrategy.getContext();
         Authentication authentication = context.getAuthentication();
-        return Optional.ofNullable(authentication)
-                .map(JwtAuthenticationToken.class::cast)
-                .map(TurboUser::new)
-                .orElse(null);
+        if (authentication instanceof JwtAuthenticationToken jwtAuthenticationToken) {
+            return new TurboUser(jwtAuthenticationToken);
+        }
+        return null;
     }
 }
