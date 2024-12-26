@@ -150,37 +150,14 @@ public interface IBoDomainService extends Subscriber<GeneralDomainObject> {
     }
 
     /**
-     * @see #removeBatchByIds(Long, Collection, int, boolean)
-     */
-    default boolean removeBatchByIds(Long boId, Collection<?> list) throws BizException {
-        return removeBatchByIds(boId, list, -1, false);
-    }
-
-    /**
-     * @see #removeBatchByIds(Long, Collection, int, boolean)
-     */
-    default boolean removeBatchByIds(Long boId, Collection<?> list, boolean useFill) throws BizException {
-        return removeBatchByIds(boId, list, -1, useFill);
-    }
-
-    /**
-     * @see #removeBatchByIds(Long, Collection, int, boolean)
-     */
-    default boolean removeBatchByIds(Long boId, Collection<?> list, int batchSize) throws BizException {
-        return removeBatchByIds(boId, list, batchSize, false);
-    }
-
-    /**
      * 根据id批量删除
      *
      * @param list      主键ID或实体列表
-     * @param batchSize 批次大小
-     * @param useFill   是否启用填充(为true的情况,会将入参转换实体进行delete删除)
      * @return true if success
      */
-    default boolean removeBatchByIds(Long boId, Collection<?> list, int batchSize, boolean useFill) throws BizException {
+    default boolean removeBatchByIds(Long boId, Collection<?> list) throws BizException {
         IDomainService<GeneralDomainObject> boRepository = getBoRepositoryOrThrow(boId);
-        return boRepository.removeBatchByIds(list, batchSize, useFill);
+        return boRepository.removeBatchByIds(list);
     }
 
     /**

@@ -59,22 +59,6 @@ public abstract class TurboTreeCrudServiceImpl<M extends TreeMapper<T>, T extend
         return super.removeById(id, useFill);
     }
 
-    @Override
-    public boolean removeBatchByIds(Collection<?> list, int batchSize) {
-        for (Object id : list) {
-            preCheckRemove((Serializable) id);
-        }
-        return super.removeBatchByIds(list, batchSize);
-    }
-
-    @Override
-    public boolean removeBatchByIds(Collection<?> list, int batchSize, boolean useFill) {
-        for (Object id : list) {
-            preCheckRemove((Serializable) id);
-        }
-        return super.removeBatchByIds(list, batchSize, useFill);
-    }
-
     /**
      * 移除前检查
      */

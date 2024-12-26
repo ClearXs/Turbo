@@ -1,0 +1,54 @@
+version: '3'
+services:
+  turbo:
+    container_name: turbo
+    image: ${REPOSITORY}/turbo:${VERSION}
+    restart: always
+    hostname: turbo
+    ports:
+      - "8600:8600"
+    environment:
+      - TZ=Asia/Shanghai
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_TIMEOUT=${REDIS_TIMEOUT}
+      - REDIS_DATABASE=${REDIS_DATABASE}
+      - DATASOURCE_URL=${DATASOURCE_URL}
+      - DATASOURCE_USERNAME=${DATASOURCE_USERNAME}
+      - DATASOURCE_PASSWORD=${DATASOURCE_PASSWORD}
+      - OSS_ENDPOINT=${OSS_ENDPOINT}
+      - OSS_ACCESS_KEY=${OSS_ACCESS_KEY}
+      - OSS_SECRET_KEY=${OSS_SECRET_KEY}
+      - OSS_BUCKET=${OSS_BUCKET}
+    volumes:
+      - ./logs:./logs
+    networks:
+      allio_net:
+        - ipv4_address: 172.32.0.2
+
+  turbo-ui:
+    container_name: turbo-ui
+    image: ${REPOSITORY}/turbo-ui:${VERSION}
+    hostname: turbo-ui
+    restart: always
+    ports:
+      - "8900:8900"
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf.d/
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/logs/:/var/log/nginx/
+      - ./nginx/cert:/etc/nginx/cert
+    networks:
+      allio_net:
+        - ipv4_address: 172.32.0.3
+    depends_on:
+      - turbo
+
+networks:
+  allio_net:
+    driver: bridge
+    ipam:
+      config:
+        subnet: 172.32.0.0/24
+        gateway: 172.32.0.1
