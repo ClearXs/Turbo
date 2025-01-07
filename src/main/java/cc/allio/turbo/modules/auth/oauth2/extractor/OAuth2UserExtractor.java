@@ -34,6 +34,13 @@ public interface OAuth2UserExtractor {
     String withEmail(OAuth2User oAuth2User);
 
     /**
+     * extract to nickname if exist
+     *
+     * @return nickname
+     */
+    String withNickname(OAuth2User oAuth2User);
+
+    /**
      * relational third system
      *
      * @return a {@link OAuth2Provider} instance

@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.2</version>
+        <groupId>cc.allio.uno</groupId>
+        <artifactId>uno-parent</artifactId>
+        <version>1.2.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -23,11 +23,19 @@
         </developer>
     </developers>
 
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
     <properties>
         <java.version>21</java.version>
-        <uno.version>1.1.9</uno.version>
+        <uno.version>1.2.0</uno.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <maven-plugin.version>3.11.0</maven-plugin.version>
+
         <knife4j.version>4.5.0</knife4j.version>
         <bcpkix-jdk15on.version>1.70</bcpkix-jdk15on.version>
         <capatcha.version>2.2.3</capatcha.version>
@@ -43,7 +51,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>cc.allio</groupId>
+                <groupId>cc.allio.uno</groupId>
                 <artifactId>uno-bom</artifactId>
                 <version>${uno.version}</version>
                 <type>pom</type>
@@ -110,6 +118,10 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
@@ -143,19 +155,19 @@
         </dependency>
         <!-- uno -->
         <dependency>
-            <groupId>cc.allio</groupId>
+            <groupId>cc.allio.uno</groupId>
             <artifactId>uno-starter-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>cc.allio</groupId>
+            <groupId>cc.allio.uno</groupId>
             <artifactId>uno-data-db</artifactId>
         </dependency>
         <dependency>
-            <groupId>cc.allio</groupId>
+            <groupId>cc.allio.uno</groupId>
             <artifactId>uno-data-mongodb</artifactId>
         </dependency>
         <dependency>
-            <groupId>cc.allio</groupId>
+            <groupId>cc.allio.uno</groupId>
             <artifactId>uno-http</artifactId>
         </dependency>
         <dependency>
@@ -195,7 +207,7 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>${okhttp.version}</version>
+            <version>${okhttp}</version>
         </dependency>
         <!-- observability -->
         <dependency>
@@ -234,18 +246,19 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>cc.allio</groupId>
+            <groupId>cc.allio.uno</groupId>
             <artifactId>uno-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>cc.allio</groupId>
+            <groupId>cc.allio.uno</groupId>
             <artifactId>uno-data-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
+        <finalName>${project.name}</finalName>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -289,6 +302,12 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -342,19 +361,6 @@
             </build>
         </profile>
     </profiles>
-
-    <distributionManagement>
-        <repository>
-            <id>rdc-releases</id>
-            <name>User Project Release</name>
-            <url>https://packages.aliyun.com/maven/repository/2300285-release-cAc7WJ/</url>
-        </repository>
-        <snapshotRepository>
-            <id>rdc-snapshots</id>
-            <name>User ProjectSNAPSHOTS</name>
-            <url>https://packages.aliyun.com/maven/repository/2300285-snapshot-JAW5GT/</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <!-- 拉取snapshot -->
     <repositories>

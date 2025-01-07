@@ -123,7 +123,7 @@ public class Path {
      * @return combine path
      */
     public String compose() {
-        return separator + String.join(separator, this.nameList);
+        return String.join(separator, this.nameList);
     }
 
     /**

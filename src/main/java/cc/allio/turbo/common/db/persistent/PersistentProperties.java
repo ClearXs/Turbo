@@ -24,5 +24,10 @@ public class PersistentProperties {
          * 忽略租户的表名列表
          */
         private List<String> ignoreList = Lists.newArrayList();
+
+        /**
+         * default tenant id
+         */
+        private String defaultTenantId = "0";
     }
 }

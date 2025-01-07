@@ -104,29 +104,14 @@ public interface ITurboCrudRepositoryService<T extends Entity> extends ITurboCru
 
     @Override
     default boolean removeByIds(Collection<?> list, boolean useFill) {
-        return removeBatchByIds(list, useFill);
+        return getRepository()
+                .getExecutor()
+                .deleteAllById(getEntityClass(), list.stream().map(Serializable.class::cast).toList());
     }
 
     @Override
     default boolean removeBatchByIds(Collection<?> list) {
-        return removeBatchByIds(list, false);
-    }
-
-    @Override
-    default boolean removeBatchByIds(Collection<?> list, boolean useFill) {
-        return removeBatchByIds(list, DEFAULT_BATCH_SIZE, useFill);
-    }
-
-    @Override
-    default boolean removeBatchByIds(Collection<?> list, int batchSize) {
-        return removeBatchByIds(list, batchSize, false);
-    }
-
-    @Override
-    default boolean removeBatchByIds(Collection<?> list, int batchSize, boolean useFill) {
-        return getRepository()
-                .getExecutor()
-                .deleteAllById(getEntityClass(), list.stream().map(Serializable.class::cast).toList());
+        return removeByIds(list);
     }
 
     @Override

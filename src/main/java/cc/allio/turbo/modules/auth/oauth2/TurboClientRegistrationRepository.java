@@ -1,5 +1,6 @@
 package cc.allio.turbo.modules.auth.oauth2;
 
+import cc.allio.uno.core.util.CollectionUtils;
 import cc.allio.uno.core.util.ObjectUtils;
 import com.google.common.collect.Lists;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
@@ -43,14 +44,17 @@ public class TurboClientRegistrationRepository implements ClientRegistrationRepo
                 mapping(builder::scope, properties::getScope);
                 // redirec uri
                 mapping(builder::redirectUri, properties::getRedirectUri);
-
                 // build
                 ClientRegistration registration = builder.build();
                 registrations.add(registration);
             }
         }
 
-        this.internal = new InMemoryClientRegistrationRepository(registrations);
+        if (CollectionUtils.isNotEmpty(registrations)) {
+            this.internal = new InMemoryClientRegistrationRepository(registrations);
+        } else {
+            this.internal = null;
+        }
     }
 
     @Override

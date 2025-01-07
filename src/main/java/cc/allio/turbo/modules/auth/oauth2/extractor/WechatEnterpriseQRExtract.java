@@ -29,6 +29,16 @@ public class WechatEnterpriseQRExtract implements OAuth2UserExtractor {
         return oAuth2User.getAttribute("email");
     }
 
+    /**
+     *
+     * @param oAuth2User
+     * @return
+     */
+    @Override
+    public String withNickname(OAuth2User oAuth2User) {
+        return oAuth2User.getAttribute("nickname");
+    }
+
     @Override
     public String getRegistrationId() {
         return OAuth2Provider.WECHAT_ENTERPRISE_QR.getRegistrationId();

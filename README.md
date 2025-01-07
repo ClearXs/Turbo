@@ -52,41 +52,50 @@
 
 ### 后端技术体系
 
-1. JDK22+
-2. springboot:3.2+
-3. [uno:1.5+](https://github.com/ClearXs/uno)
-4. mybatis-plus:3.5.3+
-5. postgresql:16+
-6. mysql:8+
-7. opentelemetry
-8. openobserve
-9. redis:7+
-10. kafka:3.6+
-11. xxljob
+| name                                                       | version |
+|------------------------------------------------------------|---------|
+| JDK                                                        | 21      |
+| [SpringBoot](https://spring.io/projects/spring-boot#learn) | 3.4.0   |
+| [Mybatis-Plus](https://baomidou.com/)                      | ~3.5.3  |
+| [PostgreSQL](https://www.postgresql.org/)                  | ~16     |
+| [OpenTelemetry](https://opentelemetry.io/)                 |         |
+| [OpenObserve](https://openobserve.ai/)                     | ~0.14   |
+| [uno](https://uno-pink.vercel.app/)                        | ~1.9    |
+| [redis](https://redis.io/)                                 | ~6.0    |
 
 ### 前端技术体系
 
-1. 语言：[React](https://zh-hans.react.dev/)
-2. [Typescript](https://www.typescriptlang.org/)
-3. UI框架：[Semui](https://semi.design/)
-4. css框架：[tailwindcss](https://tailwindcss.com/)
-5. 包管理工具：[vite](https://vitejs.dev/)
-6. 路由：[react-router](https://reactrouter.com/en/main)
-7. 状态管理：[recoil](https://recoiljs.org/)
-8. 请求框架：[axis](https://axios-http.com/)
+| name                                            | version |
+|-------------------------------------------------|---------|
+| [React](https://zh-hans.react.dev/)             | 18.3.1  |
+| [Typescript](https://www.typescriptlang.org/)   | 3.4.0   |
+| [Semi](https://semi.design/)                    | 2.72.0  |
+| [tailwindcss](https://tailwindcss.com/)         |         |
+| [vite](https://vitejs.dev/)                     | ~6.0    |
+| [OpenObserve](https://openobserve.ai/)          | ~0.14   |
+| [react-router](https://reactrouter.com/en/main) |         |
+| [axis](https://axios-http.com/)                 |         |
+| [mobx](https://mobx.js.org/)                    |         |
+| [formilyjs](https://formilyjs.org/)             | 2.3.2   |
 
-### 跨端技术体系
+### 小程序
 
-1. 语言：[React](https://zh-hans.react.dev/)
-2. 框架：[Taro](https://docs.taro.zone/)
-3. UI框架：[nutui](https://nutui.jd.com/#/)
-4. css：sass
-5. 路由：[react-router](https://reactrouter.com/en/main)
-6. 状态管理：[react-redux](https://react-redux.js.org/)
+| name                                | version |
+|-------------------------------------|---------|
+| [React](https://zh-hans.react.dev/) | 18.3.1  |
+| [Taro](https://docs.taro.zone/)     |         |
 
-### 桌面端技术体系
+### 移动端
 
-1. 框架：[tauri](https://tauri.app/)
+| name                           | version |
+|--------------------------------|---------|
+| [Flutter](https://flutter.dev) |         |
+
+### 桌面端
+
+| name                        | version |
+|-----------------------------|---------|
+| [tauri](https://tauri.app/) |         |
 
 ## 界面预览
 

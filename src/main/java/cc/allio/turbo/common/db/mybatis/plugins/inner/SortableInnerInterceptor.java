@@ -33,7 +33,7 @@ public class SortableInnerInterceptor extends PaginationInnerInterceptor {
     }
 
     @Override
-    public void beforeQuery(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
+    public void beforeQuery(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         SqlCommandType sqlCommandType = ms.getSqlCommandType();
         if (SqlCommandType.SELECT != sqlCommandType) {
             return;
@@ -43,7 +43,7 @@ public class SortableInnerInterceptor extends PaginationInnerInterceptor {
         Class<?> entityType = null;
         List<ResultMap> resultMaps = ms.getResultMaps();
         if (CollectionUtils.isNotEmpty(resultMaps)) {
-            ResultMap resultMap = resultMaps.get(0);
+            ResultMap resultMap = resultMaps.getFirst();
             entityType = resultMap.getType();
         }
         if (entityType != null) {

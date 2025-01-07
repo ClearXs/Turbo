@@ -1,5 +1,6 @@
 package cc.allio.turbo.modules.auth.oauth2;
 
+import cc.allio.turbo.common.db.persistent.PersistentProperties;
 import cc.allio.turbo.common.util.WebUtil;
 import cc.allio.uno.core.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,9 +21,11 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequ
 public class TenantSessionAuthorizationRequestRepository implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 
     private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> internal;
+    private final PersistentProperties persistentProperties;
 
-    public TenantSessionAuthorizationRequestRepository() {
+    public TenantSessionAuthorizationRequestRepository(PersistentProperties persistentProperties) {
         this.internal = new HttpSessionOAuth2AuthorizationRequestRepository();
+        this.persistentProperties = persistentProperties;
     }
 
     @Override
@@ -35,7 +38,7 @@ public class TenantSessionAuthorizationRequestRepository implements Authorizatio
         // try to tenant id or '0' if tenant is empty
         String tenantId = request.getHeader(WebUtil.X_TENANT);
         if (StringUtils.isBlank(tenantId)) {
-            tenantId = "0";
+            tenantId = persistentProperties.getTenant().getDefaultTenantId();
         }
         // set tenant to session
         request.getSession().setAttribute(WebUtil.X_TENANT, tenantId);

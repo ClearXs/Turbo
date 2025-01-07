@@ -72,7 +72,7 @@ public abstract class TurboCrudController<T extends Entity, D extends Entity, S 
     public R<Boolean> saveOrUpdate(@Validated @RequestBody D domain) {
         WebCrudInterceptor<T, D, S> interceptor = getInterceptor();
         T entity = interceptor.onSaveOrUpdateBefore(service, domain);
-        boolean saved = service.saveOrUpdate(entity, Wrappers.<T>update().eq("id", entity.getId()));
+        boolean saved = service.saveOrUpdate(entity);
         interceptor.onSaveOrUpdateAfter(service, entity, saved);
         return R.ok(saved);
     }

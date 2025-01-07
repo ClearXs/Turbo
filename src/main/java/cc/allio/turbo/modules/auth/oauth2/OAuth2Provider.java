@@ -210,7 +210,13 @@ public enum OAuth2Provider {
             builder.clientName("okta");
             return builder;
         }
+    },
 
+    CUSTOM("custom") {
+        @Override
+        public ClientRegistration.Builder getBuilder() {
+            return getBuilder(ClientAuthenticationMethod.CLIENT_SECRET_BASIC, DEFAULT_REDIRECT_URL);
+        }
     };
 
     private final String registrationId;
@@ -227,7 +233,7 @@ public enum OAuth2Provider {
 
     /**
      * Create a new
-     * {@link org.springframework.security.oauth2.client.registration.ClientRegistration.Builder
+     * {@link ClientRegistration.Builder
      * ClientRegistration.Builder} pre-configured with provider defaults.
      *
      * @return a builder instance

@@ -41,15 +41,6 @@ public class SysStorageConfigServiceImpl extends TurboCrudServiceImpl<SysStorage
     }
 
     @Override
-    public boolean saveOrUpdate(SysStorageConfig entity, Wrapper<SysStorageConfig> updateWrapper) {
-        boolean saveOrUpdate = super.saveOrUpdate(entity, updateWrapper);
-        if (Enable.ENABLE == entity.getEnable()) {
-            fireEnable();
-        }
-        return saveOrUpdate;
-    }
-
-    @Override
     public boolean enable(long id) {
         try {
             var updateAllDisable =
