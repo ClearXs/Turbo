@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.developer.service.impl;
 
 import cc.allio.turbo.common.db.entity.BaseEntity;
-import cc.allio.turbo.common.db.event.Subscription;
+import cc.allio.turbo.common.event.Subscription;
 import cc.allio.turbo.common.util.VariationAnalyzer;
 import cc.allio.turbo.modules.developer.constant.DataSourceStatus;
 import cc.allio.turbo.modules.developer.entity.DevDataSource;

@@ -1,10 +1,9 @@
 package cc.allio.turbo.modules.developer.service;
 
-import cc.allio.turbo.common.db.event.Subscriber;
+import cc.allio.turbo.common.event.Subscriber;
 import cc.allio.turbo.common.db.uno.repository.LockRepositoryMethodInterceptor;
 import cc.allio.turbo.common.domain.TreeDomain;
 import cc.allio.turbo.common.exception.BizException;
-import cc.allio.turbo.modules.developer.api.DomainObject;
 import cc.allio.turbo.modules.developer.api.GeneralDomainObject;
 import cc.allio.turbo.modules.developer.api.service.IDomainService;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;

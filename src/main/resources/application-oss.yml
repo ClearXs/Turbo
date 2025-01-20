@@ -2,9 +2,9 @@ turbo:
   oss:
     fetch: true
     provider: minio
-    endpoint: ${OSS_ENDPOINT:http://localhost:8800}
+    endpoint: ${OSS_ENDPOINT:http://43.139.180.60:8800}
     access-key: ${OSS_ACCESS_KEY:admin}
-    secret-key: ${OSS_SECRET_KEY:admin}
+    secret-key: ${OSS_SECRET_KEY:allio@2024}
     base-dir: /
     strategy: date
     bucket: ${OSS_BUCKET:turbo}

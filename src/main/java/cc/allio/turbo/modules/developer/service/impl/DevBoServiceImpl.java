@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.developer.service.impl;
 
-import cc.allio.turbo.common.db.event.Subscription;
+import cc.allio.turbo.common.event.Subscription;
 import cc.allio.turbo.common.db.mybatis.service.impl.TurboCacheCrudServiceImpl;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.util.VariationAnalyzer;

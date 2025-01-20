@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.developer.api.service;
 
-import cc.allio.turbo.common.db.event.DomainEventBus;
+import cc.allio.turbo.common.event.DomainEventBus;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepository;
 import cc.allio.turbo.common.db.uno.repository.impl.SimpleTurboCurdRepositoryImpl;
 import cc.allio.turbo.modules.developer.api.DomainObject;

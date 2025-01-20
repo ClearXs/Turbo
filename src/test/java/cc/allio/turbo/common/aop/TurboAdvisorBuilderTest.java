@@ -1,7 +1,7 @@
 package cc.allio.turbo.common.aop;
 
-import cc.allio.turbo.common.db.event.BehaviorAdvisor;
-import cc.allio.turbo.common.db.event.DomainEventBus;
+import cc.allio.turbo.common.event.BehaviorAdvisor;
+import cc.allio.turbo.common.event.DomainEventBus;
 import cc.allio.uno.test.BaseTestCase;
 import org.junit.jupiter.api.Test;
 

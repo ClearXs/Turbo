@@ -1,7 +1,7 @@
 package cc.allio.turbo.common.db.uno.repository.impl;
 
 import cc.allio.turbo.common.db.entity.Entity;
-import cc.allio.turbo.common.db.event.DomainEventBus;
+import cc.allio.turbo.common.event.DomainEventBus;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepository;
 
 /**

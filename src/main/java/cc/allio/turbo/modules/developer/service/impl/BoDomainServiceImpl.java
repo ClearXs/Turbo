@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.developer.service.impl;
 
-import cc.allio.turbo.common.db.event.DomainEventBus;
+import cc.allio.turbo.common.event.DomainEventBus;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.modules.developer.api.GeneralDomainObject;
 import cc.allio.turbo.modules.developer.api.service.DomainServiceRegistry;

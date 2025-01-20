@@ -1,8 +1,8 @@
 package cc.allio.turbo.common.db.mybatis.service;
 
 import cc.allio.turbo.common.db.entity.Entity;
-import cc.allio.turbo.common.db.event.MultiObservable;
-import cc.allio.turbo.common.db.event.Subscriber;
+import cc.allio.turbo.common.event.MultiObservable;
+import cc.allio.turbo.common.event.Subscriber;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 

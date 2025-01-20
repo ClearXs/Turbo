@@ -34,7 +34,7 @@ public final class Aspects {
      * @param advisors advisors
      * @return proxy instance
      */
-    public static <T> T create(Object target, TurboAdvisor... advisors) {
+    public static <T> T create(T target, TurboAdvisor... advisors) {
         return builder()
                 .target(target)
                 .addAdvisors(advisors)
@@ -48,7 +48,7 @@ public final class Aspects {
      * @param advisors advisors
      * @return proxy instance
      */
-    public static <T> T create(Object target, Collection<TurboAdvisor> advisors) {
+    public static <T> T create(T target, Collection<TurboAdvisor> advisors) {
         return builder()
                 .target(target)
                 .addAdvisors(advisors)

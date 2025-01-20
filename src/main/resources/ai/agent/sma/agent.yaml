@@ -1,0 +1,6 @@
+name: SMA
+description: Turbo is a rapid development framework designed to create a one-stop solution for enterprise-level application development, tailored to future trends.
+actions:
+  - chat
+  - create
+  - search

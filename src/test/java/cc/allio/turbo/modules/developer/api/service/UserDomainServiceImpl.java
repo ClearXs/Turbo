@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.developer.api.service;
 
-import cc.allio.turbo.common.db.event.DomainEventBus;
+import cc.allio.turbo.common.event.DomainEventBus;
 import cc.allio.turbo.modules.developer.api.annotation.Domain;
 
 @Domain("user")

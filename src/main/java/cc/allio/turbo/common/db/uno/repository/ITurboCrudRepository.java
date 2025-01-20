@@ -1,7 +1,7 @@
 package cc.allio.turbo.common.db.uno.repository;
 
 import cc.allio.turbo.common.db.entity.Entity;
-import cc.allio.turbo.common.db.event.Subscriber;
+import cc.allio.turbo.common.event.Subscriber;
 import com.google.common.collect.Lists;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.repository.ListCrudRepository;
