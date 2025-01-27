@@ -1,6 +1,6 @@
 package cc.allio.turbo.common.db.entity;
 
-import cc.allio.uno.core.datastructure.tree.Expand;
+import cc.allio.uno.core.util.tree.Expand;
 
 import java.io.Serializable;
 

@@ -1,6 +1,6 @@
 package cc.allio.turbo.common.db.mybatis.plugins.inner;
 
-import cc.allio.turbo.common.event.ThreadLocalWebDomainEventContext;
+import cc.allio.turbo.common.domain.ThreadLocalWebDomainEventContext;
 import cc.allio.turbo.common.db.persistent.PersistentProperties;
 import cc.allio.turbo.common.util.WebUtil;
 import cc.allio.uno.core.util.StringUtils;

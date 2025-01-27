@@ -1,22 +1,25 @@
 package cc.allio.turbo.modules.ai.agent;
 
-import cc.allio.turbo.common.event.Observable;
+import cc.allio.turbo.common.domain.Observable;
 import cc.allio.turbo.modules.ai.Input;
-import cc.allio.turbo.modules.ai.task.Response;
-import org.springframework.ai.chat.model.ChatModel;
+import cc.allio.turbo.modules.ai.Output;
+import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
+import cc.allio.turbo.modules.ai.runtime.Environment;
+import cc.allio.turbo.modules.ai.runtime.tool.Tool;
+import org.springframework.ai.chat.prompt.Prompt;
 
 import java.util.List;
 
 /**
  * definition agent. agent as an enhance AI ability and capability. it is effectively raise system usability.
  * <p>
- *    in generally, an agent has three component:
+ * in generally, an agent has three component:
  *    <ol>
  *        <li>planning</li>
  *        <li>tools</li>
  *        <li>memory</li>
  *    </ol>
- *
+ * <p>
  *    through task compose actions as a plan, and action will be use tools and memory.
  * </p>
  *
@@ -26,25 +29,57 @@ import java.util.List;
 public interface Agent {
 
     /**
-     * @param input
+     * accept user input{@link Input}. and generate task for planning and execute current task.
+     *
+     * @param input the user input
      * @return
      */
-    Observable<Response> invoke(ChatModel model, Input input);
+    Observable<Output> call(Input input);
 
     /**
-     * initialization agent and agent will be prepare chain of action.
+     * initialization agent and agent will be preparation chain of action.
      */
-    void install();
+    void install() throws AgentInitializationException;
 
     /**
      * get building plan action names
      *
      * @return the list of name
      */
-    List<String> getLiteralActionNames();
+    List<String> getDispatchActionNames();
+
+    /**
+     * get agent tools
+     *
+     * @return the list of {@link Tool}
+     */
+    List<Tool> getTools();
 
     /**
      * get agent name
      */
-    String getName();
+    String name();
+
+    /**
+     * agent description.
+     */
+    String description();
+
+    /**
+     * get agent prompt template
+     *
+     * @return
+     */
+    String getAgentPromptTemplate();
+
+    /**
+     * get agent prompt
+     *
+     * @param input       the user input
+     * @param environment the environment
+     * @return
+     */
+    default AgentPrompt getPrompt(Input input, Environment environment) {
+        return new AgentPrompt(this, getTools(), input, environment);
+    }
 }

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.UncategorizedSQLException;
 
 @RunTest(components = {TurboMybatisConfiguration.class, PersistentConfiguration.class})
-@MybatisPlusEnv(basePackages = "cc.allio.uno.turbo.common.mybatis.**")
+@MybatisPlusEnv(basePackages = "cc.allio.turbo.common.db.mapper.**")
 public class ConstraintInnerInterceptorTest {
 
     @Inject

@@ -1,6 +1,6 @@
 package cc.allio.turbo.common.db.entity;
 
-import cc.allio.uno.core.concurrent.LockContext;
+import cc.allio.uno.core.util.concurrent.LockContext;
 
 import java.io.Serializable;
 

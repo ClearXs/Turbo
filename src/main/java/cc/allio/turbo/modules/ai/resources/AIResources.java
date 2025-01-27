@@ -3,21 +3,27 @@ package cc.allio.turbo.modules.ai.resources;
 import cc.allio.turbo.modules.ai.exception.ResourceParseException;
 import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.api.Self;
-import cc.allio.uno.core.function.lambda.ThrowingMethodConsumer;
-import com.google.common.collect.Maps;
+import cc.allio.uno.core.exception.Trys;
+import cc.allio.uno.core.util.JsonUtils;
+import cc.allio.uno.core.util.list.SingleOrList;
+import com.google.common.collect.Lists;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.function.ThrowingFunction;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * read definition of AI resources from files
@@ -28,38 +34,28 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class AIResources implements Self<AIResources> {
 
-    final Yaml yaml;
+    static final Yaml YAML_PARSER = new Yaml();
     final AtomicBoolean loaded;
-    final Map<String, LiteralAction> resourceOfActions;
-    final Map<String, LiteralAgent> resourceOfAgents;
+    final Resource<LiteralAgent> agentResource;
+    final Resource<LiteralAction> actionResource;
 
-    static AIResources resourcesReader;
-
-    static final String YAML_SUFFIX = "yaml";
-    static final String YML_SUFFIX = "yml";
-    static final String ST_SUFFIX = "st";
-    static final String MD_SUFFIX = "md";
-
-    private AIResources() {
-        this.yaml = new Yaml();
+    public AIResources() {
         this.loaded = new AtomicBoolean(false);
-        this.resourceOfActions = Maps.newConcurrentMap();
-        this.resourceOfAgents = Maps.newConcurrentMap();
+        this.agentResource = new AgentResource();
+        this.actionResource = new ActionResource();
     }
 
     /**
      * immediate reading AI resource in classpath
      * if read success the parameter {@link #loaded} is true. even once again is not to do anything.
-     * read resource will be store {@link #resourceOfActions} and {@link #resourceOfAgents}
+     * read resource will be store {@link #agentResource} and {@link #actionResource}
      */
-    public AIResources readNow() throws ResourceParseException {
-        if (isLoaded()) {
-            return self();
+    public void readNow() throws ResourceParseException {
+        if (!isLoaded()) {
+            agentResource.readNow();
+            actionResource.readNow();
+            loaded.compareAndSet(false, true);
         }
-        readAgentFromClasspathResources();
-        readActionFromClasspathResources();
-        loaded.compareAndSet(false, true);
-        return self();
     }
 
     /**
@@ -71,144 +67,377 @@ public class AIResources implements Self<AIResources> {
         return loaded.get();
     }
 
-    public Optional<LiteralAction> getAction(String name) {
-        return Optional.ofNullable(resourceOfActions.get(name));
-    }
-
-    public Optional<LiteralAgent> getAgent(String name) {
-        return Optional.ofNullable(resourceOfAgents.get(name));
-    }
-
-    public Collection<LiteralAgent> getAllAgent() {
-        return resourceOfAgents.values();
-    }
-
-    public Collection<LiteralAction> getAllAction() {
-        return resourceOfActions.values();
-    }
-
     /**
-     * read following structure directory.
-     * .
-     * └── sma
-     *     ├── agent.yaml
-     *     └── prompt.st
+     * get {@link LiteralAction}
      *
-     * @throws ResourceParseException if parse error will be throws
+     * @param actionName the action name
+     * @return
      */
-    public AIResources readAgentFromClasspathResources() throws ResourceParseException {
-        ClassPathResource resource = new ClassPathResource("ai/agent");
-        File agentDirector;
-        try {
-            agentDirector = resource.getFile();
-        } catch (IOException e) {
-            throw new ResourceParseException(e);
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug("load agent root path {}", agentDirector.getPath());
-        }
-        consecutiveReadTwoTileDirectory(
-                agentDirector,
-                agentDirectory -> {
-                    File[] files = agentDirectory.listFiles();
-                    File yamlFile = null;
-                    File stFile = null;
-                    for (File file : files) {
-                        if (file.getName().endsWith(YAML_SUFFIX)) {
-                            yamlFile = file;
-                        } else if (file.getName().endsWith(ST_SUFFIX)) {
-                            stFile = file;
-                        }
-                    }
-                    if (yamlFile != null && stFile != null) {
-                        LiteralAgent literalAgent = new SimpleFileReader(yamlFile, yaml).readTo(LiteralAgent.class);
-                        String prompt = new SimpleFileReader(stFile, yaml).readTo();
-                        literalAgent.setPrompt(prompt);
-                        resourceOfAgents.computeIfAbsent(literalAgent.name, key -> literalAgent);
-                    }
-                });
-        return self();
+    public Optional<LiteralAction> getAction(String actionName) {
+        return actionResource.getResources()
+                .stream()
+                .filter(action -> actionName.equals(action.getName()))
+                .findFirst();
     }
 
     /**
-     * read following structure directory.
-     * .
-     * ├── create
-     * │         ├── action.md
-     * |         └── action.yaml
-     * └── search
-     *     ├── action.md
-     *     └── action.yaml
-     * @throws ResourceParseException if parse error will be throws
+     * get {@link LiteralAgent}
+     *
+     * @param agentName the agent name
+     * @return
      */
-    public AIResources readActionFromClasspathResources() throws ResourceParseException {
-        ClassPathResource resource = new ClassPathResource("ai/action");
-
-        File actionDirectory;
-        try {
-            actionDirectory = resource.getFile();
-        } catch (IOException e) {
-            throw new ResourceParseException(e);
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug("load agent root path {}", actionDirectory.getPath());
-        }
-
-        consecutiveReadTwoTileDirectory(
-                actionDirectory,
-                agentDirectory -> {
-                    File[] files = agentDirectory.listFiles();
-                    File yamlFile = null;
-                    File mdFile = null;
-                    for (File file : files) {
-                        if (file.getName().endsWith(YAML_SUFFIX)) {
-                            yamlFile = file;
-                        } else if (file.getName().endsWith(MD_SUFFIX)) {
-                            mdFile = file;
-                        }
-                    }
-                    if (yamlFile != null && mdFile != null) {
-                        LiteralAction literalAction = new SimpleFileReader(yamlFile, yaml).readTo(LiteralAction.class);
-                        String content = new SimpleFileReader(mdFile, yaml).readTo();
-                        literalAction.setContent(content);
-                        resourceOfActions.computeIfAbsent(literalAction.name, key -> literalAction);
-                    }
-                });
-        return self();
+    public Optional<LiteralAgent> getAgent(String agentName) {
+        return agentResource.getResources()
+                .stream()
+                .filter(agent -> agentName.equals(agent.getName()))
+                .findFirst();
     }
 
-    void consecutiveReadTwoTileDirectory(File rootFile, ThrowingMethodConsumer<File> fileDirectoryProcessor) throws ResourceParseException {
-        if (checkFileDirectoryIsNotEmpty(rootFile)) {
-            for (File director : Objects.requireNonNull(rootFile.listFiles())) {
-                if (checkFileDirectoryIsNotEmpty(director)) {
-                    try {
-                        fileDirectoryProcessor.accept(director);
-                    } catch (Throwable ex) {
-                        throw new ResourceParseException(ex);
+    /**
+     * get all agents
+     *
+     * @return
+     */
+    public Collection<LiteralAgent> getAllAgent() {
+        return agentResource.getResources();
+    }
+
+    /**
+     * get all actions
+     *
+     * @return
+     */
+    public Collection<LiteralAction> getAllAction() {
+        return actionResource.getResources();
+    }
+
+    interface Resource<T> {
+
+        /**
+         * read resources
+         *
+         * @throws ResourceParseException if failed to read resources then throwing.
+         */
+        void readNow() throws ResourceParseException;
+
+        /**
+         * get read resources.
+         *
+         * @return
+         */
+        List<T> getResources();
+
+        /**
+         * read two tile directory
+         *
+         * @param rootFile the root file directory
+         * @return
+         */
+        default List<File> consecutiveReadTwoTileDirectory(File rootFile) {
+            List<File> directories = Lists.newArrayList();
+            if (checkFileDirectoryIsNotEmpty(rootFile)) {
+                for (File directory : Objects.requireNonNull(rootFile.listFiles())) {
+                    if (checkFileDirectoryIsNotEmpty(directory)) {
+                        directories.add(directory);
                     }
                 }
+            } else {
+                log.warn("the path {} non-existing any directories.", rootFile.getPath());
             }
-        } else {
-            log.warn("the path {} non-existing any directories.", rootFile.getPath());
+            return directories;
+        }
+
+        default boolean checkFileDirectoryIsNotEmpty(File file) {
+            return file.isDirectory() && file.listFiles() != null;
         }
     }
 
-    static class SimpleFileReader {
 
-        File file;
-        Yaml yaml;
-        String suffix;
+    /**
+     * read following structure directory.
+     * .
+     * ├── agent.yaml
+     * ├── tools.json
+     * └── agentPrompt.st
+     */
+    static class AgentResource implements Resource<LiteralAgent> {
+        private final List<LiteralAgent> agents;
+        private final ClassPathResource resource;
 
-        public SimpleFileReader(File file, Yaml yaml) throws ResourceParseException {
-            validate(file);
-            this.file = file;
-            this.yaml = yaml;
-            this.suffix = readToSuffix(file);
+        static final String AGENT_FILENAME = "agent.yaml";
+        static final String PROMPT_FILENAME = "agentPrompt.st";
+        static final String TOOLS_FILENAME = "tools.json";
+
+        public AgentResource() {
+            this.agents = new ArrayList<>();
+            this.resource = new ClassPathResource("ai/agent");
         }
 
-        void validate(File file) throws ResourceParseException {
+        @Override
+        public void readNow() throws ResourceParseException {
+            File agentDirector;
+            try {
+                agentDirector = resource.getFile();
+            } catch (IOException e) {
+                throw new ResourceParseException(e);
+            }
+
+            List<File> agentDirectories = consecutiveReadTwoTileDirectory(agentDirector);
+
+            for (File directory : agentDirectories) {
+                ResourceDirectoryReader reader = new ResourceDirectoryReader(directory);
+                LiteralAgent literalAgent =
+                        Trys.onCapture(
+                                () -> reader.readTo(reader.getFile(AGENT_FILENAME), LiteralAgent.class),
+                                err -> {
+                                    log.error("load agent has fatal errors.", err);
+                                });
+
+                if (literalAgent != null) {
+                    String prompt = Trys.onContinue(() -> reader.readToString(reader.getFile(PROMPT_FILENAME)));
+                    literalAgent.setPrompt(prompt);
+                    List<Map<String, Object>> tools = Trys.onContinue(() -> reader.readToListMap(reader.getFile(TOOLS_FILENAME), String.class, Object.class));
+                    literalAgent.setTools(tools);
+                    agents.add(literalAgent);
+                }
+            }
+        }
+
+        @Override
+        public List<LiteralAgent> getResources() {
+            return agents;
+        }
+    }
+
+    /**
+     * read following structure directory.
+     * .
+     * ├── action.md
+     * └── action.yaml
+     */
+    static class ActionResource implements Resource<LiteralAction> {
+
+        private final List<LiteralAction> actions;
+        private final ClassPathResource resource;
+
+        static final String ACTION_FILENAME = "action.yaml";
+        static final String CONTENT_FILENAME = "action.md";
+
+        ActionResource() {
+            this.actions = new ArrayList<>();
+            this.resource = new ClassPathResource("ai/action");
+        }
+
+        @Override
+        public void readNow() throws ResourceParseException {
+            File actionDirectory;
+            try {
+                actionDirectory = resource.getFile();
+            } catch (IOException e) {
+                throw new ResourceParseException(e);
+            }
+
+            List<File> actionDirectories = consecutiveReadTwoTileDirectory(actionDirectory);
+
+            for (File directory : actionDirectories) {
+                ResourceDirectoryReader reader = new ResourceDirectoryReader(directory);
+                LiteralAction literalAction =
+                        Trys.onCapture(
+                                () -> reader.readTo(reader.getFile(ACTION_FILENAME), LiteralAction.class),
+                                err -> {
+                                    log.error("load action has fatal errors.", err);
+                                });
+
+                if (literalAction != null) {
+                    String content = Trys.onContinue(() -> reader.readToString(reader.getFile(CONTENT_FILENAME)));
+                    literalAction.setContent(content);
+                    actions.add(literalAction);
+                }
+            }
+        }
+
+        @Override
+        public List<LiteralAction> getResources() {
+            return actions;
+        }
+    }
+
+    /**
+     * reader specific directory.
+     */
+    static class ResourceDirectoryReader implements FileReader {
+        final File directory;
+        final List<File> files;
+
+        public ResourceDirectoryReader(File directory) {
+            this.directory = directory;
+            File[] files = directory.listFiles();
+            if (directory.isDirectory() && files != null) {
+                this.files = Lists.newArrayList(files);
+            } else {
+                this.files = Collections.emptyList();
+            }
+        }
+
+        /**
+         * base on {@link FileExtension} read file to string
+         *
+         * @param extension the file extension instance
+         * @return
+         */
+        public SingleOrList<String> readToString(FileExtension extension) {
+            return read(extension, extension::readToString);
+        }
+
+        public <T> SingleOrList<List<T>> readToList(FileExtension extension, Class<T> elementType) {
+            return read(extension, file -> extension.readToList(file, elementType));
+        }
+
+        public <K, V> SingleOrList<Map<K, V>> readToMap(FileExtension extension, Class<K> keyType, Class<V> valueType) {
+            return read(extension, file -> extension.readToMap(file, keyType, valueType));
+        }
+
+        public <K, V> SingleOrList<List<Map<K, V>>> readToListMap(FileExtension extension, Class<K> keyType, Class<V> valueType) {
+            return read(extension, file -> extension.readToListMap(file, keyType, valueType));
+        }
+
+        /**
+         * base on {@link FileExtension} read file to generic type T instance.
+         *
+         * @param extension the file extension instance
+         * @param clazz     the generic type T class
+         * @param <T>       the generic type T
+         */
+        public <T> SingleOrList<T> readTo(FileExtension extension, Class<T> clazz) {
+            return read(extension, file -> extension.readTo(file, clazz));
+        }
+
+
+        private <T> SingleOrList<T> read(FileExtension extension, ThrowingFunction<File, T> howRead) {
+            return files.stream()
+                    .filter(file -> extension.match(file.getName()))
+                    .map(howRead)
+                    .collect(Collectors.toCollection(SingleOrList::new));
+        }
+
+        @Override
+        public String readToString(File file) throws IOException, ResourceParseException {
+            FileReader reader = FileExtension.getReader(file.getName());
+            if (reader == null) {
+                throw new ResourceParseException("unsupported file suffix");
+            }
+            return reader.readToString(file);
+        }
+
+        @Override
+        public <T> List<T> readToList(File file, Class<T> elementType) throws IOException, ResourceParseException {
+            FileReader reader = FileExtension.getReader(file.getName());
+            if (reader == null) {
+                throw new ResourceParseException("unsupported file suffix");
+            }
+            return reader.readToList(file, elementType);
+        }
+
+        @Override
+        public <K, V> Map<K, V> readToMap(File file, Class<K> keyType, Class<V> valueType) throws IOException, ResourceParseException {
+            FileReader reader = FileExtension.getReader(file.getName());
+            if (reader == null) {
+                throw new ResourceParseException("unsupported file suffix");
+            }
+            return reader.readToMap(file, keyType, valueType);
+        }
+
+        @Override
+        public <K, V> List<Map<K, V>> readToListMap(File file, Class<K> keyType, Class<V> valueType) throws IOException, ResourceParseException {
+            FileReader reader = FileExtension.getReader(file.getName());
+            if (reader == null) {
+                throw new ResourceParseException("unsupported file suffix");
+            }
+            return reader.readToListMap(file, keyType, valueType);
+        }
+
+        @Override
+        public <T> T readTo(File file, Class<T> clazz) throws IOException, ResourceParseException {
+            FileReader reader = FileExtension.getReader(file.getName());
+            if (reader == null) {
+                throw new ResourceParseException("unsupported file suffix");
+            }
+            return reader.readTo(file, clazz);
+        }
+
+        /**
+         * base on file get file instance
+         *
+         * @param filename the filename
+         * @return
+         * @throws FileNotFoundException if file not existing.
+         */
+        public File getFile(String filename) throws FileNotFoundException {
+            return files.stream()
+                    .filter(f -> filename.equals(f.getName()))
+                    .findFirst()
+                    .orElseThrow(() -> new FileNotFoundException(String.format("%s file not found", filename)));
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @ToString(of = "name")
+    enum FileExtension implements FileReader {
+
+        YAML("yaml"),
+        YML("yml"),
+        STRING_TEMPLATE("st"),
+        MARKDOWN("md"),
+        JSON("json");
+
+        private final String name;
+
+        @Override
+        public String readToString(File file) throws IOException, ResourceParseException {
+            valid(file);
+            return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+        }
+
+        @Override
+        public <T> List<T> readToList(File file, Class<T> elementType) throws IOException, ResourceParseException {
+            valid(file);
+            if (this == JSON) {
+                return JsonUtils.readList(readToString(file), elementType);
+            }
+            throw new UnsupportedOperationException(String.format("%s suffix unsupported operation", this.getName()));
+        }
+
+        @Override
+        public <K, V> Map<K, V> readToMap(File file, Class<K> keyType, Class<V> valueType) throws IOException, ResourceParseException {
+            valid(file);
+            if (this == JSON) {
+                return JsonUtils.readMap(readToString(file), keyType, valueType);
+            }
+            throw new UnsupportedOperationException(String.format("%s suffix unsupported operation", this.getName()));
+        }
+
+        @Override
+        public <K, V> List<Map<K, V>> readToListMap(File file, Class<K> keyType, Class<V> valueType) throws IOException, ResourceParseException {
+            valid(file);
+            if (this == JSON) {
+                return JsonUtils.reaListMap(readToString(file), keyType, valueType);
+            }
+            throw new UnsupportedOperationException(String.format("%s suffix unsupported operation", this.getName()));
+        }
+
+        @Override
+        public <T> T readTo(File file, Class<T> clazz) throws IOException, ResourceParseException {
+            valid(file);
+            return switch (this) {
+                case YAML, YML -> YAML_PARSER.loadAs(new java.io.FileReader(file), clazz);
+                case JSON -> JsonUtils.parse(readToString(file), clazz);
+                default ->
+                        throw new UnsupportedOperationException(String.format("%s suffix unsupported operation", this.getName()));
+            };
+        }
+
+        void valid(File file) throws ResourceParseException {
             if (file == null) {
                 throw new ResourceParseException("file is null");
             }
@@ -217,52 +446,100 @@ public class AIResources implements Self<AIResources> {
                 throw new ResourceParseException("file is directory");
             }
 
-            String name = file.getName();
+            String filename = file.getName();
 
-            if (!name.endsWith(YAML_SUFFIX)
-                    && !name.endsWith(ST_SUFFIX)
-                    && !name.endsWith(MD_SUFFIX)
-                    && !name.endsWith(YML_SUFFIX)) {
-                throw new ResourceParseException(String.format("file extension suffix isn't yaml, st, md. file name is %s", name));
+            if (!match(filename)) {
+                throw new ResourceParseException(String.format("file extension suffix " +
+                        "isn't match '.yaml', '.yml', '.st', '.md', '.json', the file name is %s", filename));
             }
         }
 
         /**
-         * read to string
+         * specific filename is match this extension
+         *
+         * @param filename the filename
+         * @return
          */
-        public String readTo() throws IOException {
-            return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+        public boolean match(String filename) {
+            String suffix = FileReader.getFileSuffix(filename);
+            return suffix.equals(name);
         }
+
+        /**
+         * according filename suffix get extension file reader instance
+         *
+         * @param filename the filename
+         * @return
+         */
+        public static FileReader getReader(String filename) {
+            for (FileExtension reader : values()) {
+                if (reader.match(filename)) {
+                    return reader;
+                }
+            }
+            return null;
+        }
+    }
+
+    interface FileReader {
+
+        /**
+         * read file to string
+         *
+         * @param file the file instance
+         */
+        String readToString(File file) throws IOException, ResourceParseException;
 
         /**
          * read to specific type
          *
-         * @param clazz the type of class
+         * @param file        the file instance
+         * @param elementType the type of v
+         * @param <T>         the type generic
          * @return return to instance or null
-         * @param <T> the type generic
          */
-        public <T> T readTo(Class<T> clazz) throws FileNotFoundException {
-            if (suffix.equals(YAML_SUFFIX)) {
-                return yaml.loadAs(new FileReader(file), clazz);
-            }
-            return null;
-        }
+        <T> List<T> readToList(File file, Class<T> elementType) throws IOException, ResourceParseException;
 
-        private String readToSuffix(File file) {
-            String name = file.getName();
-            return name.substring(name.indexOf(StringPool.ORIGIN_DOT) + 1);
-        }
-    }
+        /**
+         * read to specific type
+         *
+         * @param file      the file instance
+         * @param keyType   the type of key
+         * @param valueType the type of value
+         * @return return to instance or null
+         */
+        <K, V> Map<K, V> readToMap(File file, Class<K> keyType, Class<V> valueType) throws IOException, ResourceParseException;
 
-    boolean checkFileDirectoryIsNotEmpty(File file) {
-        return file.isDirectory() && file.listFiles() != null;
-    }
+        /**
+         * read to specific type
+         *
+         * @param file      the file instance
+         * @param keyType   the type of key
+         * @param valueType the type of value
+         * @return return to instance or null
+         */
+        <K, V> List<Map<K, V>> readToListMap(File file, Class<K> keyType, Class<V> valueType) throws IOException, ResourceParseException;
 
-    public static AIResources getInstance() {
-        if (resourcesReader == null) {
-            resourcesReader = new AIResources();
+        /**
+         * read to specific type
+         *
+         * @param file  the file instance
+         * @param clazz the type of class
+         * @param <T>   the type generic
+         * @return return to instance or null
+         */
+        <T> T readTo(File file, Class<T> clazz) throws IOException, ResourceParseException;
+
+
+        /**
+         * get file suffix
+         *
+         * @param filename
+         * @return
+         */
+        static String getFileSuffix(String filename) {
+            return filename.substring(filename.indexOf(StringPool.ORIGIN_DOT) + 1);
         }
-        return resourcesReader;
     }
 
     @Data
@@ -277,5 +554,6 @@ public class AIResources implements Self<AIResources> {
         private String description;
         private String prompt;
         private List<String> actions;
+        private List<Map<String, Object>> tools;
     }
 }

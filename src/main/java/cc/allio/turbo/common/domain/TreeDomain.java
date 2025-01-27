@@ -1,7 +1,7 @@
 package cc.allio.turbo.common.domain;
 
 import cc.allio.turbo.common.db.entity.TreeNodeEntity;
-import cc.allio.uno.core.datastructure.tree.ComparableElement;
+import cc.allio.uno.core.util.tree.ComparableElement;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

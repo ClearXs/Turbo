@@ -2,8 +2,8 @@ package cc.allio.turbo.common.db.mybatis.service;
 
 import cc.allio.turbo.common.domain.TreeDomain;
 import cc.allio.turbo.common.db.entity.TreeNodeEntity;
-import cc.allio.uno.core.datastructure.tree.TreeSupport;
 import cc.allio.uno.core.util.ClassUtils;
+import cc.allio.uno.core.util.tree.TreeSupport;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 

@@ -1,24 +1,24 @@
 package cc.allio.turbo.modules.ai;
 
-import cc.allio.turbo.common.event.DomainEventBus;
-import cc.allio.turbo.common.event.Subscriber;
+import cc.allio.turbo.common.domain.DomainEventContext;
+import cc.allio.turbo.common.domain.SubPuber;
+import cc.allio.uno.core.bus.EventBus;
 
-public class Driver implements Subscriber {
+public class Driver implements SubPuber<Input> {
 
-    private DomainEventBus domainEventBus;
+    private EventBus<DomainEventContext> eventBus;
 
-    public Driver(DomainEventBus domainEventBus) {
-        this.domainEventBus = domainEventBus;
+    public Driver(EventBus<DomainEventContext> eventBus) {
+        this.eventBus = eventBus;
     }
 
     @Override
-    public void setDomainEventBus(DomainEventBus eventBus) {
-        this.domainEventBus = eventBus;
+    public void setDomainEventBus(EventBus<DomainEventContext> eventBus) {
+        this.eventBus = eventBus;
     }
 
     @Override
-    public DomainEventBus getDomainEventBus() {
-        return this.domainEventBus;
+    public EventBus<DomainEventContext> getDomainEventBus() {
+        return eventBus;
     }
-
 }

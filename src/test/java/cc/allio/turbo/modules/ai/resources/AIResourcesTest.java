@@ -7,21 +7,19 @@ import java.util.Optional;
 
 public class AIResourcesTest extends BaseTestCase {
 
+    AIResources resources = new AIResources();
+
     @Test
     void testReadAgent() {
-        assertDoesNotThrow(() -> AIResources.getInstance().readAgentFromClasspathResources());
+        assertDoesNotThrow(() -> resources.readNow());
 
-        Optional<AIResources.LiteralAgent> agent = AIResources.getInstance().getAgent("SMA");
+        Optional<AIResources.LiteralAgent> agent = resources.getAgent("travel");
 
         assertTrue(agent.isPresent());
+
+        Optional<AIResources.LiteralAgent> empty = resources.getAgent("empty");
+
+        assertTrue(empty.isEmpty());
     }
 
-    @Test
-    void testReadAction() {
-        assertDoesNotThrow(() -> AIResources.getInstance().readActionFromClasspathResources());
-
-        Optional<AIResources.LiteralAction> action = AIResources.getInstance().getAction("create");
-
-        assertTrue(action.isPresent());
-    }
 }

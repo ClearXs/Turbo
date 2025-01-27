@@ -1,15 +1,12 @@
 package cc.allio.turbo.modules.ai.agent;
 
-import cc.allio.turbo.common.event.Observable;
+import cc.allio.turbo.common.domain.Observable;
+import cc.allio.turbo.modules.ai.Driver;
 import cc.allio.turbo.modules.ai.Input;
+import cc.allio.turbo.modules.ai.Output;
+import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
 import cc.allio.turbo.modules.ai.resources.AIResources;
-import cc.allio.turbo.modules.ai.task.Response;
-import cc.allio.turbo.modules.ai.task.Task;
-import cc.allio.turbo.modules.ai.task.TaskContext;
-import cc.allio.turbo.modules.ai.task.action.ActionRegistry;
-import org.springframework.ai.chat.model.ChatModel;
-
-import java.util.List;
+import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
 
 /**
  * System Manager Assistant (SMA) Agent implementation.
@@ -17,40 +14,22 @@ import java.util.List;
  * @author j.x
  * @since 0.2.0
  */
-public class SMAAgent extends BaseResourceAgent {
+public class SMAAgent extends ResourceAgent {
 
-    public SMAAgent(AIResources resources, ActionRegistry actionRegistry) {
-        super(resources, actionRegistry);
+    public SMAAgent(AIResources resources,
+                    ActionRegistry actionRegistry,
+                    Driver driver) {
+        super(resources, actionRegistry, driver);
     }
 
     @Override
-    public Observable<Response> invoke(ChatModel model, Input input) {
-        // create the task
-        TaskContext taskContext = new TaskContext();
-        Task task = new Task(getLiteralActionNames(), actionRegistry);
+    public Observable<Output> call(Input input) {
 
         return null;
     }
 
-    /**
-     *
-     */
     @Override
-    public void install() {
+    protected void setup() throws AgentInitializationException {
 
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public List<String> getLiteralActionNames() {
-        return List.of();
-    }
-
-    @Override
-    public String getName() {
-        return "SMA";
     }
 }

@@ -12,13 +12,15 @@ import java.util.List;
  * 当使用{@link TurboTreeCrudController}时，对其每一个方法进行拦截。
  *
  * @param <T> 实体类型
- * @param <D> 领域类型
  * @param <Z> 树结点
  * @author j.x
  * @date 2024/1/18 18:41
  * @since 0.1.0
  */
-public interface WebTreeCrudInterceptor<T extends TreeEntity, Z extends TreeDomain<T, Z> & TreeNodeEntity, S extends ITurboTreeCrudService<T>> extends WebCrudInterceptor<T, Z, S> {
+public interface WebTreeCrudInterceptor<
+        T extends TreeEntity,
+        Z extends TreeDomain<T, Z> & TreeNodeEntity,
+        S extends ITurboTreeCrudService<T>> extends WebCrudInterceptor<T, Z, S> {
 
     /**
      * 在{@link TurboTreeCrudController#tree(QueryParam)}之前进行调用

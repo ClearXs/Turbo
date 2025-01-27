@@ -2,7 +2,7 @@ package cc.allio.turbo.common.db.uno.repository;
 
 import cc.allio.turbo.common.aop.TurboAdvisor;
 import cc.allio.turbo.common.aop.TurboAdvisorBuilder;
-import cc.allio.uno.core.concurrent.LockContext;
+import cc.allio.uno.core.util.concurrent.LockContext;
 
 import java.util.Objects;
 
