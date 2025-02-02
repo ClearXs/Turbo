@@ -13,6 +13,7 @@ import cc.allio.uno.core.chain.DefaultChain;
 import cc.allio.uno.core.util.id.IdGenerator;
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -45,22 +46,23 @@ public class Task {
      * @return
      */
     public Observable<Output> execute(Mono<Input> inputMono) {
-        inputMono.flatMapMany(input -> {
-            Environment environment = new Environment().injectOf(agent).injectOf(this);
-            AgentModel agentModel = new AgentModel(input.getModelOptions());
-            TaskContext taskContext =
-                    TaskContext.builder()
-                            .agentModel(agentModel)
-                            .input(input)
-                            .environment(environment)
-                            .agent(agent)
-                            .task(this)
-                            .build();
-            Chain<TaskContext, Output> planning = buildPlaning();
-            return planning.processMany(() -> taskContext);
-        });
-
-        return null;
+        Flux<Output> source =
+                inputMono.flatMapMany(
+                        input -> {
+                            Environment environment = new Environment().injectOf(agent).injectOf(this);
+                            AgentModel agentModel = new AgentModel(input.getModelOptions());
+                            TaskContext taskContext =
+                                    TaskContext.builder()
+                                            .agentModel(agentModel)
+                                            .input(input)
+                                            .environment(environment)
+                                            .agent(agent)
+                                            .task(this)
+                                            .build();
+                            Chain<TaskContext, Output> planning = buildPlaning();
+                            return planning.processMany(() -> taskContext);
+                        });
+        return Observable.from(source);
     }
 
     /**

@@ -18,14 +18,28 @@ public class DomainEventContext extends DefaultEventContext {
     public static final String DOMAIN_KEY = "domain_key";
     // 领域事件行为结果
     public static final String BEHAVIOR_RESULT_KEY = "behavior_result_key";
-    final Subscriber<?> subscription;
     @Getter
-    final Method behavior;
+    Method behavior;
 
-    public DomainEventContext(Subscriber<?> subscription, Method behavior) {
+    final Domain<?> domain;
+
+    public DomainEventContext(Domain<?> domain) {
         super();
-        this.subscription = subscription;
+        this.domain = domain;
+        setDomainLoad(domain);
+    }
+
+    public DomainEventContext(Domain<?> subscriber, Method behavior) {
+        super();
         this.behavior = behavior;
+        this.domain = subscriber;
+        setDomainLoad(domain);
+    }
+
+    void setDomainLoad(Domain<?> domain) {
+        if (domain instanceof GeneralDomain<?> generalDomain) {
+            put(DOMAIN_KEY, generalDomain.getLoad());
+        }
     }
 
     /**
@@ -34,7 +48,7 @@ public class DomainEventContext extends DefaultEventContext {
      * @return optional
      */
     public <T> Optional<T> getDomain() {
-        return (Optional<T>) get(DOMAIN_KEY, subscription.getDomainType());
+        return (Optional<T>) get(DOMAIN_KEY, domain.getDomainType());
     }
 
     /**

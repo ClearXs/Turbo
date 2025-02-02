@@ -2,6 +2,7 @@ package cc.allio.turbo.common.domain;
 
 import cc.allio.uno.core.bus.EventBus;
 import cc.allio.uno.core.bus.Topic;
+import cc.allio.uno.core.bus.TopicKey;
 import cc.allio.uno.core.function.lambda.*;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -96,8 +97,19 @@ public interface Publisher<D> extends InitializingBean, DisposableBean, Domain<D
      * @return
      */
     default Flux<Topic<DomainEventContext>> publishOn(String event, DomainEventContext context) {
+        return publishOn(TopicKey.of(event), context);
+    }
+
+    /**
+     * publish event to {@link EventBus}
+     *
+     * @param topicKey the topic key
+     * @param context  the event context
+     * @return
+     */
+    default Flux<Topic<DomainEventContext>> publishOn(TopicKey topicKey, DomainEventContext context) {
         // like DomainName/event
-        String path = buildEventPath(event);
-        return getDomainEventBus().publish(path, context);
+        String path = buildEventPath(topicKey.getPath());
+        return getDomainEventBus().publish(TopicKey.of(path), context);
     }
 }

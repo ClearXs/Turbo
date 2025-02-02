@@ -1,6 +1,7 @@
 package cc.allio.turbo.modules.development.service.impl;
 
 import cc.allio.turbo.common.db.entity.BaseEntity;
+import cc.allio.turbo.common.domain.BehaviorSubscription;
 import cc.allio.turbo.common.domain.Subscription;
 import cc.allio.turbo.common.util.VariationAnalyzer;
 import cc.allio.turbo.modules.development.constant.DataSourceStatus;
@@ -182,7 +183,10 @@ public class DataSourceDetector implements DisposableBean, ApplicationListener<A
      * @param subscription 订阅信息
      */
     void onSaveOrUpdate(Subscription<DevDataSource> subscription) {
-        Boolean saveOrUpdated = subscription.getBehaviorResult(Boolean.class).orElse(false);
+        Boolean saveOrUpdated = false;
+        if (subscription instanceof BehaviorSubscription<DevDataSource> behaviorSubscription) {
+            saveOrUpdated = behaviorSubscription.getBehaviorResult(Boolean.class).orElse(false);
+        }
         DevDataSource dataSource = subscription.getDomain().orElse(null);
         if (Boolean.TRUE.equals(saveOrUpdated) && dataSource != null) {
             commandExecutorContext.lockOptionGet(
@@ -225,17 +229,19 @@ public class DataSourceDetector implements DisposableBean, ApplicationListener<A
      * 数据源删除进行移除
      */
     void onRemove(Subscription<DevDataSource> subscription) {
-        Boolean removed = subscription.getBehaviorResult(Boolean.class).orElse(false);
-        subscription.getParameter("list")
-                .ifPresent(removeIds -> {
-                    if (removeIds instanceof Long id && Boolean.TRUE.equals(removed)) {
-                        commandExecutorContext.lockRemove(id, commandExecutorContext::remove);
-                    } else if (removeIds instanceof List<?> ids && Boolean.TRUE.equals(removed)) {
-                        for (Object id : ids) {
-                            commandExecutorContext.lockRemove((Long) id, commandExecutorContext::remove);
+        if (subscription instanceof BehaviorSubscription<DevDataSource> behaviorSubscription) {
+            Boolean removed = behaviorSubscription.getBehaviorResult(Boolean.class).orElse(false);
+            behaviorSubscription.getParameter("list")
+                    .ifPresent(removeIds -> {
+                        if (removeIds instanceof Long id && Boolean.TRUE.equals(removed)) {
+                            commandExecutorContext.lockRemove(id, commandExecutorContext::remove);
+                        } else if (removeIds instanceof List<?> ids && Boolean.TRUE.equals(removed)) {
+                            for (Object id : ids) {
+                                commandExecutorContext.lockRemove((Long) id, commandExecutorContext::remove);
+                            }
                         }
-                    }
-                });
+                    });
+        }
     }
 
     @Override

@@ -6,11 +6,9 @@ import cc.allio.turbo.modules.ai.Input;
 import cc.allio.turbo.modules.ai.Output;
 import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
 import cc.allio.turbo.modules.ai.resources.AIResources;
-import cc.allio.turbo.modules.ai.runtime.Environment;
-import cc.allio.turbo.modules.ai.runtime.action.Action;
+import cc.allio.turbo.modules.ai.runtime.Task;
 import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
-
-import java.util.List;
+import reactor.core.publisher.Mono;
 
 public class ChatAgent extends ResourceAgent {
 
@@ -18,15 +16,14 @@ public class ChatAgent extends ResourceAgent {
         super(resources, actionRegistry, driver);
     }
 
-    @Override
-    public Observable<Output> call(Input input) {
-
-        return null;
-    }
 
     @Override
     protected void setup() throws AgentInitializationException {
 
     }
 
+    @Override
+    public Observable<Output> call(Mono<Input> input) {
+        return new Task(this, actionRegistry).execute(input);
+    }
 }

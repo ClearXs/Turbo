@@ -1,7 +1,8 @@
 package cc.allio.turbo.modules.development.service.impl;
 
-import cc.allio.turbo.common.domain.Subscription;
+import cc.allio.turbo.common.domain.BehaviorSubscription;
 import cc.allio.turbo.common.db.mybatis.service.impl.TurboCacheCrudServiceImpl;
+import cc.allio.turbo.common.domain.Subscription;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.util.VariationAnalyzer;
 import cc.allio.turbo.modules.development.constant.AttributeType;
@@ -237,15 +238,17 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
 
         subscribeOn("removeByIds").observe(this::onRemove);
         subscribeOn(IDevBoService::materialize)
-                .observe(
-                        subscription ->
-                                subscription.getParameter("boId", Long.class)
-                                        .ifPresent(boId -> {
-                                            BoSchema boSchema = toBoSchema(boId);
-                                            if (boSchema != null) {
-                                                saveBoSchema(boSchema);
-                                            }
-                                        }));
+                .observe(subscription -> {
+                    if (subscription instanceof BehaviorSubscription<DevBo> behaviorSubscription) {
+                        behaviorSubscription.getParameter("boId", Long.class)
+                                .ifPresent(boId -> {
+                                    BoSchema boSchema = toBoSchema(boId);
+                                    if (boSchema != null) {
+                                        saveBoSchema(boSchema);
+                                    }
+                                });
+                    }
+                });
     }
 
     /**
@@ -263,19 +266,22 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
                         saveBoSchema(boSchema);
                     }
                 });
-        // saveBatch
-        subscription.getParameter("entityList")
-                .ifPresent(list -> {
-                    if (list instanceof List<?> attributes && !attributes.isEmpty()) {
-                        Object obj = attributes.get(0);
-                        if (obj instanceof DevBoAttribute attr) {
-                            BoSchema boSchema = toBoSchema(attr.getBoId());
-                            if (boSchema != null) {
-                                saveBoSchema(boSchema);
+        if (subscription instanceof BehaviorSubscription<DevBoAttribute> behaviorSubscription) {
+            // saveBatch
+            behaviorSubscription.getParameter("entityList")
+                    .ifPresent(list -> {
+                        if (list instanceof List<?> attributes && !attributes.isEmpty()) {
+                            Object obj = attributes.get(0);
+                            if (obj instanceof DevBoAttribute attr) {
+                                BoSchema boSchema = toBoSchema(attr.getBoId());
+                                if (boSchema != null) {
+                                    saveBoSchema(boSchema);
+                                }
                             }
                         }
-                    }
-                });
+                    });
+        }
+
     }
 
     /**
@@ -291,32 +297,34 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
      * @param subscription subscription
      */
     private void onRemove(Subscription<DevBo> subscription) {
-        List<?> ids = subscription.getParameter("list").map(List.class::cast).orElse(Collections.emptyList());
-        TransactionContext.open()
-                // 根据缓存信息移除创建表信息
-                .then(() -> {
-                    for (Object id : ids) {
-                        if (id instanceof Long boId) {
-                            BoSchema schema = cacheToSchema(boId);
-                            List<String> tableNames = Lists.newArrayList();
-                            List<BoAttributeTree> attrTree = BoAttrSchema.to(schema.getAttrs());
-                            attrTree.forEach(tree ->
-                                    tree.accept(element -> {
-                                        if (AttributeType.TABLE == element.getAttrType()) {
-                                            tableNames.add(element.getField());
-                                        }
-                                    }));
-                            dataSourceService.dropTables(schema.getDataSourceId(), tableNames.toArray(String[]::new));
+        if (subscription instanceof BehaviorSubscription<DevBo> behaviorSubscription) {
+            List<?> ids = behaviorSubscription.getParameter("list").map(List.class::cast).orElse(Collections.emptyList());
+            TransactionContext.open()
+                    // 根据缓存信息移除创建表信息
+                    .then(() -> {
+                        for (Object id : ids) {
+                            if (id instanceof Long boId) {
+                                BoSchema schema = cacheToSchema(boId);
+                                List<String> tableNames = Lists.newArrayList();
+                                List<BoAttributeTree> attrTree = BoAttrSchema.to(schema.getAttrs());
+                                attrTree.forEach(tree ->
+                                        tree.accept(element -> {
+                                            if (AttributeType.TABLE == element.getAttrType()) {
+                                                tableNames.add(element.getField());
+                                            }
+                                        }));
+                                dataSourceService.dropTables(schema.getDataSourceId(), tableNames.toArray(String[]::new));
+                            }
                         }
-                    }
-                })
-                // 移除BoSchema的缓存
-                .then(() -> getCache().remove(ids))
-                // 删除由bo创建导致的dataset同步创建
-                .then(() -> datasetService.remove(Wrappers.<DevDataset>lambdaQuery().in(DevDataset::getSourceId, ids)))
-                // 删除由bo创建导致的boAttribute同步创建
-                .then(() -> boAttributeService.remove(Wrappers.<DevBoAttribute>lambdaQuery().in(DevBoAttribute::getBoId, ids)))
-                .commit();
+                    })
+                    // 移除BoSchema的缓存
+                    .then(() -> getCache().remove(ids))
+                    // 删除由bo创建导致的dataset同步创建
+                    .then(() -> datasetService.remove(Wrappers.<DevDataset>lambdaQuery().in(DevDataset::getSourceId, ids)))
+                    // 删除由bo创建导致的boAttribute同步创建
+                    .then(() -> boAttributeService.remove(Wrappers.<DevBoAttribute>lambdaQuery().in(DevBoAttribute::getBoId, ids)))
+                    .commit();
+        }
     }
 
     /**

@@ -4,6 +4,7 @@ import cc.allio.turbo.common.aop.Aspects;
 import cc.allio.turbo.common.aop.GetterAdvisor;
 import cc.allio.turbo.common.domain.BehaviorAdvisor;
 import cc.allio.turbo.common.db.uno.repository.LockRepositoryAdvisor;
+import cc.allio.turbo.common.domain.BehaviorSubscription;
 import cc.allio.turbo.common.domain.DomainEventContext;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.getter.ApplicationContextGetter;
@@ -11,6 +12,7 @@ import cc.allio.turbo.common.i18n.DevCodes;
 import cc.allio.turbo.modules.development.api.DomainObject;
 import cc.allio.turbo.modules.development.api.GeneralDomainObject;
 import cc.allio.turbo.modules.development.domain.BoSchema;
+import cc.allio.turbo.modules.development.entity.DevBo;
 import cc.allio.turbo.modules.development.service.IDevBoService;
 import cc.allio.turbo.modules.development.service.IDevDataSourceService;
 import cc.allio.uno.core.bus.EventBus;
@@ -88,7 +90,10 @@ public final class DomainServiceRegistryImpl implements DomainServiceRegistry, S
         // 订阅boSchema改变时同步更改aop repository，避免数据不一致
         this.disposable = devBoService.subscribeOn(devBoService::saveBoSchema)
                 .observe(subscription -> {
-                            Optional<BoSchema> boSchemaOptional = subscription.getParameter("boSchema", BoSchema.class);
+                            Optional<BoSchema> boSchemaOptional = Optional.empty();
+                            if (subscription instanceof BehaviorSubscription<DevBo> behaviorSubscription) {
+                                boSchemaOptional = behaviorSubscription.getParameter("boSchema", BoSchema.class);
+                            }
                             if (boSchemaOptional.isEmpty()) {
                                 return;
                             }

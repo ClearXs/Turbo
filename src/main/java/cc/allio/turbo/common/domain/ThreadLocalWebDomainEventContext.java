@@ -24,7 +24,7 @@ public class ThreadLocalWebDomainEventContext extends DomainEventContext {
     private static final String REQUEST_KEY = "request_key";
 
     public ThreadLocalWebDomainEventContext(DomainEventContext domainEventContext) {
-        super(domainEventContext.subscription, domainEventContext.behavior);
+        super(domainEventContext.domain, domainEventContext.behavior);
         putAll(domainEventContext.getAll());
     }
 

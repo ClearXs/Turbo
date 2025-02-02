@@ -6,7 +6,8 @@ import cc.allio.turbo.modules.ai.Output;
 import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
 import cc.allio.turbo.modules.ai.runtime.Environment;
 import cc.allio.turbo.modules.ai.runtime.tool.Tool;
-import org.springframework.ai.chat.prompt.Prompt;
+
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -34,7 +35,7 @@ public interface Agent {
      * @param input the user input
      * @return
      */
-    Observable<Output> call(Input input);
+    Observable<Output> call(Mono<Input> input);
 
     /**
      * initialization agent and agent will be preparation chain of action.
