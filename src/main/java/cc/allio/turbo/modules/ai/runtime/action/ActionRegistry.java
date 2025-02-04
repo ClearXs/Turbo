@@ -6,6 +6,12 @@ import cc.allio.turbo.modules.ai.resources.AIResources;
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * {@link Action} registry
+ *
+ * @author j.x
+ * @since 0.2.0
+ */
 public class ActionRegistry extends CompositeComponentRegistry<Action, String> {
 
     private final AIResources resources;
@@ -15,22 +21,27 @@ public class ActionRegistry extends CompositeComponentRegistry<Action, String> {
         this.resources = resources;
     }
 
+    @Override
+    protected void initialization() throws Exception {
+        lookup();
+    }
+
     /**
      * automation lookup action (from resources)
      */
-   public void lookup() {
-       ChatAction chatAction = new ChatAction();
-       put(chatAction.getName(), chatAction);
-       Collection<AIResources.LiteralAction> actions = resources.getAllAction();
-       for (AIResources.LiteralAction literal : actions) {
-           getAction(literal.getName())
-                   .ifPresent(action -> {
-                       if (action instanceof MessageAction messageAction) {
-                           messageAction.composeMessage(literal.getContent());
-                       }
-                   });
-       }
-   }
+    public void lookup() {
+        ChatAction chatAction = new ChatAction();
+        put(chatAction.getName(), chatAction);
+        Collection<AIResources.LiteralAction> actions = resources.getAllAction();
+        for (AIResources.LiteralAction literal : actions) {
+            getAction(literal.getName())
+                    .ifPresent(action -> {
+                        if (action instanceof MessageAction messageAction) {
+                            messageAction.composeMessage(literal.getContent());
+                        }
+                    });
+        }
+    }
 
     /**
      * according to name get action instance

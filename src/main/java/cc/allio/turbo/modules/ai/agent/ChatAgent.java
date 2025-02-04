@@ -1,25 +1,27 @@
 package cc.allio.turbo.modules.ai.agent;
 
 import cc.allio.turbo.common.domain.Observable;
-import cc.allio.turbo.modules.ai.Driver;
 import cc.allio.turbo.modules.ai.Input;
 import cc.allio.turbo.modules.ai.Output;
-import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
-import cc.allio.turbo.modules.ai.resources.AIResources;
 import cc.allio.turbo.modules.ai.runtime.Task;
 import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
+import cc.allio.turbo.modules.ai.runtime.tool.ToolRegistry;
 import reactor.core.publisher.Mono;
 
+/**
+ * Chat-Bot agent implementation.
+ *
+ * @author j.x
+ * @since 0.2.0
+ */
 public class ChatAgent extends ResourceAgent {
 
-    public ChatAgent(AIResources resources, ActionRegistry actionRegistry, Driver driver) {
-        super(resources, actionRegistry, driver);
+    public ChatAgent(ToolRegistry toolRegistry, ActionRegistry actionRegistry) {
+        super(toolRegistry, actionRegistry);
     }
 
-
-    @Override
-    protected void setup() throws AgentInitializationException {
-
+    public String name() {
+        return "Chat";
     }
 
     @Override

@@ -1,13 +1,11 @@
 package cc.allio.turbo.modules.ai.agent;
 
 import cc.allio.turbo.common.domain.Observable;
-import cc.allio.turbo.modules.ai.Driver;
 import cc.allio.turbo.modules.ai.Input;
 import cc.allio.turbo.modules.ai.Output;
-import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
-import cc.allio.turbo.modules.ai.resources.AIResources;
 import cc.allio.turbo.modules.ai.runtime.Task;
 import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
+import cc.allio.turbo.modules.ai.runtime.tool.ToolRegistry;
 import reactor.core.publisher.Mono;
 
 /**
@@ -18,15 +16,13 @@ import reactor.core.publisher.Mono;
  */
 public class SMAAgent extends ResourceAgent {
 
-    public SMAAgent(AIResources resources,
-                    ActionRegistry actionRegistry,
-                    Driver driver) {
-        super(resources, actionRegistry, driver);
+    public SMAAgent(ToolRegistry toolRegistry, ActionRegistry actionRegistry) {
+        super(toolRegistry, actionRegistry);
     }
 
     @Override
-    protected void setup() throws AgentInitializationException {
-
+    public String name() {
+        return "SMA";
     }
 
     @Override

@@ -11,6 +11,8 @@ import lombok.Getter;
  */
 public interface Tool {
 
+    String FUNCTION_KEY = "function";
+
     /**
      * tool type
      */
@@ -19,7 +21,7 @@ public interface Tool {
     @AllArgsConstructor
     @Getter
     enum Type {
-        Function("function");
+        Function(FUNCTION_KEY);
         private final String name;
     }
 }

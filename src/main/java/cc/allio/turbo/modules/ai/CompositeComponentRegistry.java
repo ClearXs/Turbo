@@ -2,18 +2,15 @@ package cc.allio.turbo.modules.ai;
 
 import cc.allio.uno.core.function.lambda.ThrowingMethodFunction;
 import cc.allio.uno.core.reflect.ReflectTools;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.ResolvableType;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -32,7 +29,7 @@ public abstract class CompositeComponentRegistry<V, K> implements
     private final Registry<V, K> delegate;
     private final ThrowingMethodFunction<V, K> getKeyFunc;
 
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
 
     protected CompositeComponentRegistry(Registry<V, K> delegate,
                                          ThrowingMethodFunction<V, K> getKeyFunc) {
@@ -84,6 +81,7 @@ public abstract class CompositeComponentRegistry<V, K> implements
         if (isAutoScan) {
             scan();
         }
+        initialization();
     }
 
     @Override
@@ -106,9 +104,8 @@ public abstract class CompositeComponentRegistry<V, K> implements
      */
     protected void scan() {
         if (applicationContext != null) {
-            ObjectProvider<List<V>> beanProvider =
-                    applicationContext.getBeanProvider(ResolvableType.forClass(Lists.class, valueType));
-            beanProvider.getIfAvailable(Lists::newArrayList)
+            Map<String, V> valueTypeMap = applicationContext.getBeansOfType(valueType);
+            valueTypeMap.values()
                     .forEach(v -> {
                         try {
                             K key = getKeyFunc.apply(v);
@@ -120,4 +117,6 @@ public abstract class CompositeComponentRegistry<V, K> implements
         }
     }
 
+    protected void initialization() throws Exception {
+    }
 }

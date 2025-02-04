@@ -10,7 +10,6 @@ import cc.allio.turbo.modules.ai.runtime.TaskContext;
 import cc.allio.uno.core.chain.Chain;
 import cc.allio.uno.core.chain.ChainContext;
 import cc.allio.uno.core.util.id.IdGenerator;
-import org.springframework.ai.chat.prompt.Prompt;
 import reactor.core.publisher.Flux;
 
 /**
@@ -36,14 +35,10 @@ public class ChatAction extends MessageAction {
                     output.setAgent(agent.name());
                     output.setInputId(input.getId());
                     output.setMessage(responses.getResult().getOutput().getText());
+                    output.setInput(input);
                     taskContext.setOutput(output);
                     return chain.proceed(context);
                 });
-    }
-
-    @Override
-    public String message() {
-        return "";
     }
 
     @Override

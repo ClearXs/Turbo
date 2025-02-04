@@ -16,7 +16,9 @@ public class TurboJwtEncoder implements JwtEncoder {
 
     private final JwtEncoder actual;
 
-    public TurboJwtEncoder() {
+    private static TurboJwtEncoder instance;
+
+    private TurboJwtEncoder() {
         RSAKey rsaKey =
                 new RSAKey.Builder(SecureUtil.getSystemRasPublicKey())
                         .privateKey(SecureUtil.getSystemRasPrivateKey())
@@ -28,5 +30,19 @@ public class TurboJwtEncoder implements JwtEncoder {
     @Override
     public Jwt encode(JwtEncoderParameters parameters) throws JwtEncodingException {
         return actual.encode(parameters);
+    }
+
+    /**
+     * static method synchronize get {@link JwtEncoder} instance
+     *
+     * @return the {@link JwtEncoder} instance
+     */
+    public static JwtEncoder getInstance() {
+        if (instance == null) {
+            synchronized (TurboJwtEncoder.class) {
+                instance = new TurboJwtEncoder();
+            }
+        }
+        return instance;
     }
 }

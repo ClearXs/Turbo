@@ -2,6 +2,7 @@ package cc.allio.turbo.modules.ai.runtime.action;
 
 import cc.allio.turbo.modules.ai.Output;
 import cc.allio.turbo.modules.ai.runtime.TaskContext;
+import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.chain.Node;
 
 /**
@@ -23,7 +24,9 @@ public interface Action extends Node<TaskContext, Output> {
     /**
      * get action information of message
      */
-    String message();
+    default String message() {
+        return StringPool.EMPTY;
+    }
 
     /**
      * get action name

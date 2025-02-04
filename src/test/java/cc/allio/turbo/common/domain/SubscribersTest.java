@@ -17,8 +17,10 @@ public class SubscribersTest extends BaseTestCase {
         DomainTools<Double> tools = DomainTools.fromActual(creditCard);
         tools.subscribeOn(CreditCard::pay)
                 .observe(subscription -> {
-                    Double balance = subscription.getBehaviorResult(Double.class).orElseThrow(NullPointerException::new);
-                    assertEquals(90.0, balance);
+                    if (subscription instanceof BehaviorSubscription<?> behaviorSubscription) {
+                        Double balance = behaviorSubscription.getBehaviorResult(Double.class).orElseThrow(NullPointerException::new);
+                        assertEquals(90.0, balance);
+                    }
                 });
 
         tools.watch(CreditCard::pay)

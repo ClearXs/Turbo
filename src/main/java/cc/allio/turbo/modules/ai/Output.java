@@ -1,8 +1,11 @@
 package cc.allio.turbo.modules.ai;
 
+import cc.allio.turbo.modules.ai.annotation.DriverModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 @Data
+@DriverModel
 public class Output {
 
     private Long id;
@@ -12,4 +15,7 @@ public class Output {
 
     // the response message
     private String message;
+
+    @JsonIgnore
+    private Input input;
 }

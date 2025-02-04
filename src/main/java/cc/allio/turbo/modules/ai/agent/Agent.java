@@ -4,6 +4,7 @@ import cc.allio.turbo.common.domain.Observable;
 import cc.allio.turbo.modules.ai.Input;
 import cc.allio.turbo.modules.ai.Output;
 import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
+import cc.allio.turbo.modules.ai.resources.AIResources;
 import cc.allio.turbo.modules.ai.runtime.Environment;
 import cc.allio.turbo.modules.ai.runtime.tool.Tool;
 
@@ -40,7 +41,7 @@ public interface Agent {
     /**
      * initialization agent and agent will be preparation chain of action.
      */
-    void install() throws AgentInitializationException;
+    void install(AIResources.LiteralAgent literalAgent) throws AgentInitializationException;
 
     /**
      * get building plan action names
@@ -68,8 +69,6 @@ public interface Agent {
 
     /**
      * get agent prompt template
-     *
-     * @return
      */
     String getAgentPromptTemplate();
 
@@ -78,7 +77,7 @@ public interface Agent {
      *
      * @param input       the user input
      * @param environment the environment
-     * @return
+     * @return the {@link AgentPrompt}
      */
     default AgentPrompt getPrompt(Input input, Environment environment) {
         return new AgentPrompt(this, getTools(), input, environment);

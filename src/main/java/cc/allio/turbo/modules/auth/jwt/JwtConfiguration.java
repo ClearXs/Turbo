@@ -11,12 +11,12 @@ public class JwtConfiguration {
 
     @Bean
     public JwtEncoder turboJwtEncoder() {
-        return new TurboJwtEncoder();
+        return TurboJwtEncoder.getInstance();
     }
 
     @Bean
     public JwtDecoder turboJwtDecoder() {
-        return new TurboJwtDecoder();
+        return TurboJwtDecoder.getInstance();
     }
 
     @Bean

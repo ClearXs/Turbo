@@ -1,6 +1,5 @@
 package cc.allio.turbo.modules.ai.runtime.tool;
 
-import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.uno.core.util.map.OptionalMap;
 
 import java.util.Map;
@@ -15,6 +14,11 @@ import java.util.Optional;
  * @since 0.2.0
  */
 public interface FunctionTool extends Tool {
+
+    String TYPE_KEY = "type";
+    String NAME_KEY = "name";
+    String DESCRIPTION_KEY = "description";
+    String PARAMETERS_KEY = "parameters";
 
     /**
      * the tool name
@@ -32,21 +36,34 @@ public interface FunctionTool extends Tool {
     Map<String, Object> parameters();
 
     /**
-     * of json create {@link FunctionTool}
+     * json map create {@link FunctionTool}.
+     * <p>
+     * typically tool json maps like:
+     * <code>
+     * {"type":"function","function":{"name":"get_current_weather","description":"Get the current weather in a given location","parameters":{"type":"object","properties":{"location":{"type":"string","description":"The city and state, e.g. San Francisco, CA"},"unit":{"type":"string","enum":["celsius","fahrenheit"]}},"required":["location"]}}}
+     * </code>
      *
      * @param json the json map
-     * @return
+     * @return the {@link FunctionTool} instance or null if parse failed.
      */
     static FunctionTool of(Map<String, Object> json) {
         OptionalMap<String> optionalMap = OptionalMap.of(json);
         // read
-        Optional<String> type = optionalMap.get("type", String.class);
-        if (type.isPresent() && type.get().equals(Type.Function.name())) {
-            Object obj = optionalMap.get("function").orElse(null);
-            if (obj == null) {
+        Optional<String> optionalType = optionalMap.get(TYPE_KEY, String.class);
+        if (optionalType.isPresent() && optionalType.get().equals(Type.Function.getName())) {
+            Optional<Map<String, Object>> optionalObj = optionalMap.getMap(FUNCTION_KEY, String.class, Object.class);
+            if (optionalObj.isEmpty()) {
                 return null;
             }
-            return JsonUtils.parse(JsonUtils.toJson(obj), DefaultTool.class);
+            DefaultTool.DefaultToolBuilder builder = DefaultTool.builder();
+            // set of tool instance
+            optionalObj.map(OptionalMap::of)
+                    .ifPresent(objMap -> {
+                        objMap.get(NAME_KEY, String.class).ifPresent(builder::name);
+                        objMap.get(DESCRIPTION_KEY, String.class).ifPresent(builder::description);
+                        objMap.getMap(PARAMETERS_KEY, String.class, Object.class).ifPresent(builder::parameters);
+                    });
+            return builder.build();
         }
         return null;
     }

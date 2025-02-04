@@ -29,7 +29,7 @@ public final class AuthUtil {
     /**
      * 获取当前登陆用户的id
      *
-     * @return Long maybe null
+     * @return Long may be null
      */
     public static Long getUserId() {
         return getAuthenticationWrapper().getUserId();

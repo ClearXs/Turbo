@@ -1,15 +1,17 @@
 package cc.allio.turbo.modules.ai.runtime.tool;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import java.util.Map;
 
+@Builder
 @AllArgsConstructor
 public class DefaultTool implements FunctionTool {
 
-    private final String name;
-    private final String description;
-    private final Map<String, Object> parameters;
+    private String name;
+    private String description;
+    private Map<String, Object> parameters;
 
     @Override
     public String name() {

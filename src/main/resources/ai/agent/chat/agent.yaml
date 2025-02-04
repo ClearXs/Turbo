@@ -1,4 +1,4 @@
-name: chat
+name: Chat
 description: a chat bot.
 actions:
   - chat

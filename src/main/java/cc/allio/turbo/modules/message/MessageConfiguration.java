@@ -1,4 +1,4 @@
-package cc.allio.turbo.modules.message.configuration;
+package cc.allio.turbo.modules.message;
 
 import cc.allio.turbo.modules.message.runtime.MessageCollector;
 import cc.allio.turbo.modules.message.runtime.MessageEndpoint;

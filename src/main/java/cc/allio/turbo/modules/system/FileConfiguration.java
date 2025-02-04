@@ -1,4 +1,4 @@
-package cc.allio.turbo.modules.system.configuration;
+package cc.allio.turbo.modules.system;
 
 import cc.allio.turbo.modules.system.properties.FileProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

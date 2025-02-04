@@ -1,6 +1,7 @@
 package cc.allio.turbo.common.domain;
 
 import cc.allio.turbo.common.aop.TurboAspectConfiguration;
+import cc.allio.turbo.common.db.entity.Org;
 import cc.allio.uno.test.BaseTestCase;
 import cc.allio.uno.test.Inject;
 import cc.allio.uno.test.RunTest;
@@ -21,8 +22,10 @@ public class SubscriptionTest extends BaseTestCase {
     public void testEmptyParameterMethod() throws InterruptedException {
         orgService.subscribeOn(orgService::getName)
                 .observe(subscription -> {
-                    Optional<Object> behaviorResult = subscription.getBehaviorResult();
-
+                    Optional<Object> behaviorResult = Optional.empty();
+                    if (subscription instanceof BehaviorSubscription<Org> behaviorSubscription) {
+                        behaviorResult = behaviorSubscription.getBehaviorResult();
+                    }
                     boolean present = behaviorResult.isPresent();
                     assertTrue(present);
 

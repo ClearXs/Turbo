@@ -3,11 +3,11 @@ package cc.allio.turbo.common.domain;
 import cc.allio.turbo.common.aop.TurboAdvisorBuilder;
 import cc.allio.uno.core.bus.EventBus;
 import cc.allio.uno.core.bus.EventBusFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@AutoConfiguration
 public class DomainEventConfiguration {
 
     @Bean

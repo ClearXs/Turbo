@@ -13,11 +13,11 @@ public class AIResourcesTest extends BaseTestCase {
     void testReadAgent() {
         assertDoesNotThrow(() -> resources.readNow());
 
-        Optional<AIResources.LiteralAgent> agent = resources.getAgent("travel");
+        Optional<AIResources.LiteralAgent> agent = resources.detectOfAgent("travel");
 
         assertTrue(agent.isPresent());
 
-        Optional<AIResources.LiteralAgent> empty = resources.getAgent("empty");
+        Optional<AIResources.LiteralAgent> empty = resources.detectOfAgent("empty");
 
         assertTrue(empty.isEmpty());
     }

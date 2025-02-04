@@ -15,7 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.function.ThrowingFunction;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,7 +38,20 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AIResources implements Self<AIResources> {
 
-    static final Yaml YAML_PARSER = new Yaml();
+    static final Yaml YAML_PARSER;
+
+    static {
+        LoaderOptions loaderOptions = new LoaderOptions();
+        loaderOptions.setAllowDuplicateKeys(false);
+        loaderOptions.setMaxAliasesForCollections(Integer.MAX_VALUE);
+        loaderOptions.setAllowRecursiveKeys(true);
+        loaderOptions.setCodePointLimit(Integer.MAX_VALUE);
+
+        DumperOptions dumperOptions = new DumperOptions();
+        Representer representer = new Representer(dumperOptions);
+        YAML_PARSER = new Yaml(new Constructor(loaderOptions), representer, dumperOptions, loaderOptions);
+    }
+
     final AtomicBoolean loaded;
     final Resource<LiteralAgent> agentResource;
     final Resource<LiteralAction> actionResource;
@@ -68,12 +85,29 @@ public class AIResources implements Self<AIResources> {
     }
 
     /**
-     * get {@link LiteralAction}
+     * detect the {@code target} whether existing in resources. and return the first one.
+     *
+     * @param target the target class
+     * @param name   the target name
+     * @param <T>    the resource type
+     * @return optional resource
+     */
+    public <T> Optional<T> detect(Class<T> target, String name) {
+        if (target.isAssignableFrom(LiteralAgent.class)) {
+            return (Optional<T>) detectOfAgent(name);
+        } else if (target.isAssignableFrom(LiteralAction.class)) {
+            return (Optional<T>) detectOfAction(name);
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * detect {@link LiteralAction}
      *
      * @param actionName the action name
-     * @return
+     * @return the Optional {@link LiteralAction}
      */
-    public Optional<LiteralAction> getAction(String actionName) {
+    public Optional<LiteralAction> detectOfAction(String actionName) {
         return actionResource.getResources()
                 .stream()
                 .filter(action -> actionName.equals(action.getName()))
@@ -81,12 +115,12 @@ public class AIResources implements Self<AIResources> {
     }
 
     /**
-     * get {@link LiteralAgent}
+     * detect {@link LiteralAgent}
      *
      * @param agentName the agent name
-     * @return
+     * @return the Optional {@link LiteralAgent}
      */
-    public Optional<LiteralAgent> getAgent(String agentName) {
+    public Optional<LiteralAgent> detectOfAgent(String agentName) {
         return agentResource.getResources()
                 .stream()
                 .filter(agent -> agentName.equals(agent.getName()))
@@ -554,6 +588,7 @@ public class AIResources implements Self<AIResources> {
         private String description;
         private String prompt;
         private List<String> actions;
+        private List<String> externalTools;
         private List<Map<String, Object>> tools;
     }
 }

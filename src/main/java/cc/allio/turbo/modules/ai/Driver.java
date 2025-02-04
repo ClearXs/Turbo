@@ -4,12 +4,20 @@ import cc.allio.turbo.common.domain.DomainEventContext;
 import cc.allio.turbo.common.domain.SubPuber;
 import cc.allio.uno.core.bus.EventBus;
 
-public class Driver implements SubPuber<Input> {
+/**
+ * AI Agent driver
+ *
+ * @author j.x
+ * @since 0.2.0
+ */
+public class Driver<D> implements SubPuber<D> {
 
     private EventBus<DomainEventContext> eventBus;
+    private final Class<D> inherentClass;
 
-    public Driver(EventBus<DomainEventContext> eventBus) {
+    public Driver(Class<D> inherentClass, EventBus<DomainEventContext> eventBus) {
         this.eventBus = eventBus;
+        this.inherentClass = inherentClass;
     }
 
     @Override
@@ -20,5 +28,21 @@ public class Driver implements SubPuber<Input> {
     @Override
     public EventBus<DomainEventContext> getDomainEventBus() {
         return eventBus;
+    }
+
+    /**
+     * 获取订阅者名称
+     *
+     * @return name
+     */
+    public String getDomainName() {
+        return inherentClass.getSimpleName();
+    }
+
+    /**
+     * 获取领域类型
+     */
+    public Class<D> getDomainType() {
+        return inherentClass;
     }
 }

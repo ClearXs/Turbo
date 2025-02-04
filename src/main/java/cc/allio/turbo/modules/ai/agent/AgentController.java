@@ -6,7 +6,7 @@ import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
 import cc.allio.turbo.modules.ai.exception.ResourceParseException;
 import cc.allio.turbo.modules.ai.resources.AIResources;
 import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
-import cc.allio.uno.core.bus.EventBus;
+import cc.allio.turbo.modules.ai.runtime.tool.ToolRegistry;
 import cc.allio.uno.core.bus.Topic;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -28,28 +28,31 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class AgentController implements InitializingBean, Disposable {
 
-    final EventBus<DomainEventContext> eventBus;
-    final Registry<Agent, String> agentRegistry;
-
+    final AgentRegistry agentRegistry;
     final ActionRegistry actionRegistry;
+    final ToolRegistry toolRegistry;
     final AIResources resources;
     @Getter
-    final Driver driver;
+    final Driver<Input> driver;
 
     Disposable disposable;
 
-    public AgentController(EventBus<DomainEventContext> eventBus) {
-        this.eventBus = eventBus;
-        this.agentRegistry = new AgentRegistry();
-        this.resources = new AIResources();
-        this.actionRegistry = new ActionRegistry(resources);
-        this.driver = new Driver(eventBus);
+    public AgentController(Driver<Input> driver,
+                           AgentRegistry agentRegistry,
+                           ActionRegistry actionRegistry,
+                           ToolRegistry toolRegistry,
+                           AIResources resources) {
+        this.driver = driver;
+        this.agentRegistry = agentRegistry;
+        this.resources = resources;
+        this.actionRegistry = actionRegistry;
+        this.toolRegistry = toolRegistry;
     }
 
     /**
      * initialization agent system
      */
-    void setup() throws ResourceParseException, AgentInitializationException {
+    void setup() throws ResourceParseException {
         // load resource
         resources.readNow();
 
@@ -68,15 +71,30 @@ public class AgentController implements InitializingBean, Disposable {
                         .subscribe();
     }
 
-    void initiateAgents() throws AgentInitializationException {
+    void initiateAgents() {
         // load internal agent
-        SMAAgent smaAgent = new SMAAgent(resources, actionRegistry, driver);
-        smaAgent.install();
-        agentRegistry.put(smaAgent.name(), smaAgent);
+        SMAAgent smaAgent = new SMAAgent(toolRegistry, actionRegistry);
+        resources.detectOfAgent(smaAgent.name())
+                .ifPresent(agent -> {
+                    try {
 
-        ChatAgent chatAgent = new ChatAgent(resources, actionRegistry, driver);
-        chatAgent.install();
-        agentRegistry.put(smaAgent.name(), chatAgent);
+                        smaAgent.install(agent);
+                    } catch (AgentInitializationException e) {
+                        log.error("Agent {} initialization failed", smaAgent.name(), e);
+                    }
+                    agentRegistry.put(smaAgent.name(), smaAgent);
+                });
+
+        ChatAgent chatAgent = new ChatAgent(toolRegistry, actionRegistry);
+        resources.detectOfAgent(chatAgent.name())
+                .ifPresent(agent -> {
+                    try {
+                        chatAgent.install(agent);
+                    } catch (AgentInitializationException e) {
+                        log.error("Agent {} initialization failed", "chat", e);
+                    }
+                    agentRegistry.put(smaAgent.name(), chatAgent);
+                });
     }
 
     /**
@@ -95,7 +113,6 @@ public class AgentController implements InitializingBean, Disposable {
         if (log.isInfoEnabled()) {
             log.info("subscribe user input message {}, use by agents is {}", message, agents);
         }
-
         MultiObservable<Output> observable = new MultiObservable<>();
         for (String agentName : agents) {
             Agent agent = agentRegistry.get(agentName);
@@ -109,7 +126,7 @@ public class AgentController implements InitializingBean, Disposable {
     /**
      * transform the subscription to observable.
      *
-     * @param subscription
+     * @param subscription the subscription instance.
      */
     Flux<Topic<DomainEventContext>> transform(Subscription<Output> subscription) {
         if (subscription.getDomain().isPresent()) {

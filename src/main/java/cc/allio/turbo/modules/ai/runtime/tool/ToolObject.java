@@ -4,6 +4,7 @@ import cc.allio.uno.core.util.JsonUtils;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.definition.ToolDefinition;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -24,10 +25,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @since 0.2.0
  */
 @Slf4j
-public abstract class ToolObject {
+public abstract class ToolObject implements InitializingBean {
 
-    private final Map<Method, Tool> tools = Maps.newConcurrentMap();
+    private final Map<Method, FunctionTool> tools = Maps.newConcurrentMap();
     AtomicBoolean hasScan = new AtomicBoolean(false);
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        setup();
+    }
+
+    protected void setup() {
+        scan();
+    }
 
     /**
      * @see #registerTool(Method)
@@ -61,8 +71,7 @@ public abstract class ToolObject {
     /**
      * get all tools
      */
-    public Collection<Tool> getTools() {
-        scan();
+    public Collection<FunctionTool> getTools() {
         return tools.values();
     }
 
