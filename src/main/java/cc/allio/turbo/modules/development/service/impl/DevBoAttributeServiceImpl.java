@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.development.service.impl;
 
 import cc.allio.turbo.common.db.mybatis.service.impl.TurboTreeCrudServiceImpl;
-import cc.allio.turbo.modules.development.constant.AttributeType;
+import cc.allio.turbo.modules.development.enums.AttributeType;
 import cc.allio.turbo.common.db.constant.FieldType;
 import cc.allio.turbo.modules.development.domain.DevAttributeProps;
 import cc.allio.turbo.modules.development.entity.DevBoAttribute;

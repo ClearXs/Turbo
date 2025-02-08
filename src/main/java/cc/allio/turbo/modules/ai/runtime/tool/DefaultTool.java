@@ -2,11 +2,13 @@ package cc.allio.turbo.modules.ai.runtime.tool;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 
 import java.util.Map;
 
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode(of = "name")
 public class DefaultTool implements FunctionTool {
 
     private String name;

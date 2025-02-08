@@ -46,7 +46,6 @@ public class AIResources implements Self<AIResources> {
         loaderOptions.setMaxAliasesForCollections(Integer.MAX_VALUE);
         loaderOptions.setAllowRecursiveKeys(true);
         loaderOptions.setCodePointLimit(Integer.MAX_VALUE);
-
         DumperOptions dumperOptions = new DumperOptions();
         Representer representer = new Representer(dumperOptions);
         YAML_PARSER = new Yaml(new Constructor(loaderOptions), representer, dumperOptions, loaderOptions);

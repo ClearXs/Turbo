@@ -17,7 +17,4 @@ public class TaskContext {
     private Agent agent;
     // runtime environment
     private Environment environment;
-
-    // output
-    private Output output;
 }

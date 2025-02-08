@@ -13,7 +13,8 @@ public enum ModelManufacturer {
     OLLAMA("ollama"),
     MONOSHOT("monoshot"),
     QIAN_FAN("qianfan"),
-    ZHIPU("zhipu");
+    ZHIPU("zhipu"),
+    DEEP_SEEK("deepseek");
 
     private final String name;
 }

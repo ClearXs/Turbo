@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.system.domain;
 
 import cc.allio.turbo.common.domain.TreeDomain;
-import cc.allio.turbo.modules.system.constant.DicType;
+import cc.allio.turbo.modules.system.enums.DicType;
 import cc.allio.turbo.modules.system.entity.SysDic;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

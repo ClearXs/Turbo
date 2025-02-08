@@ -9,7 +9,7 @@ import cc.allio.turbo.common.db.mybatis.service.impl.TurboCrudServiceImpl;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.i18n.ExceptionCodes;
 import cc.allio.turbo.common.util.SecureUtil;
-import cc.allio.turbo.modules.system.constant.UserStatus;
+import cc.allio.turbo.modules.system.enums.UserStatus;
 import cc.allio.turbo.modules.system.dto.BindingOrgDTO;
 import cc.allio.turbo.modules.system.dto.BindingPostDTO;
 import cc.allio.turbo.modules.system.dto.BindingRoleDTO;

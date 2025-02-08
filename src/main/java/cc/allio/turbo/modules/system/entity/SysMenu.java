@@ -3,7 +3,7 @@ package cc.allio.turbo.modules.system.entity;
 import cc.allio.turbo.common.db.constraint.Sortable;
 import cc.allio.turbo.common.db.constraint.Unique;
 import cc.allio.turbo.common.db.entity.TreeEntity;
-import cc.allio.turbo.modules.system.constant.MenuType;
+import cc.allio.turbo.modules.system.enums.MenuType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;

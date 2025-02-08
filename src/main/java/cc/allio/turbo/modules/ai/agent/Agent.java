@@ -5,12 +5,14 @@ import cc.allio.turbo.modules.ai.Input;
 import cc.allio.turbo.modules.ai.Output;
 import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
 import cc.allio.turbo.modules.ai.resources.AIResources;
-import cc.allio.turbo.modules.ai.runtime.Environment;
+import cc.allio.turbo.modules.ai.runtime.ExecutionMode;
+import cc.allio.turbo.modules.ai.runtime.tool.FunctionTool;
 import cc.allio.turbo.modules.ai.runtime.tool.Tool;
 
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * definition agent. agent as an enhance AI ability and capability. it is effectively raise system usability.
@@ -34,9 +36,10 @@ public interface Agent {
      * accept user input{@link Input}. and generate task for planning and execute current task.
      *
      * @param input the user input
+     * @param mode
      * @return
      */
-    Observable<Output> call(Mono<Input> input);
+    Observable<Output> call(Mono<Input> input, ExecutionMode mode);
 
     /**
      * initialization agent and agent will be preparation chain of action.
@@ -44,18 +47,18 @@ public interface Agent {
     void install(AIResources.LiteralAgent literalAgent) throws AgentInitializationException;
 
     /**
-     * get building plan action names
-     *
-     * @return the list of name
-     */
-    List<String> getDispatchActionNames();
-
-    /**
      * get agent tools
      *
      * @return the list of {@link Tool}
      */
-    List<Tool> getTools();
+    Set<FunctionTool> getTools();
+
+    /**
+     * get building plan action names
+     *
+     * @return the list of name
+     */
+    Set<String> getDispatchActionNames();
 
     /**
      * get agent name
@@ -70,16 +73,6 @@ public interface Agent {
     /**
      * get agent prompt template
      */
-    String getAgentPromptTemplate();
+    String getPromptTemplate();
 
-    /**
-     * get agent prompt
-     *
-     * @param input       the user input
-     * @param environment the environment
-     * @return the {@link AgentPrompt}
-     */
-    default AgentPrompt getPrompt(Input input, Environment environment) {
-        return new AgentPrompt(this, getTools(), input, environment);
-    }
 }

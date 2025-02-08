@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * model toll
+ * model tool
  *
  * @author j.x
  * @since 0.2.0

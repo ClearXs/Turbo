@@ -7,11 +7,12 @@ import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
 import cc.allio.turbo.modules.ai.runtime.tool.FunctionTool;
 import cc.allio.turbo.modules.ai.runtime.tool.Tool;
 import cc.allio.turbo.modules.ai.runtime.tool.ToolRegistry;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * from {@link AIResources} load agent requirement {@link Action} and {@link Tool}
@@ -22,13 +23,13 @@ import java.util.Map;
 public abstract class ResourceAgent implements Agent {
 
     @Getter
-    protected List<String> dispatchActionNames = Lists.newArrayList();
+    protected  Set<String> dispatchActionNames = Sets.newHashSet();
     @Getter
-    protected List<Tool> tools = Lists.newArrayList();
+    protected  Set<FunctionTool> tools = Sets.newHashSet();
 
     // read agent resources prompt template
     @Getter
-    protected String agentPromptTemplate;
+    protected String promptTemplate;
 
     protected final ActionRegistry actionRegistry;
     protected final ToolRegistry toolRegistry;
@@ -50,8 +51,8 @@ public abstract class ResourceAgent implements Agent {
             throw new AgentInitializationException("Agent name not match");
         }
 
-        this.agentPromptTemplate = agent.getPrompt();
-        this.dispatchActionNames = agent.getActions();
+        this.promptTemplate = agent.getPrompt();
+        this.dispatchActionNames = Sets.newHashSet(agent.getActions());
         List<Map<String, Object>> toolListMap = agent.getTools();
 
         List<FunctionTool> fileTools = toolListMap.stream().map(FunctionTool::of).toList();
@@ -83,5 +84,4 @@ public abstract class ResourceAgent implements Agent {
     protected void setup() throws AgentInitializationException {
 
     }
-
 }

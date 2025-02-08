@@ -90,7 +90,7 @@ public class ChatHandler implements WebSocketHandler, InitializingBean, Disposab
                     input.setSessionId(sessionId);
                     input.setAgents(msg.getAgents());
                     input.setModelOptions(msg.getModelOptions());
-                    input.setMessage(msg.getMsg());
+                    input.setMessages(msg.getMsg());
                     input.setSession(session);
                     return input;
                 })

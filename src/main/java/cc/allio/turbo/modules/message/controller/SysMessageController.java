@@ -5,7 +5,7 @@ import cc.allio.turbo.common.util.AuthUtil;
 import cc.allio.turbo.common.web.R;
 import cc.allio.turbo.common.web.TurboCrudController;
 import cc.allio.turbo.common.web.params.QueryParam;
-import cc.allio.turbo.modules.message.constant.Status;
+import cc.allio.turbo.modules.message.enums.Status;
 import cc.allio.turbo.modules.message.dto.ReceiveVariables;
 import cc.allio.turbo.modules.message.entity.SysMessage;
 import cc.allio.turbo.modules.message.service.ISysMessageService;

@@ -3,7 +3,7 @@ package cc.allio.turbo.modules.system.controller;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.web.R;
 import cc.allio.turbo.common.web.TurboCrudController;
-import cc.allio.turbo.modules.system.constant.UserStatus;
+import cc.allio.turbo.modules.system.enums.UserStatus;
 import cc.allio.turbo.modules.system.dto.BindingOrgDTO;
 import cc.allio.turbo.modules.system.dto.BindingPostDTO;
 import cc.allio.turbo.modules.system.dto.BindingRoleDTO;

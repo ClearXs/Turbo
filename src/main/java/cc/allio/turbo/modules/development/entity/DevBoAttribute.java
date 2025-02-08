@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.development.entity;
 
 import cc.allio.turbo.common.db.entity.TreeEntity;
-import cc.allio.turbo.modules.development.constant.AttributeType;
+import cc.allio.turbo.modules.development.enums.AttributeType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;

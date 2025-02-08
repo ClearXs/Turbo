@@ -1,7 +1,6 @@
 package cc.allio.turbo.common.db.mybatis.service;
 
 import cc.allio.turbo.common.db.entity.Entity;
-import cc.allio.turbo.common.domain.BehaviorSubscription;
 import cc.allio.turbo.common.domain.MultiObservable;
 import cc.allio.turbo.common.domain.Observable;
 import cc.allio.turbo.common.domain.Subscriber;

@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.development.domain;
 
 import cc.allio.turbo.common.domain.TreeDomain;
-import cc.allio.turbo.modules.development.constant.AttributeType;
+import cc.allio.turbo.modules.development.enums.AttributeType;
 import cc.allio.turbo.common.db.constant.FieldType;
 import cc.allio.turbo.modules.development.entity.DevBoAttribute;
 import cc.allio.uno.data.orm.dsl.ColumnDef;

@@ -5,7 +5,7 @@ import cc.allio.turbo.modules.ai.Driver;
 import java.lang.annotation.*;
 
 /**
- * annotate {@link Driver} model.
+ * annotate {@link Driver} model. allow annotated class to be a driver model.
  *
  * @author j.x
  * @since 0.2.0

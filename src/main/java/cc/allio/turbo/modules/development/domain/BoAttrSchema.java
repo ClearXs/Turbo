@@ -3,7 +3,7 @@ package cc.allio.turbo.modules.development.domain;
 import cc.allio.turbo.modules.development.api.Key;
 import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.domain.Domains;
-import cc.allio.turbo.modules.development.constant.AttributeType;
+import cc.allio.turbo.modules.development.enums.AttributeType;
 import cc.allio.turbo.common.db.constant.FieldType;
 import cc.allio.turbo.modules.development.domain.view.ColumnType;
 import cc.allio.turbo.modules.development.language.TypeScriptType;

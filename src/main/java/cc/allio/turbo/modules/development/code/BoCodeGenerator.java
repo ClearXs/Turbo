@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.development.code;
 
 import cc.allio.turbo.common.exception.BizException;
-import cc.allio.turbo.modules.development.constant.CodeGenerateSource;
+import cc.allio.turbo.modules.development.enums.CodeGenerateSource;
 import cc.allio.turbo.modules.development.domain.BoSchema;
 import cc.allio.turbo.modules.development.domain.hybrid.HybridBoSchema;
 import cc.allio.turbo.modules.development.domain.view.DataView;

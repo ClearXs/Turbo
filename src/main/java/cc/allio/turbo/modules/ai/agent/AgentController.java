@@ -5,6 +5,7 @@ import cc.allio.turbo.modules.ai.*;
 import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
 import cc.allio.turbo.modules.ai.exception.ResourceParseException;
 import cc.allio.turbo.modules.ai.resources.AIResources;
+import cc.allio.turbo.modules.ai.runtime.ExecutionMode;
 import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
 import cc.allio.turbo.modules.ai.runtime.tool.ToolRegistry;
 import cc.allio.uno.core.bus.Topic;
@@ -16,7 +17,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 
 /**
@@ -108,8 +109,8 @@ public class AgentController implements InitializingBean, Disposable {
             return Flux.empty();
         }
 
-        String message = input.getMessage();
-        List<String> agents = input.getAgents();
+        Set<String> message = input.getMessages();
+        Set<String> agents = input.getAgents();
         if (log.isInfoEnabled()) {
             log.info("subscribe user input message {}, use by agents is {}", message, agents);
         }
@@ -117,7 +118,7 @@ public class AgentController implements InitializingBean, Disposable {
         for (String agentName : agents) {
             Agent agent = agentRegistry.get(agentName);
             if (agent != null) {
-                observable.concat(agent.call(Mono.just(input)));
+                observable.concat(agent.call(Mono.just(input), ExecutionMode.STREAM));
             }
         }
         return observable.observeMany();

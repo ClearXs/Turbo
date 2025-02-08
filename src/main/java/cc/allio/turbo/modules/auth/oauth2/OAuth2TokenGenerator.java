@@ -7,7 +7,7 @@ import cc.allio.turbo.modules.auth.jwt.JwtAuthentication;
 import cc.allio.turbo.modules.auth.oauth2.extractor.OAuth2UserExtractor;
 import cc.allio.turbo.modules.auth.provider.TurboUser;
 import cc.allio.turbo.modules.auth.service.IAuthService;
-import cc.allio.turbo.modules.system.constant.UserSource;
+import cc.allio.turbo.modules.system.enums.UserSource;
 import cc.allio.turbo.modules.system.domain.SysUserVO;
 import cc.allio.turbo.modules.system.entity.SysRole;
 import cc.allio.turbo.modules.system.entity.SysThirdUser;

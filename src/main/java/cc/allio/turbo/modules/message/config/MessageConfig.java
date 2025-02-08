@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.message.config;
 
-import cc.allio.turbo.modules.message.constant.NotificationType;
+import cc.allio.turbo.modules.message.enums.NotificationType;
 
 import java.util.List;
 

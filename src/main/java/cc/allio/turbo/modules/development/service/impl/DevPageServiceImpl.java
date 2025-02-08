@@ -7,7 +7,7 @@ import cc.allio.turbo.modules.development.entity.DevPage;
 import cc.allio.turbo.modules.development.service.IDevBoService;
 import cc.allio.turbo.modules.development.service.IDevFormService;
 import cc.allio.turbo.modules.development.service.IDevPageService;
-import cc.allio.turbo.modules.system.constant.MenuType;
+import cc.allio.turbo.modules.system.enums.MenuType;
 import cc.allio.turbo.modules.system.entity.SysMenu;
 import cc.allio.turbo.modules.system.service.ISysMenuService;
 import cc.allio.uno.core.util.StringUtils;

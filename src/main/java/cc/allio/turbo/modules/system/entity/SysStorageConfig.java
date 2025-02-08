@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.system.entity;
 
 import cc.allio.turbo.common.db.entity.BaseEntity;
-import cc.allio.turbo.modules.system.constant.StorageType;
+import cc.allio.turbo.modules.system.enums.StorageType;
 import cc.allio.turbo.extension.oss.Provider;
 import cc.allio.turbo.common.constant.Enable;
 import com.baomidou.mybatisplus.annotation.TableField;

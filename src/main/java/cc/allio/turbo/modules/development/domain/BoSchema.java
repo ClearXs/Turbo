@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.development.domain;
 
 import cc.allio.turbo.common.db.entity.Entity;
-import cc.allio.turbo.modules.development.constant.AttributeType;
+import cc.allio.turbo.modules.development.enums.AttributeType;
 import cc.allio.turbo.modules.development.entity.DevBo;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.uno.data.orm.dsl.ColumnDef;
@@ -96,7 +96,7 @@ public class BoSchema implements Serializable, Entity {
 
     /**
      * 获取primary bo attr schema
-     * <p>{@link #attrs}中第一个是{@link cc.allio.turbo.modules.development.constant.AttributeType#TABLE}的数据</p>
+     * <p>{@link #attrs}中第一个是{@link cc.allio.turbo.modules.development.enums.AttributeType#TABLE}的数据</p>
      *
      * @return BoAttrSchema or null
      */

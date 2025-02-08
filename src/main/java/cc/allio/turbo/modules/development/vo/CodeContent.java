@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.development.vo;
 
-import cc.allio.turbo.modules.development.constant.CodeLanguage;
-import cc.allio.turbo.modules.development.constant.CodeTemplateDomain;
+import cc.allio.turbo.modules.development.enums.CodeLanguage;
+import cc.allio.turbo.modules.development.enums.CodeTemplateDomain;
 import cc.allio.turbo.modules.development.entity.DevCodeGenerate;
 import cc.allio.turbo.modules.development.entity.DevCodeGenerateTemplate;
 import lombok.Data;

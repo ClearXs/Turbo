@@ -2,7 +2,7 @@ package cc.allio.turbo.modules.development.entity;
 
 import cc.allio.turbo.common.db.entity.CategoryEntity;
 import cc.allio.turbo.common.db.entity.TenantEntity;
-import cc.allio.turbo.modules.development.constant.CodeGenerateSource;
+import cc.allio.turbo.modules.development.enums.CodeGenerateSource;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;

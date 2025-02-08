@@ -6,8 +6,8 @@ import cc.allio.turbo.modules.ai.Output;
 import cc.allio.turbo.modules.ai.agent.Agent;
 import cc.allio.turbo.modules.ai.model.AgentModel;
 import cc.allio.turbo.modules.ai.runtime.action.Action;
+import cc.allio.turbo.modules.ai.runtime.action.ActionContext;
 import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
-import cc.allio.turbo.modules.ai.runtime.action.EndAction;
 import cc.allio.uno.core.chain.Chain;
 import cc.allio.uno.core.chain.DefaultChain;
 import cc.allio.uno.core.util.id.IdGenerator;
@@ -17,6 +17,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * user task.
@@ -30,56 +32,76 @@ public class Task {
 
     @Getter
     private final Long id;
-    private final Agent agent;
+    private final Agent formAgent;
     private final ActionRegistry actionRegistry;
+    @Getter
+    private final Environment environment;
 
-    public Task(Agent agent, ActionRegistry actionRegistry) {
+    public Task(Agent formAgent, ActionRegistry actionRegistry) {
         this.id = IdGenerator.defaultGenerator().getNextId();
-        this.agent = agent;
+        this.formAgent = formAgent;
         this.actionRegistry = actionRegistry;
+        this.environment = new Environment().injectOf(formAgent).injectOf(this);
+    }
+
+    /**
+     * @see #execute(Mono, ExecutionMode)
+     */
+    public Observable<Output> execute(Mono<Input> inputMono) {
+        return execute(inputMono, ExecutionMode.STREAM);
     }
 
     /**
      * do execute current user task
      *
      * @param inputMono the input
+     * @param mode
      * @return the {@link Observable} for {@link Output}
      */
-    public Observable<Output> execute(Mono<Input> inputMono) {
-        Flux<Output> source =
-                inputMono.flatMapMany(
-                        input -> {
-                            Environment environment = new Environment().injectOf(agent).injectOf(this);
-                            AgentModel agentModel = new AgentModel(input.getModelOptions());
-                            TaskContext taskContext =
-                                    TaskContext.builder()
-                                            .agentModel(agentModel)
-                                            .input(input)
-                                            .environment(environment)
-                                            .agent(agent)
-                                            .task(this)
-                                            .build();
-                            Chain<TaskContext, Output> planning = buildPlaning();
-                            return planning.processMany(() -> taskContext);
-                        });
+    public Observable<Output> execute(Mono<Input> inputMono, ExecutionMode mode) {
+        Flux<Output> source = inputMono.flatMapMany(
+                input -> {
+                    Environment newEnvironment = environment.copy();
+                    if (input.getVariable() != null) {
+                        newEnvironment.injectOf(input.getVariable());
+                    }
+                    AgentModel agentModel = new AgentModel(input.getModelOptions());
+                    TaskContext taskContext =
+                            TaskContext.builder()
+                                    .agentModel(agentModel)
+                                    .input(input)
+                                    .environment(newEnvironment)
+                                    .agent(formAgent)
+                                    .task(this)
+                                    .build();
+                    Chain<TaskContext, Output> planning = buildPlaning();
+                    ActionContext actionContext = new ActionContext(taskContext);
+                    actionContext.setMode(mode);
+                    return planning.processMany(actionContext);
+                });
         return Observable.from(source);
     }
 
     /**
      * specific task planing chain.
      */
-    Chain<TaskContext, Output> buildPlaning() {
-        List<String> dispatchActionNames = agent.getDispatchActionNames();
+    public Chain<TaskContext, Output> buildPlaning() {
+        Set<String> dispatchActionNames = formAgent.getDispatchActionNames();
         List<Action> actions = Lists.newCopyOnWriteArrayList();
+        // check action
+        Action endAction =
+                actionRegistry.getAction(Action.END)
+                        .orElseThrow(() -> new NoSuchElementException("No End Action existing."));
         // get action
         for (String actionName : dispatchActionNames) {
+            // keep end action always last index.
+            if (actionName.equals(Action.END)) {
+                continue;
+            }
             actionRegistry.getAction(actionName).ifPresent(actions::add);
         }
-
-        if (!dispatchActionNames.contains(Action.END)) {
-            actions.addLast(new EndAction());
-        }
-
+        // set end action
+        actions.addLast(endAction);
         return new DefaultChain<>(actions);
     }
 }

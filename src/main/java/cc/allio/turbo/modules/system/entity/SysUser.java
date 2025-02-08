@@ -1,8 +1,8 @@
 package cc.allio.turbo.modules.system.entity;
 
 import cc.allio.turbo.common.db.entity.TenantEntity;
-import cc.allio.turbo.modules.system.constant.UserSource;
-import cc.allio.turbo.modules.system.constant.UserStatus;
+import cc.allio.turbo.modules.system.enums.UserSource;
+import cc.allio.turbo.modules.system.enums.UserStatus;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.baomidou.mybatisplus.annotation.TableField;

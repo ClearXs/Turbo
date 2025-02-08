@@ -2,8 +2,8 @@ package cc.allio.turbo.modules.development.entity;
 
 import cc.allio.turbo.common.db.entity.CategoryEntity;
 import cc.allio.turbo.common.db.entity.TenantEntity;
-import cc.allio.turbo.modules.development.constant.CodeTemplateDomain;
-import cc.allio.turbo.modules.development.constant.CodeLanguage;
+import cc.allio.turbo.modules.development.enums.CodeTemplateDomain;
+import cc.allio.turbo.modules.development.enums.CodeLanguage;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;

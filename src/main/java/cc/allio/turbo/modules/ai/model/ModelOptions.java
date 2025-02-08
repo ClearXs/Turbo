@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import org.springframework.ai.chat.prompt.ChatOptions;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Data
@@ -14,6 +13,10 @@ import java.util.Optional;
 public class ModelOptions extends MapEntity implements ChatOptions {
 
     private ModelManufacturer manufacturer;
+
+    // model api address or accessible address.
+    // like as http://ollama:11434
+    private String address;
     // model name
     private String model;
 
@@ -28,8 +31,6 @@ public class ModelOptions extends MapEntity implements ChatOptions {
     private Double temperature;
     private Integer topK;
     private Double topP;
-
-    private Map<String, Object> extraOptions;
 
     /**
      * get value in map and return {@link java.util.Optional}

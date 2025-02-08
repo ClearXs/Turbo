@@ -2,9 +2,9 @@ package cc.allio.turbo.modules.message.runtime;
 
 import cc.allio.turbo.common.util.AuthUtil;
 import cc.allio.turbo.modules.message.config.*;
-import cc.allio.turbo.modules.message.constant.SendStatus;
-import cc.allio.turbo.modules.message.constant.Source;
-import cc.allio.turbo.modules.message.constant.Status;
+import cc.allio.turbo.modules.message.enums.SendStatus;
+import cc.allio.turbo.modules.message.enums.Source;
+import cc.allio.turbo.modules.message.enums.Status;
 import cc.allio.turbo.modules.message.entity.SysMessage;
 import cc.allio.turbo.modules.message.entity.SysMessageConfig;
 import cc.allio.turbo.modules.message.entity.SysMessageLog;

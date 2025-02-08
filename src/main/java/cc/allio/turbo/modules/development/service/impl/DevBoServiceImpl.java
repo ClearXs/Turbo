@@ -5,8 +5,8 @@ import cc.allio.turbo.common.db.mybatis.service.impl.TurboCacheCrudServiceImpl;
 import cc.allio.turbo.common.domain.Subscription;
 import cc.allio.turbo.common.exception.BizException;
 import cc.allio.turbo.common.util.VariationAnalyzer;
-import cc.allio.turbo.modules.development.constant.AttributeType;
-import cc.allio.turbo.modules.development.constant.DatasetSource;
+import cc.allio.turbo.modules.development.enums.AttributeType;
+import cc.allio.turbo.modules.development.enums.DatasetSource;
 import cc.allio.turbo.modules.development.domain.BoAttrSchema;
 import cc.allio.turbo.modules.development.domain.BoAttributeTree;
 import cc.allio.turbo.modules.development.domain.BoSchema;
@@ -153,6 +153,7 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
                             int compare = Comparators.collections(finder).compare(o1.getColumnDefs(), o2.getColumnDefs());
                             return compare < 0;
                         });
+
         VariationAnalyzer.AnalyzeResultSet<TableColumns, DSLName> resultSet = tableAnalyzer.analyze();
         return TransactionContext.anyMatchOpen()
                 .then(() -> {
@@ -171,44 +172,7 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
                             .allMatch(result -> {
                                 TableColumns source = result.getSource();
                                 TableColumns bench = result.getBench();
-                                // 如果表名称存在变化，则会放在新增处，故该地方判断column变化结果集，根据差异分析作出变化的差集
-                                VariationAnalyzer<ColumnDef, DSLName> columnAnalyzer =
-                                        new VariationAnalyzer<>(
-                                                source.getColumnDefs(),
-                                                bench.getColumnDefs(),
-                                                ColumnDef::getDslName,
-                                                // 1.比较名称
-                                                // 2.比较类型
-                                                // 3.比较precision scale
-                                                (o1, o2) -> !o1.equalsTo(o2));
-                                VariationAnalyzer.AnalyzeResultSet<ColumnDef, DSLName> columnResultSet = columnAnalyzer.analyze();
-                                if (columnResultSet.changed()) {
-                                    return dataSourceService.alertTable(
-                                            dataSourceId,
-                                            f -> {
-                                                // 新增的
-                                                List<VariationAnalyzer.Result<ColumnDef, DSLName>> addition = columnResultSet.getAddition();
-                                                ColumnDef[] addiableColumns = addition.stream().map(VariationAnalyzer.Result::getSource).toArray(ColumnDef[]::new);
-                                                if (addiableColumns.length > 0) {
-                                                    f.addColumns(addiableColumns);
-                                                }
-                                                // 改变的
-                                                List<VariationAnalyzer.Result<ColumnDef, DSLName>> mutative = columnResultSet.getMutative();
-                                                ColumnDef[] alternativeColumns = mutative.stream().map(VariationAnalyzer.Result::getSource).toArray(ColumnDef[]::new);
-                                                if (alternativeColumns.length > 0) {
-                                                    f.alertColumns(alternativeColumns);
-                                                }
-                                                // 减少的
-                                                List<VariationAnalyzer.Result<ColumnDef, DSLName>> reduction = columnResultSet.getReduction();
-                                                DSLName[] reductiveColumns = reduction.stream().map(VariationAnalyzer.Result::getBench).map(ColumnDef::getDslName).toArray(DSLName[]::new);
-                                                if (reductiveColumns.length > 0) {
-                                                    f.deleteColumns(reductiveColumns);
-                                                }
-                                                return f.from(source.getTable());
-                                            }
-                                    );
-                                }
-                                return false;
+                                return compareColumnIfChangeThenAlter(dataSourceId, source, bench);
                             });
                 })
                 .commit();
@@ -271,7 +235,7 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
             behaviorSubscription.getParameter("entityList")
                     .ifPresent(list -> {
                         if (list instanceof List<?> attributes && !attributes.isEmpty()) {
-                            Object obj = attributes.get(0);
+                            Object obj = attributes.getFirst();
                             if (obj instanceof DevBoAttribute attr) {
                                 BoSchema boSchema = toBoSchema(attr.getBoId());
                                 if (boSchema != null) {
@@ -338,8 +302,61 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
         if (bo == null) {
             return null;
         }
-        List<DevBoAttribute> tree = boAttributeService.tree(Wrappers.<DevBoAttribute>lambdaQuery().eq(DevBoAttribute::getBoId, boId));
+        List<DevBoAttribute> tree =
+                boAttributeService.tree(Wrappers.<DevBoAttribute>lambdaQuery().eq(DevBoAttribute::getBoId, boId));
         List<BoAttributeTree> treeify = tree.stream().map(boAttributeService::entityToDomain).toList();
         return BoSchema.from(bo, TreeSupport.adjust(treeify));
+    }
+
+    /**
+     * compare {@code source} and {@code bench} columns difference. if existing difference, then alter table
+     *
+     * @param dataSourceId the datasource id
+     * @param source       the source {@link TableColumns}
+     * @param bench        the bench {@link TableColumns}
+     * @return true if alter table success
+     */
+    boolean compareColumnIfChangeThenAlter(Long dataSourceId, TableColumns source, TableColumns bench) {
+        // 如果表名称存在变化，则会放在新增处，故该地方判断column变化结果集，根据差异分析作出变化的差集
+        VariationAnalyzer<ColumnDef, DSLName> columnAnalyzer =
+                new VariationAnalyzer<>(
+                        source.getColumnDefs(),
+                        bench.getColumnDefs(),
+                        ColumnDef::getDslName,
+                        // 1.比较名称
+                        // 2.比较类型
+                        // 3.比较precision scale
+                        (o1, o2) -> !o1.equalsTo(o2));
+        VariationAnalyzer.AnalyzeResultSet<ColumnDef, DSLName> columnResultSet = columnAnalyzer.analyze();
+        if (columnResultSet.changed()) {
+            return dataSourceService.alertTable(
+                    dataSourceId,
+                    f -> {
+                        // 新增的
+                        List<VariationAnalyzer.Result<ColumnDef, DSLName>> addition = columnResultSet.getAddition();
+                        ColumnDef[] addiableColumns =
+                                addition.stream().map(VariationAnalyzer.Result::getSource).toArray(ColumnDef[]::new);
+                        if (addiableColumns.length > 0) {
+                            f.addColumns(addiableColumns);
+                        }
+                        // 改变的
+                        List<VariationAnalyzer.Result<ColumnDef, DSLName>> mutative = columnResultSet.getMutative();
+                        ColumnDef[] alternativeColumns =
+                                mutative.stream().map(VariationAnalyzer.Result::getSource).toArray(ColumnDef[]::new);
+                        if (alternativeColumns.length > 0) {
+                            f.alertColumns(alternativeColumns);
+                        }
+                        // 减少的
+                        List<VariationAnalyzer.Result<ColumnDef, DSLName>> reduction = columnResultSet.getReduction();
+                        DSLName[] reductiveColumns =
+                                reduction.stream().map(VariationAnalyzer.Result::getBench).map(ColumnDef::getDslName).toArray(DSLName[]::new);
+                        if (reductiveColumns.length > 0) {
+                            f.deleteColumns(reductiveColumns);
+                        }
+                        return f.from(source.getTable());
+                    }
+            );
+        }
+        return false;
     }
 }

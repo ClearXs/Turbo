@@ -1,9 +1,9 @@
 package cc.allio.turbo.modules.ai.model;
 
-import cc.allio.turbo.modules.ai.runtime.tool.Tool;
+import cc.allio.turbo.modules.ai.runtime.tool.FunctionTool;
 import org.springframework.ai.chat.model.ChatModel;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * spring AI model loader
@@ -13,5 +13,12 @@ import java.util.List;
  */
 public interface ModelLoader {
 
-    ChatModel load(ModelOptions options, List<Tool> tools);
+    /**
+     * load {@link ChatModel}
+     *
+     * @param options the {@link ModelOptions}
+     * @param tools   the tools
+     * @return
+     */
+    ChatModel load(ModelOptions options, Set<FunctionTool> tools);
 }

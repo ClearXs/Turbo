@@ -3,15 +3,15 @@ package cc.allio.turbo.modules.ai.websocket;
 import cc.allio.turbo.modules.ai.model.ModelOptions;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 public class Message {
 
     // the use message
-    private String msg;
+    private Set<String> msg;
 
     // use choose agents
-    private List<String> agents;
+    private Set<String> agents;
     private ModelOptions modelOptions;
 }

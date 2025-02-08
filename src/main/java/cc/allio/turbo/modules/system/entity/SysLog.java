@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.system.entity;
 
 import cc.allio.turbo.common.db.entity.MapEntity;
-import cc.allio.turbo.modules.system.constant.LogType;
+import cc.allio.turbo.modules.system.enums.LogType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

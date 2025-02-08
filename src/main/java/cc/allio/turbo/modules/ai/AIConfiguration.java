@@ -6,6 +6,8 @@ import cc.allio.turbo.modules.ai.agent.AgentController;
 import cc.allio.turbo.modules.ai.agent.AgentRegistry;
 import cc.allio.turbo.modules.ai.evaluation.EvaluationController;
 import cc.allio.turbo.modules.ai.resources.AIResources;
+import cc.allio.turbo.modules.ai.resources.ResourceConfiguration;
+import cc.allio.turbo.modules.ai.runtime.action.ActionConfiguration;
 import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
 import cc.allio.turbo.modules.ai.runtime.tool.ToolConfiguration;
 import cc.allio.turbo.modules.ai.runtime.tool.ToolRegistry;
@@ -14,25 +16,21 @@ import cc.allio.uno.core.bus.EventBus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.*;
 
 @AutoConfiguration
-@ImportAutoConfiguration({DomainEventConfiguration.class, ToolConfiguration.class, AIWsConfiguration.class})
+@ImportAutoConfiguration({
+        ResourceConfiguration.class,
+        DomainEventConfiguration.class,
+        ToolConfiguration.class,
+        AIWsConfiguration.class,
+        ActionConfiguration.class})
 @AutoConfigureAfter({DomainEventConfiguration.class, ToolConfiguration.class})
+@AutoConfigureBefore(ResourceConfiguration.class)
 public class AIConfiguration {
-
-    @Bean
-    @ConditionalOnMissingBean
-    public AIResources resources() {
-        return new AIResources();
-    }
-
-    @Bean
-    public ActionRegistry actionRegistry(AIResources resources) {
-        return new ActionRegistry(resources);
-    }
 
     @Bean
     public AgentRegistry agentRegistry() {

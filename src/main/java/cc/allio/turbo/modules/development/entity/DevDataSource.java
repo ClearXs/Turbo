@@ -2,7 +2,7 @@ package cc.allio.turbo.modules.development.entity;
 
 import cc.allio.turbo.common.db.constraint.Unique;
 import cc.allio.turbo.common.db.entity.BaseEntity;
-import cc.allio.turbo.modules.development.constant.DataSourceStatus;
+import cc.allio.turbo.modules.development.enums.DataSourceStatus;
 import cc.allio.turbo.common.db.constant.StorageType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;

@@ -1,9 +1,9 @@
 package cc.allio.turbo.modules.message.entity;
 
 import cc.allio.turbo.common.db.entity.TenantEntity;
-import cc.allio.turbo.modules.message.constant.Source;
-import cc.allio.turbo.modules.message.constant.Status;
-import cc.allio.turbo.modules.message.constant.NotificationType;
+import cc.allio.turbo.modules.message.enums.Source;
+import cc.allio.turbo.modules.message.enums.Status;
+import cc.allio.turbo.modules.message.enums.NotificationType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
