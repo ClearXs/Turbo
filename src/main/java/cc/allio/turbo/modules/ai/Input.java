@@ -78,4 +78,17 @@ public class Input implements Copyable<Input> {
         }
         agents.add(agent);
     }
+
+    /**
+     * add variable
+     *
+     * @param key   the key
+     * @param value the value
+     */
+    public void addVariable(String key, Object value) {
+        if (variable == null) {
+            variable = new Variable();
+        }
+        variable.put(key, value);
+    }
 }

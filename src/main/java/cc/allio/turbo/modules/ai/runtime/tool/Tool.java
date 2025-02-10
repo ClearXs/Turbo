@@ -5,6 +5,7 @@ import lombok.Getter;
 
 /**
  * model tool
+ * see https://docs.spring.io/spring-ai/reference/api/tools.html#_tool_callback
  *
  * @author j.x
  * @since 0.2.0

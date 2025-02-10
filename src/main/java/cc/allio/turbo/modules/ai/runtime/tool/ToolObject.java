@@ -1,15 +1,14 @@
 package cc.allio.turbo.modules.ai.runtime.tool;
 
-import cc.allio.uno.core.util.JsonUtils;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.tool.definition.ToolDefinition;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -57,22 +56,14 @@ public abstract class ToolObject implements InitializingBean {
      * @param method the tool {@link Method}
      */
     protected void registerTool(Method method) {
-        tools.computeIfAbsent(
-                method,
-                k -> {
-                    ToolDefinition definition = ToolDefinition.from(method);
-                    String name = definition.name();
-                    String description = definition.description();
-                    String jsonSchema = definition.inputSchema();
-                    return new DefaultTool(name, description, JsonUtils.toMap(jsonSchema));
-                });
+        tools.computeIfAbsent(method, k -> MethodFunctionTool.from(method, this));
     }
 
     /**
      * get all tools
      */
-    public Collection<FunctionTool> getTools() {
-        return tools.values();
+    public Set<FunctionTool> getTools() {
+        return Sets.newHashSet(tools.values());
     }
 
     /**

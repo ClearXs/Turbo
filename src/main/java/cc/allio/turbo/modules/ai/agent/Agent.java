@@ -11,7 +11,6 @@ import cc.allio.turbo.modules.ai.runtime.tool.Tool;
 
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,27 +35,43 @@ public interface Agent {
      * accept user input{@link Input}. and generate task for planning and execute current task.
      *
      * @param input the user input
-     * @param mode
-     * @return
+     * @param mode  the {@link ExecutionMode} mode
+     * @return {@link Observable} for {@link Output}
      */
     Observable<Output> call(Mono<Input> input, ExecutionMode mode);
 
     /**
      * initialization agent and agent will be preparation chain of action.
+     *
+     * @throws AgentInitializationException when install happen error will be throwing.
      */
     void install(AIResources.LiteralAgent literalAgent) throws AgentInitializationException;
 
     /**
+     * add temporal tool
+     *
+     * @param tool the {@link FunctionTool}
+     */
+    void addTemporalTool(FunctionTool tool);
+
+    /**
      * get agent tools
      *
-     * @return the list of {@link Tool}
+     * @return the set of {@link Tool}
      */
     Set<FunctionTool> getTools();
 
     /**
+     * add building plan action name
+     *
+     * @param actionName the action name
+     */
+    void addDispatchActionName(String actionName);
+
+    /**
      * get building plan action names
      *
-     * @return the list of name
+     * @return the set of name
      */
     Set<String> getDispatchActionNames();
 

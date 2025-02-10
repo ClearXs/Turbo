@@ -8,7 +8,14 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ExecutionMode {
 
+    /**
+     * chat output through streaming
+     */
     STREAM("stream", "stream"),
+
+    /**
+     * directive output
+     */
     CALL("call", "call");
 
     private final String name;

@@ -88,6 +88,7 @@ public class ChatHandler implements WebSocketHandler, InitializingBean, Disposab
                     Message msg = JsonUtils.parse(message, Message.class);
                     WsInput input = new WsInput();
                     input.setSessionId(sessionId);
+                    input.setVariable(msg.getVariable());
                     input.setAgents(msg.getAgents());
                     input.setModelOptions(msg.getModelOptions());
                     input.setMessages(msg.getMsg());
@@ -115,16 +116,23 @@ public class ChatHandler implements WebSocketHandler, InitializingBean, Disposab
         Map<String, Object> attributes = handshakeInfo.getAttributes();
         HttpHeaders headers = handshakeInfo.getHeaders();
         if (headers.containsKey(WebUtil.X_AUTHENTICATION) || attributes.containsKey(WebUtil.X_AUTHENTICATION)) {
-            Supplier<Optional<String>> getHeaderOpt = () -> Optional.ofNullable(headers.getFirst(WebUtil.X_AUTHENTICATION));
-            Supplier<Optional<String>> getAttributesOpt = () -> Optional.ofNullable(attributes.get(WebUtil.X_AUTHENTICATION)).map(Object::toString);
+
+            // from header get token
+            Supplier<Optional<String>> getHeaderOpt =
+                    () -> Optional.ofNullable(headers.getFirst(WebUtil.X_AUTHENTICATION));
+
+            // from attributes get token
+            Supplier<Optional<String>> getAttributesOpt =
+                    () -> Optional.ofNullable(attributes.get(WebUtil.X_AUTHENTICATION)).map(Object::toString);
+
             return Optionals.firstNonEmpty(getHeaderOpt, getAttributesOpt)
                     .map(token -> {
                         Jwt jwt = TurboJwtDecoder.getInstance().decode(token);
                         Instant expiresAt = jwt.getExpiresAt();
+                        // check expires
                         return expiresAt == null || expiresAt.isAfter(DateUtil.now().toInstant());
                     })
                     .orElse(false);
-
         }
         return false;
     }

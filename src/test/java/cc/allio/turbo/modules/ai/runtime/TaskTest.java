@@ -8,12 +8,13 @@ import cc.allio.turbo.modules.ai.model.ModelOptions;
 import cc.allio.turbo.modules.ai.runtime.action.ActionConfiguration;
 import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
 import cc.allio.turbo.modules.ai.runtime.action.TestAction;
+import cc.allio.turbo.modules.ai.runtime.tool.FunctionTool;
+import cc.allio.turbo.modules.ai.runtime.tool.TestToolObject;
 import cc.allio.uno.core.chain.Chain;
 import cc.allio.uno.core.chain.Node;
 import cc.allio.uno.test.BaseTestCase;
 import cc.allio.uno.test.Inject;
 import cc.allio.uno.test.RunTest;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,30 +22,33 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.List;
+import java.util.Set;
 
 @RunTest(components = {ActionConfiguration.class, TestAction.class})
 public class TaskTest extends BaseTestCase {
 
     @Inject
     private ActionRegistry actionRegistry;
-    private Agent mockAgent;
-    private Task task;
+    private Agent mockTestAgent;
 
     private Input templateInput;
 
-    private static final String AGENT_NAME = "test";
-    private static final String AGENT_DESCRIPTION = "this is test agent";
-    private static final String AGENT_PROMPT_TEMPLATE = "you are english teacher";
+    private static final String TEST_AGENT_NAME = "test";
+    private static final String TEST_AGENT_DESCRIPTION = "this is test agent";
+    private static final String TEST_AGENT_PROMPT_TEMPLATE = "you are english teacher";
+
+    private Agent mockTemperatureAgent;
+    private static final String TEMPERATURE_AGENT_NAME = "temperature";
+    private static final String TEMPERATURE_AGENT_DESCRIPTION = "this is temperature agent";
+    private static final String TEMPERATURE_AGENT_PROMPT_TEMPLATE = "you are temperature agent";
 
     @Override
     public void onInit() throws Throwable {
-        mockAgent = Mockito.mock(Agent.class);
-        Mockito.when(mockAgent.name()).thenReturn(AGENT_NAME);
-        Mockito.when(mockAgent.description()).thenReturn(AGENT_DESCRIPTION);
-        Mockito.when(mockAgent.getPromptTemplate()).thenReturn(AGENT_PROMPT_TEMPLATE);
+        mockTestAgent = Mockito.mock(Agent.class);
+        Mockito.when(mockTestAgent.name()).thenReturn(TEST_AGENT_NAME);
+        Mockito.when(mockTestAgent.description()).thenReturn(TEST_AGENT_DESCRIPTION);
+        Mockito.when(mockTestAgent.getPromptTemplate()).thenReturn(TEST_AGENT_PROMPT_TEMPLATE);
 
-
-        this.task = new Task(mockAgent, actionRegistry);
         this.templateInput = new Input();
 
         ModelOptions modelOptions = new ModelOptions();
@@ -53,20 +57,30 @@ public class TaskTest extends BaseTestCase {
         modelOptions.setManufacturer(ModelManufacturer.OLLAMA);
 
         templateInput.setModelOptions(modelOptions);
+
+        // build temperature agent
+        mockTemperatureAgent = Mockito.mock(Agent.class);
+        Mockito.when(mockTemperatureAgent.name()).thenReturn(TEMPERATURE_AGENT_NAME);
+        Mockito.when(mockTemperatureAgent.description()).thenReturn(TEMPERATURE_AGENT_DESCRIPTION);
+        Mockito.when(mockTemperatureAgent.getPromptTemplate()).thenReturn(TEMPERATURE_AGENT_PROMPT_TEMPLATE);
+        TestToolObject testToolObject = new TestToolObject();
+        testToolObject.afterPropertiesSet();
+        Set<FunctionTool> tools = testToolObject.getTools();
+        Mockito.when(mockTemperatureAgent.getTools()).thenReturn(tools);
     }
 
     @Test
     void testEnvironment() {
-        Environment environment = task.getEnvironment();
+        Environment environment = new Task(mockTestAgent, actionRegistry).getEnvironment();
 
         assertNotNull(environment);
         Object agentName = environment.get(Environment.AGENT_NAME);
-        assertEquals(AGENT_NAME, agentName);
+        assertEquals(TEST_AGENT_NAME, agentName);
     }
 
     @Test
     void testBuildPlanning() {
-        Chain<TaskContext, Output> chain = task.buildPlaning();
+        Chain<TaskContext, Output> chain = new Task(mockTestAgent, actionRegistry).buildPlaning();
         List<? extends Node<TaskContext, Output>> nodes = chain.getNodes();
 
         assertEquals(2, nodes.size());
@@ -74,7 +88,7 @@ public class TaskTest extends BaseTestCase {
 
     @Test
     void testPlanningOfEnd() {
-        task.execute(Mono.just(templateInput))
+        new Task(mockTestAgent, actionRegistry).execute(Mono.just(templateInput))
                 .observeMany()
                 .as(StepVerifier::create)
                 .expectComplete()
@@ -83,12 +97,28 @@ public class TaskTest extends BaseTestCase {
 
     @Test
     void testPlanningOfLocalChat() {
-        Mockito.when(mockAgent.getDispatchActionNames()).thenReturn(Sets.newHashSet("chat"));
+        Mockito.when(mockTestAgent.getDispatchActionNames()).thenReturn(Sets.newHashSet("chat"));
         Input input = templateInput.copy();
         input.addMessage("what's english grammar?");
 
-        task.execute(Mono.just(input), ExecutionMode.CALL)
+        new Task(mockTestAgent, actionRegistry).execute(Mono.just(input), ExecutionMode.CALL)
                 .observeMany()
+                .as(StepVerifier::create)
+                .expectNextCount(1L)
+                .verifyComplete();
+    }
+
+    @Test
+    void testPlanningOfToolChat() {
+        Mockito.when(mockTemperatureAgent.getDispatchActionNames()).thenReturn(Sets.newHashSet("chat"));
+        Input input = templateInput.copy();
+        input.addMessage("what's today temperature?");
+
+        new Task(mockTemperatureAgent, actionRegistry)
+                .execute(Mono.just(input), ExecutionMode.CALL)
+                .observeMany()
+                .flatMap(subscription -> Mono.justOrEmpty(subscription.getDomain()))
+                .map(Output::getMessage)
                 .as(StepVerifier::create)
                 .expectNextCount(1L)
                 .verifyComplete();

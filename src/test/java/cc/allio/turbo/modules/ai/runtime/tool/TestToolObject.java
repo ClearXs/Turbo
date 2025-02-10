@@ -4,7 +4,7 @@ import org.springframework.ai.tool.annotation.Tool;
 
 public class TestToolObject extends ToolObject {
 
-    @Tool
+    @Tool(description = "get today temperature")
     public String getName() {
         return "test";
     }

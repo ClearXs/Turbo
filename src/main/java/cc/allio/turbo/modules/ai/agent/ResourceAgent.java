@@ -23,9 +23,9 @@ import java.util.Set;
 public abstract class ResourceAgent implements Agent {
 
     @Getter
-    protected  Set<String> dispatchActionNames = Sets.newHashSet();
+    protected Set<String> dispatchActionNames = Sets.newHashSet();
     @Getter
-    protected  Set<FunctionTool> tools = Sets.newHashSet();
+    protected Set<FunctionTool> tools = Sets.newHashSet();
 
     // read agent resources prompt template
     @Getter
@@ -71,6 +71,22 @@ public abstract class ResourceAgent implements Agent {
 
         // load implementation setup method.
         setup();
+    }
+
+    @Override
+    public void addTemporalTool(FunctionTool tool) {
+        if (this.tools == null) {
+            this.tools = Sets.newHashSet();
+        }
+        this.tools.add(tool);
+    }
+
+    @Override
+    public void addDispatchActionName(String actionName) {
+        if (this.dispatchActionNames == null) {
+            this.dispatchActionNames = Sets.newHashSet();
+        }
+        this.dispatchActionNames.add(actionName);
     }
 
     @Override

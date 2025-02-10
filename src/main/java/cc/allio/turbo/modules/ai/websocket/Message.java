@@ -1,6 +1,7 @@
 package cc.allio.turbo.modules.ai.websocket;
 
 import cc.allio.turbo.modules.ai.model.ModelOptions;
+import cc.allio.turbo.modules.ai.runtime.Variable;
 import lombok.Data;
 
 import java.util.Set;
@@ -13,5 +14,6 @@ public class Message {
 
     // use choose agents
     private Set<String> agents;
+    private Variable variable;
     private ModelOptions modelOptions;
 }

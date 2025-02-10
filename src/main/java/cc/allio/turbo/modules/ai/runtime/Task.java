@@ -55,31 +55,32 @@ public class Task {
      * do execute current user task
      *
      * @param inputMono the input
-     * @param mode
+     * @param mode      the execution mode
      * @return the {@link Observable} for {@link Output}
      */
     public Observable<Output> execute(Mono<Input> inputMono, ExecutionMode mode) {
-        Flux<Output> source = inputMono.flatMapMany(
-                input -> {
-                    Environment newEnvironment = environment.copy();
-                    if (input.getVariable() != null) {
-                        newEnvironment.injectOf(input.getVariable());
-                    }
-                    AgentModel agentModel = new AgentModel(input.getModelOptions());
-                    TaskContext taskContext =
-                            TaskContext.builder()
-                                    .agentModel(agentModel)
-                                    .input(input)
-                                    .environment(newEnvironment)
-                                    .agent(formAgent)
-                                    .task(this)
-                                    .build();
-                    Chain<TaskContext, Output> planning = buildPlaning();
-                    ActionContext actionContext = new ActionContext(taskContext);
-                    actionContext.setMode(mode);
-                    return planning.processMany(actionContext);
-                });
-        return Observable.from(source);
+        return Observable.from(
+                inputMono.flatMapMany(
+                        input -> {
+                            Environment newEnvironment = environment.copy();
+                            if (input.getVariable() != null) {
+                                newEnvironment.injectOf(input.getVariable());
+                            }
+                            AgentModel agentModel = new AgentModel(input.getModelOptions());
+                            TaskContext taskContext =
+                                    TaskContext.builder()
+                                            .agentModel(agentModel)
+                                            .input(input)
+                                            .environment(newEnvironment)
+                                            .agent(formAgent)
+                                            .task(this)
+                                            .build();
+                            Chain<TaskContext, Output> planning = buildPlaning();
+                            ActionContext actionContext = new ActionContext(taskContext);
+                            actionContext.setMode(mode);
+                            return planning.processMany(actionContext);
+                        })
+        );
     }
 
     /**
