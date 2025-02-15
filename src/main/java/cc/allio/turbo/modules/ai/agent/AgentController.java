@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
@@ -130,10 +131,11 @@ public class AgentController implements InitializingBean, Disposable {
      * @param subscription the subscription instance.
      */
     Flux<Topic<DomainEventContext>> transform(Subscription<Output> subscription) {
-        if (subscription.getDomain().isPresent()) {
+        Optional<Output> domainOptional = subscription.getDomain();
+        if (domainOptional.isEmpty()) {
             return Flux.empty();
         }
-        Output output = subscription.getDomain().get();
+        Output output = domainOptional.get();
         GeneralDomain<Output> domain = new GeneralDomain<>(output, driver.getDomainEventBus());
         Long inputId = output.getInputId();
         // publish to evaluation and output.

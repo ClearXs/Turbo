@@ -3,6 +3,8 @@ package cc.allio.turbo.common.domain;
 import cc.allio.uno.core.bus.EventBus;
 import lombok.Getter;
 
+import java.util.Optional;
+
 /**
  * domain generic type D load.
  *
@@ -20,7 +22,6 @@ public class GeneralDomain<D> implements Domain<D> {
         this.eventBus = eventBus;
     }
 
-
     @Override
     public void setDomainEventBus(EventBus<DomainEventContext> eventBus) {
         this.eventBus = eventBus;
@@ -29,5 +30,13 @@ public class GeneralDomain<D> implements Domain<D> {
     @Override
     public EventBus<DomainEventContext> getDomainEventBus() {
         return eventBus;
+    }
+
+    @Override
+    public Class<D> getDomainType() {
+        if (load != null) {
+            return (Class<D>) load.getClass();
+        }
+        return null;
     }
 }

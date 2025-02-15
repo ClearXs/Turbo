@@ -1,7 +1,6 @@
 package cc.allio.turbo.modules.ai;
 
 import cc.allio.turbo.common.domain.DomainEventConfiguration;
-import cc.allio.turbo.common.domain.DomainEventContext;
 import cc.allio.turbo.modules.ai.agent.AgentController;
 import cc.allio.turbo.modules.ai.agent.AgentRegistry;
 import cc.allio.turbo.modules.ai.evaluation.EvaluationController;
@@ -11,8 +10,7 @@ import cc.allio.turbo.modules.ai.runtime.action.ActionConfiguration;
 import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
 import cc.allio.turbo.modules.ai.runtime.tool.ToolConfiguration;
 import cc.allio.turbo.modules.ai.runtime.tool.ToolRegistry;
-import cc.allio.turbo.modules.ai.websocket.AIWsConfiguration;
-import cc.allio.uno.core.bus.EventBus;
+import cc.allio.turbo.modules.ai.websocket.WsConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -25,8 +23,9 @@ import org.springframework.context.annotation.*;
 @ImportAutoConfiguration({
         ResourceConfiguration.class,
         DomainEventConfiguration.class,
+        DriverConfiguration.class,
         ToolConfiguration.class,
-        AIWsConfiguration.class,
+        WsConfiguration.class,
         ActionConfiguration.class})
 @AutoConfigureAfter({DomainEventConfiguration.class, ToolConfiguration.class})
 @AutoConfigureBefore(ResourceConfiguration.class)
@@ -35,11 +34,6 @@ public class AIConfiguration {
     @Bean
     public AgentRegistry agentRegistry() {
         return new AgentRegistry();
-    }
-
-    @Bean
-    public DriverBeanRegister driverBeanRegister(EventBus<DomainEventContext> eventBus) {
-        return new DriverBeanRegister(eventBus);
     }
 
     @Bean

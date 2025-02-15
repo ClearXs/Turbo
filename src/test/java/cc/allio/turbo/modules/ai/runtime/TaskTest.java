@@ -83,7 +83,7 @@ public class TaskTest extends BaseTestCase {
         Chain<TaskContext, Output> chain = new Task(mockTestAgent, actionRegistry).buildPlaning();
         List<? extends Node<TaskContext, Output>> nodes = chain.getNodes();
 
-        assertEquals(2, nodes.size());
+        assertEquals(3, nodes.size());
     }
 
     @Test

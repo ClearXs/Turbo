@@ -1,15 +1,15 @@
 package cc.allio.turbo.modules.ai.websocket;
 
-import cc.allio.turbo.modules.ai.AIConfiguration;
-import cc.allio.turbo.modules.ai.Driver;
-import cc.allio.turbo.modules.ai.Input;
-import cc.allio.turbo.modules.ai.Output;
-import cc.allio.turbo.modules.auth.jwt.JwtConfiguration;
+import cc.allio.turbo.modules.ai.*;
+import cc.allio.turbo.modules.auth.jwt.JwtCodecConfiguration;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.reactive.socket.WebSocketHandler;
@@ -21,13 +21,15 @@ import org.springframework.web.reactive.socket.server.upgrade.UndertowRequestUpg
 import java.util.Map;
 
 @AutoConfiguration
-@AutoConfigureAfter({AIConfiguration.class, JwtConfiguration.class})
-public class AIWsConfiguration {
+@ImportAutoConfiguration({DriverConfiguration.class, JwtCodecConfiguration.class})
+@AutoConfigureAfter(DriverConfiguration.class)
+public class WsConfiguration {
 
     @Bean
     public ChatHandler chatHandler(@Qualifier("Driver_Input") Driver<Input> inputDriver,
-                                   @Qualifier("Driver_Output") Driver<Output> outputDriver) {
-        return new ChatHandler(inputDriver, outputDriver);
+                                   @Qualifier("Driver_Output") Driver<Output> outputDriver,
+                                   JwtDecoder jwtDecoder) {
+        return new ChatHandler(inputDriver, outputDriver, jwtDecoder);
     }
 
     @Bean
@@ -38,11 +40,13 @@ public class AIWsConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public WebSocketHandlerAdapter wsHandlerAdapter() {
         return new WebSocketHandlerAdapter(webSocketService());
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public WebSocketService webSocketService() {
         UndertowRequestUpgradeStrategy strategy = new UndertowRequestUpgradeStrategy();
         return new HandshakeWebSocketService(strategy);

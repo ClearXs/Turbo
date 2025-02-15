@@ -1,23 +1,18 @@
 package cc.allio.turbo.modules.auth.jwt;
 
+import cc.allio.turbo.modules.auth.configuration.SecurityConfiguration;
 import cc.allio.turbo.modules.auth.properties.SecureProperties;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 
-@Configuration
+@AutoConfiguration
+@ImportAutoConfiguration({JwtCodecConfiguration.class, SecurityConfiguration.class})
+@AutoConfigureAfter(SecurityConfiguration.class)
 public class JwtConfiguration {
-
-    @Bean
-    public JwtEncoder turboJwtEncoder() {
-        return TurboJwtEncoder.getInstance();
-    }
-
-    @Bean
-    public JwtDecoder turboJwtDecoder() {
-        return TurboJwtDecoder.getInstance();
-    }
 
     @Bean
     public JwtAuthentication jwtAuthentication(JwtEncoder jwtEncoder,
