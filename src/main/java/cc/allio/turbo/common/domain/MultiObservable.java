@@ -1,6 +1,7 @@
 package cc.allio.turbo.common.domain;
 
 import cc.allio.uno.core.api.Self;
+import com.google.common.collect.Lists;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,7 +22,7 @@ public class MultiObservable<D> implements Observable<D>, Self<MultiObservable<D
 
     @SafeVarargs
     public MultiObservable(Observable<D>... observables) {
-        this.observableList = Arrays.asList(observables);
+        this.observableList = Lists.newCopyOnWriteArrayList(Arrays.asList(observables));
     }
 
     /**

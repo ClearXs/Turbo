@@ -190,6 +190,11 @@
         </dependency>
         <dependency>
             <groupId>cc.allio.uno</groupId>
+            <artifactId>uno-auto</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cc.allio.uno</groupId>
             <artifactId>uno-http</artifactId>
         </dependency>
         <dependency>

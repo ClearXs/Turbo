@@ -33,18 +33,11 @@ public class BehaviorObservable<D> implements Observable<D> {
 
     @Override
     public Mono<Subscription<D>> observe() {
-        return doObserve().single();
+        return observeMany().single();
     }
 
     @Override
     public Flux<Subscription<D>> observeMany() {
-        return doObserve();
-    }
-
-    /**
-     * do observe domain subscribe behavior
-     */
-    Flux<Subscription<D>> doObserve() {
         return Mono.justOrEmpty(eventBus)
                 .flatMapMany(bus ->
                         bus.subscribeOnRepeatable(eventBehavior)

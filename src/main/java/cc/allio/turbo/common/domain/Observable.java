@@ -22,10 +22,10 @@ public interface Observable<D> {
      *
      * @param acceptor when exiting active observe callback.
      * @return the {@link Disposable} instance
-     * @see #observe()
+     * @see #observeMany()
      */
     default Disposable observe(Consumer<Subscription<D>> acceptor) {
-        return observe().subscribe(acceptor);
+        return observeMany().subscribe(acceptor);
     }
 
     /**
@@ -60,7 +60,7 @@ public interface Observable<D> {
      * @param <D>      the domain type
      * @return {@link Observable}
      */
-    static <D> Observable<D> from(Flux<D> fromFlux) {
+    static <D> Observable<D> from(@NonNull Flux<D> fromFlux) {
         return new FluxObservable<>(fromFlux);
     }
 
@@ -79,7 +79,7 @@ public interface Observable<D> {
 
         @Override
         public Flux<Subscription<D>> observeMany() {
-            throw new UnsupportedOperationException();
+            return Flux.from(observe());
         }
     }
 
@@ -93,7 +93,7 @@ public interface Observable<D> {
 
         @Override
         public Mono<Subscription<D>> observe() {
-            return observeMany().single();
+            return observeMany().take(1).single();
         }
 
         @Override

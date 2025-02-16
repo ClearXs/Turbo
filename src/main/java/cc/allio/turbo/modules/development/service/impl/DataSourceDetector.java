@@ -16,7 +16,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
@@ -43,7 +42,6 @@ import java.util.concurrent.TimeUnit;
  * @since 0.1.0
  */
 @Configuration
-@EnableAutoConfiguration
 @AutoConfigureAfter({MybatisPlusAutoConfiguration.class, TxAutoConfiguration.class})
 public class DataSourceDetector implements DisposableBean, ApplicationListener<ApplicationStartedEvent> {
 

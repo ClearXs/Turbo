@@ -7,6 +7,7 @@ import cc.allio.uno.core.exception.Trys;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.uno.core.util.list.SingleOrList;
 import com.google.common.collect.Lists;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -26,6 +27,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -66,11 +69,15 @@ public class AIResources implements Self<AIResources> {
      * if read success the parameter {@link #loaded} is true. even once again is not to do anything.
      * read resource will be store {@link #agentResource} and {@link #actionResource}
      */
-    public void readNow() throws ResourceParseException {
+    public void readNow() {
         if (!isLoaded()) {
-            agentResource.readNow();
-            actionResource.readNow();
-            loaded.compareAndSet(false, true);
+            CompletableFuture.runAsync(
+                    () -> {
+                        agentResource.readNow();
+                        actionResource.readNow();
+                        loaded.compareAndSet(false, true);
+                    },
+                    Executors.newVirtualThreadPerTaskExecutor());
         }
     }
 
@@ -148,10 +155,8 @@ public class AIResources implements Self<AIResources> {
 
         /**
          * read resources
-         *
-         * @throws ResourceParseException if failed to read resources then throwing.
          */
-        void readNow() throws ResourceParseException;
+        void readNow();
 
         /**
          * get read resources.
@@ -198,7 +203,7 @@ public class AIResources implements Self<AIResources> {
         private final ClassPathResource resource;
 
         static final String AGENT_FILENAME = "agent.yaml";
-        static final String PROMPT_FILENAME = "agentPrompt.st";
+        static final String PROMPT_FILENAME = "prompt.st";
         static final String TOOLS_FILENAME = "tools.json";
 
         public AgentResource() {
@@ -207,33 +212,40 @@ public class AIResources implements Self<AIResources> {
         }
 
         @Override
-        public void readNow() throws ResourceParseException {
-            File agentDirector;
+        public void readNow() {
+            File agentDirectory = null;
             try {
-                agentDirector = resource.getFile();
+                agentDirectory = resource.getFile();
             } catch (IOException e) {
-                throw new ResourceParseException(e);
+                log.warn("resource directory ai/agent not found in classpath");
             }
 
-            List<File> agentDirectories = consecutiveReadTwoTileDirectory(agentDirector);
+            if (agentDirectory != null) {
+                List<File> agentDirectories = consecutiveReadTwoTileDirectory(agentDirectory);
 
-            for (File directory : agentDirectories) {
-                ResourceDirectoryReader reader = new ResourceDirectoryReader(directory);
-                LiteralAgent literalAgent =
-                        Trys.onCapture(
-                                () -> reader.readTo(reader.getFile(AGENT_FILENAME), LiteralAgent.class),
-                                err -> {
-                                    log.error("load agent has fatal errors.", err);
-                                });
+                for (File directory : agentDirectories) {
+                    ResourceDirectoryReader reader = new ResourceDirectoryReader(directory);
+                    LiteralAgent literalAgent =
+                            Trys.onCapture(
+                                    () -> reader.readTo(reader.getFile(AGENT_FILENAME), LiteralAgent.class),
+                                    err -> {
+                                        log.error("load agent has fatal errors.", err);
+                                    });
 
-                if (literalAgent != null) {
-                    String prompt = Trys.onContinue(() -> reader.readToString(reader.getFile(PROMPT_FILENAME)));
-                    literalAgent.setPrompt(prompt);
-                    List<Map<String, Object>> tools = Trys.onContinue(() -> reader.readToListMap(reader.getFile(TOOLS_FILENAME), String.class, Object.class));
-                    literalAgent.setTools(tools);
-                    agents.add(literalAgent);
+                    if (literalAgent != null) {
+                        String prompt =
+                                Trys.onContinue(() -> reader.readToString(reader.getFile(PROMPT_FILENAME)));
+                        literalAgent.setPrompt(prompt);
+
+                        List<Map<String, Object>> tools =
+                                Trys.onContinue(() -> reader.readToListMap(reader.getFile(TOOLS_FILENAME), String.class, Object.class));
+                        literalAgent.setTools(tools);
+
+                        agents.add(literalAgent);
+                    }
                 }
             }
+
         }
 
         @Override
@@ -262,29 +274,31 @@ public class AIResources implements Self<AIResources> {
         }
 
         @Override
-        public void readNow() throws ResourceParseException {
-            File actionDirectory;
+        public void readNow() {
+            File actionDirectory = null;
             try {
                 actionDirectory = resource.getFile();
-            } catch (IOException e) {
-                throw new ResourceParseException(e);
+            } catch (IOException ex) {
+                log.warn("resource directory ai/action not found in classpath");
             }
 
-            List<File> actionDirectories = consecutiveReadTwoTileDirectory(actionDirectory);
+            if (actionDirectory != null) {
+                List<File> actionDirectories = consecutiveReadTwoTileDirectory(actionDirectory);
 
-            for (File directory : actionDirectories) {
-                ResourceDirectoryReader reader = new ResourceDirectoryReader(directory);
-                LiteralAction literalAction =
-                        Trys.onCapture(
-                                () -> reader.readTo(reader.getFile(ACTION_FILENAME), LiteralAction.class),
-                                err -> {
-                                    log.error("load action has fatal errors.", err);
-                                });
+                for (File directory : actionDirectories) {
+                    ResourceDirectoryReader reader = new ResourceDirectoryReader(directory);
+                    LiteralAction literalAction =
+                            Trys.onCapture(
+                                    () -> reader.readTo(reader.getFile(ACTION_FILENAME), LiteralAction.class),
+                                    err -> {
+                                        log.error("load action has fatal errors.", err);
+                                    });
 
-                if (literalAction != null) {
-                    String content = Trys.onContinue(() -> reader.readToString(reader.getFile(CONTENT_FILENAME)));
-                    literalAction.setContent(content);
-                    actions.add(literalAction);
+                    if (literalAction != null) {
+                        String content = Trys.onContinue(() -> reader.readToString(reader.getFile(CONTENT_FILENAME)));
+                        literalAction.setContent(content);
+                        actions.add(literalAction);
+                    }
                 }
             }
         }
@@ -586,8 +600,11 @@ public class AIResources implements Self<AIResources> {
         private String name;
         private String description;
         private String prompt;
+        @Nullable
         private List<String> actions;
+        @Nullable
         private List<String> externalTools;
+        @Nullable
         private List<Map<String, Object>> tools;
     }
 }

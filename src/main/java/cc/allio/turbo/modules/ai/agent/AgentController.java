@@ -2,6 +2,8 @@ package cc.allio.turbo.modules.ai.agent;
 
 import cc.allio.turbo.common.domain.*;
 import cc.allio.turbo.modules.ai.*;
+import cc.allio.turbo.modules.ai.agent.builtin.ChatAgent;
+import cc.allio.turbo.modules.ai.agent.builtin.SMAAgent;
 import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
 import cc.allio.turbo.modules.ai.exception.ResourceParseException;
 import cc.allio.turbo.modules.ai.resources.AIResources;
@@ -58,8 +60,8 @@ public class AgentController implements InitializingBean, Disposable {
         // load resource
         resources.readNow();
 
-        // load all agent
-        initiateAgents();
+        // load built in agent
+        initiateBuiltInAgents();
 
         // subscribe user input
         this.disposable =
@@ -73,7 +75,7 @@ public class AgentController implements InitializingBean, Disposable {
                         .subscribe();
     }
 
-    void initiateAgents() {
+    void initiateBuiltInAgents() {
         // load internal agent
         SMAAgent smaAgent = new SMAAgent(toolRegistry, actionRegistry);
         resources.detectOfAgent(smaAgent.name())

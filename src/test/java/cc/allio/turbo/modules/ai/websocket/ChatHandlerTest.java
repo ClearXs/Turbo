@@ -55,7 +55,6 @@ public class ChatHandlerTest extends BaseTestCase {
         Mockito.when(mockHandshakeInfo.getAttributes()).thenReturn(attributes);
         Mockito.when(mockHandshakeInfo.getHeaders()).thenReturn(headers);
 
-
         boolean a1 = chatHandler.isAuthentication(mockHandshakeInfo);
         Assertions.assertFalse(a1);
 

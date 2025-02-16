@@ -7,6 +7,7 @@ import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
 import cc.allio.turbo.modules.ai.runtime.tool.FunctionTool;
 import cc.allio.turbo.modules.ai.runtime.tool.Tool;
 import cc.allio.turbo.modules.ai.runtime.tool.ToolRegistry;
+import cc.allio.uno.core.util.CollectionUtils;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 
@@ -51,22 +52,36 @@ public abstract class ResourceAgent implements Agent {
             throw new AgentInitializationException("Agent name not match");
         }
 
+        // set prompt template
         this.promptTemplate = agent.getPrompt();
-        this.dispatchActionNames = Sets.newHashSet(agent.getActions());
-        List<Map<String, Object>> toolListMap = agent.getTools();
 
-        List<FunctionTool> fileTools = toolListMap.stream().map(FunctionTool::of).toList();
-        this.tools.addAll(fileTools);
+        // set actions
+        List<String> actions = agent.getActions();
+        if (CollectionUtils.isNotEmpty(actions)) {
+            this.dispatchActionNames = Sets.newHashSet(actions);
+        }
+
+        // set tools
+        List<Map<String, Object>> toolListMap = agent.getTools();
+        if (CollectionUtils.isEmpty(toolListMap)) {
+            List<FunctionTool> fileTools = toolListMap.stream().map(FunctionTool::of).toList();
+            this.tools.addAll(fileTools);
+        }
+
 
         // load external-tools
         List<String> externalTools = agent.getExternalTools();
-        for (String externalTool : externalTools) {
-            FunctionTool functionTool = toolRegistry.get(externalTool);
-            if (functionTool != null) {
-                this.tools.add(functionTool);
+
+        if (CollectionUtils.isNotEmpty(externalTools)) {
+            for (String externalTool : externalTools) {
+                FunctionTool functionTool = toolRegistry.get(externalTool);
+                if (functionTool != null) {
+                    this.tools.add(functionTool);
+                }
             }
         }
 
+        // set description
         this.description = agent.getDescription();
 
         // load implementation setup method.
