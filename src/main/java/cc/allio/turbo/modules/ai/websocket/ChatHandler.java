@@ -8,9 +8,12 @@ import cc.allio.turbo.modules.ai.Driver;
 import cc.allio.turbo.modules.ai.Input;
 import cc.allio.turbo.modules.ai.Output;
 import cc.allio.turbo.modules.ai.Topics;
+import cc.allio.turbo.modules.ai.model.ModelOptions;
+import cc.allio.turbo.modules.ai.runtime.Variable;
 import cc.allio.uno.core.bus.TopicKey;
 import cc.allio.uno.core.util.DateUtil;
 import cc.allio.uno.core.util.JsonUtils;
+import cc.allio.uno.core.util.id.IdGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -19,14 +22,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
-import org.springframework.web.reactive.socket.*;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 import reactor.core.Disposable;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -36,7 +43,7 @@ import java.util.function.Supplier;
  * @since 0.2.0
  */
 @Slf4j
-public class ChatHandler implements WebSocketHandler, InitializingBean, DisposableBean {
+public class ChatHandler extends TextWebSocketHandler implements InitializingBean, DisposableBean {
 
     private final Driver<Input> inputDriver;
     private final Driver<Output> outputDriver;
@@ -57,52 +64,69 @@ public class ChatHandler implements WebSocketHandler, InitializingBean, Disposab
         this.disposable =
                 outputDriver.subscribeOn(Topics.OUTPUT_PATTERNS)
                         .observeMany()
-                        .flatMap(subscription -> Flux.from(handleOutput(subscription)))
+                        .doOnNext(this::handleOutput)
                         .subscribe();
     }
 
+    void handleOutput(Subscription<Output> subscription) {
+        subscription.getDomain()
+                .ifPresent(output -> {
+                    Input input = output.getInput();
+                    Optional.ofNullable(input)
+                            .flatMap(i -> {
+                                if (i instanceof WsInput wsInput) {
+                                    return Optional.ofNullable(wsInput.getSession());
+                                }
+                                return Optional.empty();
+                            })
+                            .ifPresent(session -> {
+                                String message = output.getMessage();
+                                TextMessage textMessage = new TextMessage(message.getBytes(StandardCharsets.UTF_8));
+                                try {
+                                    session.sendMessage(textMessage);
+                                } catch (IOException ex) {
+                                    log.error("failed ws send msg: {}", message, ex);
+                                }
+                            });
+                });
+    }
+
     @Override
-    public Mono<Void> handle(WebSocketSession session) {
-        // unique id for session.
-        HandshakeInfo handshakeInfo = session.getHandshakeInfo();
-        if (!isAuthentication(handshakeInfo)) {
-            return session.close(CloseStatus.NOT_ACCEPTABLE);
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        if (log.isInfoEnabled()) {
+            log.info("receive message: {}", message.getPayload());
         }
-        return session.receive()
-                .map(WebSocketMessage::getPayloadAsText)
-                // create ws input
-                .map(message -> {
-                    Message msg = JsonUtils.parse(message, Message.class);
-                    WsInput input = new WsInput();
-                    String sessionId = session.getId();
-                    input.setSession(session);
-                    input.setSessionId(sessionId);
-                    input.setVariable(msg.getVariable());
-                    input.setAgents(msg.getAgents());
-                    input.setModelOptions(msg.getModelOptions());
-                    input.setMessages(msg.getMsg());
-                    return input;
-                })
-                .flatMap(input -> {
-                    GeneralDomain<Input> domain = new GeneralDomain<>(input, inputDriver.getDomainEventBus());
-                    DomainEventContext context = new DomainEventContext(domain);
-                    TopicKey topicKey = Topics.USER_INPUT.append(input.getSessionId());
-                    return inputDriver.publishOn(topicKey, context);
-                })
-                // simple record to log
-                .onErrorContinue((throwable, o) -> log.error("receive message error", throwable))
-                .then();
+        Message msg = null;
+        try {
+            msg = JsonUtils.parse(message.getPayload(), Message.class);
+        } catch (Exception ex) {
+            // ignore
+            // user send msg is literal string
+        }
+        WsInput input = new WsInput();
+        String sessionId = session.getId();
+        input.setId(IdGenerator.defaultGenerator().getNextId());
+        input.setSession(session);
+        input.setSessionId(sessionId);
+        input.setVariable(msg == null ? new Variable() : msg.getVariable());
+        input.setAgents(msg == null ? Set.of("Chat") : msg.getAgents());
+        input.setModelOptions(msg == null ? ModelOptions.getDefaultForOllama() : msg.getModelOptions());
+        input.setMessages(msg == null ? Set.of(message.getPayload()) : msg.getMsg());
+        GeneralDomain<Input> domain = new GeneralDomain<>(input, inputDriver.getDomainEventBus());
+        DomainEventContext context = new DomainEventContext(domain);
+        TopicKey topicKey = Topics.USER_INPUT.copy().append(input.getId());
+        inputDriver.publishOn(topicKey, context).subscribe();
     }
 
     /**
-     * from handshake info to check is authentication.
+     * from WebSocketSession info to check is authentication.
      *
-     * @param handshakeInfo the {@link HandshakeInfo} instance.
+     * @param session the {@link WebSocketSession} instance.
      * @return true if is authentication.
      */
-    public boolean isAuthentication(HandshakeInfo handshakeInfo) {
-        Map<String, Object> attributes = handshakeInfo.getAttributes();
-        HttpHeaders headers = handshakeInfo.getHeaders();
+    public boolean isAuthentication(WebSocketSession session) {
+        Map<String, Object> attributes = session.getAttributes();
+        HttpHeaders headers = session.getHandshakeHeaders();
         if (headers.containsKey(WebUtil.X_AUTHENTICATION) || attributes.containsKey(WebUtil.X_AUTHENTICATION)) {
             // from header get token
             Supplier<Optional<String>> getHeaderOpt =
@@ -128,25 +152,6 @@ public class ChatHandler implements WebSocketHandler, InitializingBean, Disposab
                     .orElse(false);
         }
         return false;
-    }
-
-    Mono<Void> handleOutput(Subscription<Output> subscription) {
-        return subscription.getDomain()
-                .flatMap(output -> {
-                    Input input = output.getInput();
-                    return Optional.ofNullable(input)
-                            .flatMap(i -> {
-                                if (i instanceof WsInput wsInput) {
-                                    return Optional.ofNullable(wsInput.getSession());
-                                }
-                                return Optional.empty();
-                            })
-                            .map(session -> {
-                                WebSocketMessage message = session.textMessage(output.getMessage());
-                                return session.send(Mono.just(message));
-                            });
-                })
-                .orElse(Mono.empty());
     }
 
     @Override

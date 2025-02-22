@@ -8,6 +8,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import reactor.core.publisher.Flux;
 
+import java.util.List;
+
 /**
  * domain event publisher.
  *
@@ -109,7 +111,24 @@ public interface Publisher<D> extends InitializingBean, DisposableBean, Domain<D
      */
     default Flux<Topic<DomainEventContext>> publishOn(TopicKey topicKey, DomainEventContext context) {
         // like DomainName/event
-        String path = buildEventPath(topicKey.getPath());
-        return getDomainEventBus().publish(TopicKey.of(path), context);
+        String domainPath = buildEventPath(topicKey.getPath());
+        return getDomainEventBus().publish(TopicKey.of(domainPath), context);
+    }
+
+    /**
+     * batch publish to {@link EventBus}
+     *
+     * @param topicKeys the list of {@link TopicKey}
+     * @param context   the {@link DomainEventContext}
+     * @return
+     */
+    default Flux<Topic<DomainEventContext>> publishOn(List<TopicKey> topicKeys, DomainEventContext context) {
+        return getDomainEventBus()
+                .batchPublish(
+                        topicKeys.stream()
+                                .map(topicKey -> TopicKey.of(buildEventPath(topicKey.getPath())))
+                                .toList(),
+                        context
+                );
     }
 }

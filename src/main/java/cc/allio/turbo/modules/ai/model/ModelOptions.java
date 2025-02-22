@@ -48,4 +48,17 @@ public class ModelOptions extends MapEntity implements ChatOptions {
     public <T extends ChatOptions> T copy() {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * get <code>ModelOptions</code> instance for ollama
+     *
+     * @return {@link ModelOptions}
+     */
+    public static ModelOptions getDefaultForOllama() {
+        ModelOptions modelOptions = new ModelOptions();
+        modelOptions.setManufacturer(ModelManufacturer.OLLAMA);
+        modelOptions.setAddress("http://localhost:11434");
+        modelOptions.setModel("llama3.2:1b");
+        return modelOptions;
+    }
 }

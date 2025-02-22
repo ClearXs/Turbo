@@ -41,13 +41,6 @@ public interface Agent {
     Observable<Output> call(Mono<Input> input, ExecutionMode mode);
 
     /**
-     * initialization agent and agent will be preparation chain of action.
-     *
-     * @throws AgentInitializationException when install happen error will be throwing.
-     */
-    void install(AIResources.LiteralAgent literalAgent) throws AgentInitializationException;
-
-    /**
      * add temporal tool
      *
      * @param tool the {@link FunctionTool}

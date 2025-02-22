@@ -20,7 +20,7 @@ public class DomainBeanPostProcessor implements BeanPostProcessor {
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         // judgement bean is Subscriber
         if (bean instanceof Subscriber<?> subscriber) {
             subscriber.setDomainEventBus(eventBus);

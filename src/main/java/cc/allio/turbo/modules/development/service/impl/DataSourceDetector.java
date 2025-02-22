@@ -14,6 +14,7 @@ import cc.allio.uno.data.tx.TxAutoConfiguration;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -41,6 +42,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2024/1/26 00:11
  * @since 0.1.0
  */
+@Slf4j
 @Configuration
 @AutoConfigureAfter({MybatisPlusAutoConfiguration.class, TxAutoConfiguration.class})
 public class DataSourceDetector implements DisposableBean, ApplicationListener<ApplicationStartedEvent> {
@@ -60,7 +62,8 @@ public class DataSourceDetector implements DisposableBean, ApplicationListener<A
 
     @Override
     public void onApplicationEvent(ApplicationStartedEvent event) {
-        discards.add(dataSourceService.subscribeOnInitialize().observe(this::onInitialization));
+
+        onInitialization();
         // save
         discards.add(dataSourceService.subscribeOn(dataSourceService::save).observe(this::onSaveOrUpdate));
         // update
@@ -90,7 +93,7 @@ public class DataSourceDetector implements DisposableBean, ApplicationListener<A
      *
      * @param subscription subscription
      */
-    void onInitialization(Subscription<DevDataSource> subscription) {
+    void onInitialization() {
         TransactionContext.execute(() -> {
             List<AggregateCommandExecutor> allDefault = commandExecutorContext.getAllDefault();
             // 保存所有默认的
@@ -141,10 +144,16 @@ public class DataSourceDetector implements DisposableBean, ApplicationListener<A
 
         // 查询所有非默认的加入值 registry
         List<DevDataSource> nonDefault = dataSourceService.list(Wrappers.<DevDataSource>lambdaQuery().eq(DevDataSource::isDefaulted, false));
-        nonDefault.stream()
-                .peek(commandExecutorContext::lockWrite)
-                .map(dataSourceService::createExecutorOptions)
-                .forEach(commandExecutorContext::createAndRegister);
+
+        for (DevDataSource devDataSource : nonDefault) {
+            commandExecutorContext.lockWrite(devDataSource);
+            ExecutorOptions executorOptions = dataSourceService.createExecutorOptions(devDataSource);
+            try {
+                commandExecutorContext.createAndRegister(executorOptions);
+            } catch (Throwable e) {
+                log.error("create executor options {} has error", executorOptions, e);
+            }
+        }
     }
 
     /**

@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.function.ThrowingFunction;
 import org.yaml.snakeyaml.DumperOptions;
@@ -30,6 +31,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -65,19 +67,38 @@ public class AIResources implements Self<AIResources> {
     }
 
     /**
-     * immediate reading AI resource in classpath
+     * @see #read(Consumer)
+     */
+    public void read() {
+        read(null);
+    }
+
+    /**
+     * asynchronous reading AI resource in classpath
      * if read success the parameter {@link #loaded} is true. even once again is not to do anything.
      * read resource will be store {@link #agentResource} and {@link #actionResource}
+     * <p>
+     * when completion will be invoked {@code callback} function.
+     */
+    public void read(Consumer<Void> callback) {
+        CompletableFuture.runAsync(
+                () -> {
+                    readNow();
+                    if (callback != null) {
+                        callback.accept(null);
+                    }
+                },
+                Executors.newVirtualThreadPerTaskExecutor());
+    }
+
+    /**
+     * immediate reading AI resource in classpath
      */
     public void readNow() {
         if (!isLoaded()) {
-            CompletableFuture.runAsync(
-                    () -> {
-                        agentResource.readNow();
-                        actionResource.readNow();
-                        loaded.compareAndSet(false, true);
-                    },
-                    Executors.newVirtualThreadPerTaskExecutor());
+            agentResource.readNow();
+            actionResource.readNow();
+            loaded.compareAndSet(false, true);
         }
     }
 

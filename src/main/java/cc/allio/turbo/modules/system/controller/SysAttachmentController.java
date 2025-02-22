@@ -6,7 +6,6 @@ import cc.allio.turbo.common.web.TurboCrudController;
 import cc.allio.turbo.modules.system.entity.SysAttachment;
 import cc.allio.turbo.modules.system.service.ISysAttachmentService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

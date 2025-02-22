@@ -19,13 +19,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketMessage;
-import org.springframework.web.reactive.socket.WebSocketSession;
-import reactor.core.publisher.Flux;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
@@ -33,7 +31,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ChatHandlerTest extends BaseTestCase {
 
@@ -48,47 +45,44 @@ public class ChatHandlerTest extends BaseTestCase {
 
     @Test
     void testAuthentication() {
-        HandshakeInfo mockHandshakeInfo = Mockito.mock(HandshakeInfo.class);
+        WebSocketSession session = Mockito.mock(WebSocketSession.class);
         Map<String, Object> attributes = Maps.newConcurrentMap();
         HttpHeaders headers = new HttpHeaders();
 
-        Mockito.when(mockHandshakeInfo.getAttributes()).thenReturn(attributes);
-        Mockito.when(mockHandshakeInfo.getHeaders()).thenReturn(headers);
+        Mockito.when(session.getAttributes()).thenReturn(attributes);
+        Mockito.when(session.getHandshakeHeaders()).thenReturn(headers);
 
-        boolean a1 = chatHandler.isAuthentication(mockHandshakeInfo);
+        boolean a1 = chatHandler.isAuthentication(session);
         Assertions.assertFalse(a1);
 
         attributes.put(WebUtil.X_AUTHENTICATION, "");
-        boolean a2 = chatHandler.isAuthentication(mockHandshakeInfo);
+        boolean a2 = chatHandler.isAuthentication(session);
         Assertions.assertFalse(a2);
 
         String validToken = buildToken(new Date().toInstant().plus(1000L, ChronoUnit.MILLIS));
         attributes.put(WebUtil.X_AUTHENTICATION, validToken);
-        boolean a3 = chatHandler.isAuthentication(mockHandshakeInfo);
+        boolean a3 = chatHandler.isAuthentication(session);
         Assertions.assertTrue(a3);
 
 
         String expiredToken = buildToken(new Date().toInstant().minus(1000L, ChronoUnit.MILLIS));
         attributes.put(WebUtil.X_AUTHENTICATION, expiredToken);
-        boolean a4 = chatHandler.isAuthentication(mockHandshakeInfo);
+        boolean a4 = chatHandler.isAuthentication(session);
         Assertions.assertFalse(a4);
     }
 
     @Test
     void testCorrectHandle() {
-        AtomicReference<FluxSink<WebSocketMessage>> sinkRef = new AtomicReference<>();
-        Flux<WebSocketMessage> receive = Flux.create(sinkRef::set);
+        WebSocketSession mockSession = Mockito.mock(WebSocketSession.class);
+        Mockito.when(mockSession.getId()).thenReturn("1");
 
-        WebSocketSession mockWebSocketSession = Mockito.mock(WebSocketSession.class);
-        Mockito.when(mockWebSocketSession.receive()).thenReturn(receive);
-        Mockito.when(mockWebSocketSession.getId()).thenReturn("1");
+        validSessionInfo(mockSession);
 
-        HandshakeInfo mockHandshakeInfo = validHandshakeInfo();
-        Mockito.when(mockWebSocketSession.getHandshakeInfo()).thenReturn(mockHandshakeInfo);
-
-        chatHandler.handle(mockWebSocketSession).subscribe();
-
-        sinkToMessage(sinkRef.get(), "hello");
+        Mono.delay(Duration.ofSeconds(1L))
+                .then(Mono.fromRunnable(() -> {
+                    assertDoesNotThrow(() -> chatHandler.handleMessage(mockSession, new TextMessage("hello")));
+                }))
+                .subscribe();
 
         Driver.from(Input.class)
                 .subscribeOn(Topics.USER_INPUT_PATTERNS)
@@ -112,17 +106,15 @@ public class ChatHandlerTest extends BaseTestCase {
         return jwt.getTokenValue();
     }
 
-    HandshakeInfo validHandshakeInfo() {
-        HandshakeInfo mockHandshakeInfo = Mockito.mock(HandshakeInfo.class);
+    void validSessionInfo(WebSocketSession mockSession) {
         Map<String, Object> attributes = Maps.newConcurrentMap();
         HttpHeaders headers = new HttpHeaders();
 
-        Mockito.when(mockHandshakeInfo.getAttributes()).thenReturn(attributes);
-        Mockito.when(mockHandshakeInfo.getHeaders()).thenReturn(headers);
+        Mockito.when(mockSession.getAttributes()).thenReturn(attributes);
+        Mockito.when(mockSession.getHandshakeHeaders()).thenReturn(headers);
 
         String validToken = buildToken(new Date().toInstant().plus(1000L, ChronoUnit.MILLIS));
         attributes.put(WebUtil.X_AUTHENTICATION, validToken);
-        return mockHandshakeInfo;
     }
 
     void sinkToMessage(FluxSink<WebSocketMessage> sink, String msg) {
@@ -136,6 +128,5 @@ public class ChatHandlerTest extends BaseTestCase {
                     sink.next(webSocketMessage);
                 }))
                 .subscribe();
-
     }
 }

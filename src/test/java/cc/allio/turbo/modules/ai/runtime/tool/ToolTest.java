@@ -31,7 +31,7 @@ public class ToolTest extends BaseTestCase {
     @Test
     void testFromResourcesRegisterToRegistry() {
         AIResources resources = new AIResources();
-        assertDoesNotThrow(resources::readNow);
+        assertDoesNotThrow(() -> resources.read());
 
         Optional<AIResources.LiteralAgent> travelOptional = resources.detectOfAgent("travel");
         assertTrue(travelOptional.isPresent());

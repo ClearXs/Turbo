@@ -11,7 +11,7 @@ public class AIResourcesTest extends BaseTestCase {
 
     @Test
     void testReadAgent() {
-        assertDoesNotThrow(() -> resources.readNow());
+        assertDoesNotThrow(() -> resources.read());
 
         Optional<AIResources.LiteralAgent> agent = resources.detectOfAgent("travel");
 

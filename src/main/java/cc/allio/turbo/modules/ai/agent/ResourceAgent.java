@@ -42,27 +42,28 @@ public abstract class ResourceAgent implements Agent {
         this.toolRegistry = toolRegistry;
     }
 
-    @Override
-    public void install(AIResources.LiteralAgent agent) throws AgentInitializationException {
-        if (agent == null) {
+    public void install(AIResources  resources) throws AgentInitializationException {
+        if (resources == null) {
+            throw new AgentInitializationException("Resources not found");
+        }
+
+        AIResources.LiteralAgent literalAgent = resources.detectOfAgent(name()).orElse(null);
+
+        if (literalAgent == null) {
             throw new AgentInitializationException("Agent not found");
         }
 
-        if (!agent.getName().equals(name())) {
-            throw new AgentInitializationException("Agent name not match");
-        }
-
         // set prompt template
-        this.promptTemplate = agent.getPrompt();
+        this.promptTemplate = literalAgent.getPrompt();
 
         // set actions
-        List<String> actions = agent.getActions();
+        List<String> actions = literalAgent.getActions();
         if (CollectionUtils.isNotEmpty(actions)) {
             this.dispatchActionNames = Sets.newHashSet(actions);
         }
 
         // set tools
-        List<Map<String, Object>> toolListMap = agent.getTools();
+        List<Map<String, Object>> toolListMap = literalAgent.getTools();
         if (CollectionUtils.isEmpty(toolListMap)) {
             List<FunctionTool> fileTools = toolListMap.stream().map(FunctionTool::of).toList();
             this.tools.addAll(fileTools);
@@ -70,7 +71,7 @@ public abstract class ResourceAgent implements Agent {
 
 
         // load external-tools
-        List<String> externalTools = agent.getExternalTools();
+        List<String> externalTools = literalAgent.getExternalTools();
 
         if (CollectionUtils.isNotEmpty(externalTools)) {
             for (String externalTool : externalTools) {
@@ -82,7 +83,7 @@ public abstract class ResourceAgent implements Agent {
         }
 
         // set description
-        this.description = agent.getDescription();
+        this.description = literalAgent.getDescription();
 
         // load implementation setup method.
         setup();

@@ -23,4 +23,5 @@ public interface Secures {
     String NICKNAME_FIELD = "nickname";
     String ADMINISTRATOR_FIELD = "administrator";
     String ROLE_OF_ADMINISTRATOR = "administrator";
+    String CIPHER = "cipher";
 }

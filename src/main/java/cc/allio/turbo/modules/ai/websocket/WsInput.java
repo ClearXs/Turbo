@@ -3,7 +3,7 @@ package cc.allio.turbo.modules.ai.websocket;
 import cc.allio.turbo.modules.ai.Input;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.web.reactive.socket.WebSocketSession;
+import org.springframework.web.socket.WebSocketSession;
 
 /**
  * websocket for input

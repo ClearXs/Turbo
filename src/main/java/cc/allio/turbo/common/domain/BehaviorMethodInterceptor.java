@@ -32,14 +32,16 @@ public class BehaviorMethodInterceptor implements MethodInterceptor {
     private final EventBus<DomainEventContext> eventBus;
 
     private static final List<String> DIRECTLY_INVOKE_NAMES =
-            List.of("onApplicationEvent",
+            List.of(
+                    "onApplicationEvent",
                     "getDomainType",
                     "subscribeOnBefore",
                     "subscribeOn",
                     "subscribeOnInitialize",
                     "subscribeOnAfter",
                     "subscribeOnMultiple",
-                    "setDomainEventBus");
+                    "setDomainEventBus"
+            );
 
     public BehaviorMethodInterceptor(Subscriber<?> bean, EventBus<DomainEventContext> eventBus) {
         this.bean = bean;
@@ -74,8 +76,8 @@ public class BehaviorMethodInterceptor implements MethodInterceptor {
     void publishOnBehaviorBefore(Subscriber<?> bean, Method method, MethodInvocation invocation) {
         String subscriberName = AopUtils.getTargetClass(bean).getSimpleName();
         String methodName = method.getName();
-        // DomainBehavior/methodName-before
-        String beforePath = subscriberName + StringPool.SLASH + methodName + StringPool.DASH + Subscriber.BEFORE;
+        // DomainBehavior/before@methodName
+        String beforePath = subscriberName + StringPool.SLASH + Subscriber.BEFORE + StringPool.AT + methodName;
         if (eventBus != null && eventBus.hasTopic(beforePath)) {
             DomainEventContext eventContext = buildEventContext(bean, method, invocation);
             try {
@@ -145,8 +147,8 @@ public class BehaviorMethodInterceptor implements MethodInterceptor {
     void publishOnBehaviorAfter(Subscriber<?> bean, Method method, MethodInvocation invocation) {
         String subscriberName = AopUtils.getTargetClass(bean).getSimpleName();
         String methodName = method.getName();
-        // DomainBehavior/methodName-after
-        String afterPath = subscriberName + StringPool.SLASH + methodName + StringPool.DASH + Subscriber.AFTER;
+        // DomainBehavior/after@methodName
+        String afterPath = subscriberName + StringPool.SLASH + Subscriber.AFTER + StringPool.AT + methodName;
         if (eventBus != null && eventBus.hasTopic(afterPath)) {
             DomainEventContext eventContext = buildEventContext(bean, method, invocation);
             try {

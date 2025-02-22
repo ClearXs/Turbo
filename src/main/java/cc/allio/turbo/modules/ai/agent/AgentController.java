@@ -2,16 +2,12 @@ package cc.allio.turbo.modules.ai.agent;
 
 import cc.allio.turbo.common.domain.*;
 import cc.allio.turbo.modules.ai.*;
-import cc.allio.turbo.modules.ai.agent.builtin.ChatAgent;
-import cc.allio.turbo.modules.ai.agent.builtin.SMAAgent;
 import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
-import cc.allio.turbo.modules.ai.exception.ResourceParseException;
 import cc.allio.turbo.modules.ai.resources.AIResources;
 import cc.allio.turbo.modules.ai.runtime.ExecutionMode;
 import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
 import cc.allio.turbo.modules.ai.runtime.tool.ToolRegistry;
 import cc.allio.uno.core.bus.Topic;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import reactor.core.Disposable;
@@ -19,6 +15,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -36,17 +33,19 @@ public class AgentController implements InitializingBean, Disposable {
     final ActionRegistry actionRegistry;
     final ToolRegistry toolRegistry;
     final AIResources resources;
-    @Getter
-    final Driver<Input> driver;
+    final Driver<Input> inputDriver;
+    final Driver<Output> outputDriver;
 
     Disposable disposable;
 
-    public AgentController(Driver<Input> driver,
+    public AgentController(Driver<Input> inputDriver,
+                           Driver<Output> outputDriver,
                            AgentRegistry agentRegistry,
                            ActionRegistry actionRegistry,
                            ToolRegistry toolRegistry,
                            AIResources resources) {
-        this.driver = driver;
+        this.inputDriver = inputDriver;
+        this.outputDriver = outputDriver;
         this.agentRegistry = agentRegistry;
         this.resources = resources;
         this.actionRegistry = actionRegistry;
@@ -56,49 +55,30 @@ public class AgentController implements InitializingBean, Disposable {
     /**
      * initialization agent system
      */
-    void setup() throws ResourceParseException {
+    void setup() throws AgentInitializationException {
         // load resource
         resources.readNow();
 
-        // load built in agent
-        initiateBuiltInAgents();
+        initiateResourceAgents();
 
         // subscribe user input
         this.disposable =
-                driver.subscribeOn(Topics.USER_INPUT_PATTERNS)
-                        .observe()
+                inputDriver.subscribeOn(Topics.USER_INPUT_PATTERNS)
+                        .observeMany()
                         .subscribeOn(Schedulers.fromExecutor(Executors.newVirtualThreadPerTaskExecutor()))
                         // handle user input
-                        .flatMapMany(this::dispatch)
+                        .flatMap(this::dispatch)
                         // receive upstream output and publish to evaluation and output
                         .flatMap(this::transform)
                         .subscribe();
     }
 
-    void initiateBuiltInAgents() {
-        // load internal agent
-        SMAAgent smaAgent = new SMAAgent(toolRegistry, actionRegistry);
-        resources.detectOfAgent(smaAgent.name())
-                .ifPresent(agent -> {
-                    try {
-
-                        smaAgent.install(agent);
-                    } catch (AgentInitializationException e) {
-                        log.error("Agent {} initialization failed", smaAgent.name(), e);
-                    }
-                    agentRegistry.put(smaAgent.name(), smaAgent);
-                });
-
-        ChatAgent chatAgent = new ChatAgent(toolRegistry, actionRegistry);
-        resources.detectOfAgent(chatAgent.name())
-                .ifPresent(agent -> {
-                    try {
-                        chatAgent.install(agent);
-                    } catch (AgentInitializationException e) {
-                        log.error("Agent {} initialization failed", "chat", e);
-                    }
-                    agentRegistry.put(smaAgent.name(), chatAgent);
-                });
+    void initiateResourceAgents() throws AgentInitializationException {
+        for (Agent agent : agentRegistry.getAll()) {
+            if (agent instanceof ResourceAgent resourceAgent) {
+                resourceAgent.install(resources);
+            }
+        }
     }
 
     /**
@@ -138,12 +118,11 @@ public class AgentController implements InitializingBean, Disposable {
             return Flux.empty();
         }
         Output output = domainOptional.get();
-        GeneralDomain<Output> domain = new GeneralDomain<>(output, driver.getDomainEventBus());
+        GeneralDomain<Output> domain = new GeneralDomain<>(output, outputDriver.getDomainEventBus());
         Long inputId = output.getInputId();
         // publish to evaluation and output.
         DomainEventContext eventContext = new DomainEventContext(domain);
-        return driver.publishOn(Topics.EVALUATION.append(inputId), eventContext)
-                .thenMany(driver.publishOn(Topics.OUTPUT.append(inputId), eventContext));
+        return outputDriver.publishOn(List.of(Topics.EVALUATION.append(inputId), Topics.OUTPUT.append(inputId)), eventContext);
     }
 
     @Override
