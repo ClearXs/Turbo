@@ -13,11 +13,23 @@ spring:
   application:
     name: turbo
   profiles:
-    active: dev,oauth2,oss,file,ob,secure,persistent
+    active: oauth2,oss,file,ob,secure,persistent
     # 开启虚拟线程
   threads:
     virtual:
       enabled: true
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/turbo}
+    username: ${DATASOURCE_USERNAME:postgres}
+    password: ${DATASOURCE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:postgres}
+      timeout: ${REDIS_TIMEOUT:5000}
+      database: ${REDIS_DATABASE:0}
 # mybatis 配置
 mybatis-plus:
   # mybatis mapper路径
@@ -83,3 +95,8 @@ excel:
   enum:
     scanner:
       package: cc/allio/turbo/modules/system/constant/**/*
+
+
+logging:
+  level:
+    cc.allio.uno: debug
