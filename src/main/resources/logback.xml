@@ -52,24 +52,9 @@
 
     <!-- uno -->
     <logger name="cc.allio.uno" level="DEBUG"/>
-
-    <springProfile name="dev">
-        <root level="INFO">
-            <appender-ref ref="AsyncConsoleAppender"/>
-        </root>
-    </springProfile>
-
-    <springProfile name="test">
-        <root level="WARN">
-            <appender-ref ref="AsyncConsoleAppender"/>
-            <appender-ref ref="FILE"/>
-        </root>
-    </springProfile>
-
-    <springProfile name="prod">
-        <root level="WARN">
-            <appender-ref ref="AsyncConsoleAppender"/>
-            <appender-ref ref="FILE"/>
-        </root>
-    </springProfile>
+|
+    <root level="WARN">
+        <appender-ref ref="AsyncConsoleAppender"/>
+        <appender-ref ref="FILE"/>
+    </root>
 </configuration>

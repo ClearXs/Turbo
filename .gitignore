@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### TURBO ###
-./logs
+/logs

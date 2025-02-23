@@ -1,5 +1,6 @@
 package cc.allio.turbo.modules.development.entity;
 
+import cc.allio.turbo.common.db.constant.StorageType;
 import cc.allio.turbo.common.db.entity.CategoryEntity;
 import cc.allio.turbo.common.db.entity.TenantEntity;
 import cc.allio.turbo.modules.development.enums.CodeGenerateSource;
@@ -79,11 +80,25 @@ public class DevCodeGenerate extends TenantEntity implements CategoryEntity {
     private Long boId;
 
     /**
-     * 数据集ID
+     * 页面id
      */
     @TableField("page_id")
     @Schema(description = "页面id")
     private Long pageId;
+
+    /**
+     * ddl
+     */
+    @TableField("ddl")
+    @Schema(description = "ddl")
+    private String ddl;
+
+    /**
+     * ddl
+     */
+    @TableField("ddl_db")
+    @Schema(description = "ddl")
+    private StorageType ddlDb;
 
     /**
      * 实体表;实体表实体（json数据）

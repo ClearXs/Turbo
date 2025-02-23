@@ -55,6 +55,27 @@ public class DevCodeGenerateServiceImpl extends SimpleTurboCrudRepositoryService
     }
 
     @Override
+    public void generateFile(Long id, String filename, HttpServletResponse response) throws BizException {
+        DevCodeGenerate codeGenerate = details(id);
+        if (codeGenerate == null) {
+            throw new BizException("Not found code generate entity by id");
+        }
+        List<CodeContent> codeContents = doGenerate(codeGenerate);
+
+        CodeContent specificCodeFile =
+                codeContents.stream()
+                        .filter(codeContent -> codeContent.getFilename().equals(filename))
+                        .findFirst()
+                        .orElse(null);
+
+        if (specificCodeFile != null) {
+            InputStream io = withSpecificContext(specificCodeFile);
+            WebUtil.writeToOutputStream(filename, io, response);
+        }
+        throw new BizException(String.format("Not found %s file", filename));
+    }
+
+    @Override
     public void batchGenerate(List<Long> id, HttpServletResponse response) {
         List<DevCodeGenerate> devCodeGenerates = listByIds(id);
         // loop for method of doGenerate and get list of CodeContent
@@ -105,5 +126,17 @@ public class DevCodeGenerateServiceImpl extends SimpleTurboCrudRepositoryService
                     return new ByteArrayInputStream(zipBuilder.toBytes());
                 })
                 .unchecked();
+    }
+
+    /**
+     * get specific {@link CodeContent} {@link InputStream}
+     *
+     * @param codeContent the {@link CodeContent} instance
+     * @return return {@link InputStream}
+     */
+    InputStream withSpecificContext(CodeContent codeContent) {
+        // file content
+        String content = codeContent.getContent();
+        return new ByteArrayInputStream(content.getBytes());
     }
 }
