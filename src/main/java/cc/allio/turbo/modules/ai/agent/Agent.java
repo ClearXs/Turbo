@@ -1,10 +1,12 @@
 package cc.allio.turbo.modules.ai.agent;
 
 import cc.allio.turbo.common.domain.Observable;
-import cc.allio.turbo.modules.ai.Input;
-import cc.allio.turbo.modules.ai.Output;
-import cc.allio.turbo.modules.ai.runtime.tool.FunctionTool;
-import cc.allio.turbo.modules.ai.runtime.tool.Tool;
+import cc.allio.turbo.modules.ai.driver.model.Input;
+import cc.allio.turbo.modules.ai.driver.model.Output;
+import cc.allio.turbo.modules.ai.agent.builtin.chat.ChatAgent;
+import cc.allio.turbo.modules.ai.agent.builtin.sma.SMAAgent;
+import cc.allio.turbo.modules.ai.chat.tool.FunctionTool;
+import cc.allio.turbo.modules.ai.chat.tool.Tool;
 
 import reactor.core.publisher.Mono;
 
@@ -27,6 +29,16 @@ import java.util.Set;
  * @since 0.1.1
  */
 public interface Agent {
+
+    /**
+     * @see ChatAgent
+     */
+    String CHAT_AGENT = "Chat";
+
+    /**
+     * @see SMAAgent
+     */
+    String SMA_AGENT = "SMA";
 
     /**
      * accept user input{@link Input}. and generate task for planning and execute current task.

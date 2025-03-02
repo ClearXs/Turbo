@@ -1,6 +1,9 @@
 package cc.allio.turbo.modules.ai.websocket;
 
-import cc.allio.turbo.modules.ai.*;
+import cc.allio.turbo.modules.ai.driver.Driver;
+import cc.allio.turbo.modules.ai.driver.DriverConfiguration;
+import cc.allio.turbo.modules.ai.driver.model.Input;
+import cc.allio.turbo.modules.ai.driver.model.Output;
 import cc.allio.turbo.modules.auth.jwt.JwtCodecConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -15,8 +18,6 @@ import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAd
 import org.springframework.web.reactive.socket.server.upgrade.UndertowRequestUpgradeStrategy;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-
-import java.util.Map;
 
 @AutoConfiguration
 @ImportAutoConfiguration({DriverConfiguration.class, JwtCodecConfiguration.class})

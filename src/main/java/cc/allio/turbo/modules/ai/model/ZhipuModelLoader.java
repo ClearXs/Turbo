@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.ai.model;
 
-import cc.allio.turbo.modules.ai.runtime.tool.FunctionTool;
+import cc.allio.turbo.modules.ai.chat.tool.FunctionTool;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.zhipuai.ZhiPuAiChatModel;
 import org.springframework.ai.zhipuai.ZhiPuAiChatOptions;

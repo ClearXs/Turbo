@@ -1,11 +1,14 @@
 package cc.allio.turbo.modules.ai.agent;
 
 import cc.allio.turbo.common.domain.*;
-import cc.allio.turbo.modules.ai.*;
+import cc.allio.turbo.modules.ai.driver.Driver;
+import cc.allio.turbo.modules.ai.driver.Topics;
+import cc.allio.turbo.modules.ai.driver.model.Input;
+import cc.allio.turbo.modules.ai.driver.model.Output;
 import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
-import cc.allio.turbo.modules.ai.resources.AIResources;
-import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
-import cc.allio.turbo.modules.ai.runtime.tool.ToolRegistry;
+import cc.allio.turbo.modules.ai.chat.resources.AIResources;
+import cc.allio.turbo.modules.ai.agent.runtime.action.ActionRegistry;
+import cc.allio.turbo.modules.ai.chat.tool.ToolRegistry;
 import cc.allio.uno.core.bus.Topic;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -16,7 +19,6 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.Executors;
 
 /**
@@ -28,12 +30,12 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class Supervisor implements InitializingBean, Disposable {
 
+    final Driver<Input> inputDriver;
+    final Driver<Output> outputDriver;
     final AgentRegistry agentRegistry;
     final ActionRegistry actionRegistry;
     final ToolRegistry toolRegistry;
     final AIResources resources;
-    final Driver<Input> inputDriver;
-    final Driver<Output> outputDriver;
 
     Disposable disposable;
 
@@ -62,7 +64,7 @@ public class Supervisor implements InitializingBean, Disposable {
 
         // subscribe user input
         this.disposable =
-                inputDriver.subscribeOn(Topics.USER_INPUT_PATTERNS)
+                inputDriver.subscribeOn(Topics.USER_CHAT_INPUT_PATTERNS)
                         .observeMany()
                         .subscribeOn(Schedulers.fromExecutor(Executors.newVirtualThreadPerTaskExecutor()))
                         // handle user input
@@ -90,16 +92,12 @@ public class Supervisor implements InitializingBean, Disposable {
         if (input == null) {
             return Flux.empty();
         }
-
-        Set<String> agents = input.getAgents();
-        MultiObservable<Output> observable = new MultiObservable<>();
-        for (String agentName : agents) {
-            Agent agent = agentRegistry.get(agentName);
-            if (agent != null) {
-                observable.concat(agent.call(Mono.just(input)));
-            }
+        String agentName = input.getAgent();
+        Agent agent = agentRegistry.get(agentName);
+        if (agent != null) {
+            return agent.call(Mono.just(input)).observeMany();
         }
-        return observable.observeMany();
+        return Flux.empty();
     }
 
     /**
@@ -117,7 +115,7 @@ public class Supervisor implements InitializingBean, Disposable {
         Long inputId = output.getInputId();
         // publish to evaluation and output.
         DomainEventContext eventContext = new DomainEventContext(domain);
-        return outputDriver.publishOn(List.of(Topics.EVALUATION.append(inputId), Topics.OUTPUT.append(inputId)), eventContext);
+        return outputDriver.publishOn(List.of(Topics.EVALUATION.append(inputId), Topics.USER_CHAT_OUTPUT.append(inputId)), eventContext);
     }
 
     @Override

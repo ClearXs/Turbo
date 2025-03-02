@@ -12,7 +12,8 @@ public enum Role {
 
     USER("user", "user"),
     SYSTEM("system", "system"),
-    ASSISTANT("assistant", "assistant");
+    ASSISTANT("assistant", "assistant"),
+    TOOL("tool", "tool");
 
     @JsonValue
     @EnumValue
@@ -26,6 +27,21 @@ public enum Role {
             return SYSTEM;
         } else if (MessageType.USER == messageType) {
             return USER;
+        } else if (MessageType.TOOL == messageType) {
+            return TOOL;
+        }
+        return null;
+    }
+
+    public MessageType toMessageType() {
+        if (this == USER) {
+            return MessageType.USER;
+        } else if (this == SYSTEM) {
+            return MessageType.SYSTEM;
+        } else if (this == ASSISTANT) {
+            return MessageType.ASSISTANT;
+        } else if (this == TOOL) {
+            return MessageType.TOOL;
         }
         return null;
     }

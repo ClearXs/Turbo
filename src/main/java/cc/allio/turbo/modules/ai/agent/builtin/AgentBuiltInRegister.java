@@ -1,8 +1,10 @@
 package cc.allio.turbo.modules.ai.agent.builtin;
 
-import cc.allio.turbo.modules.ai.annotation.DriverModel;
-import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
-import cc.allio.turbo.modules.ai.runtime.tool.ToolRegistry;
+import cc.allio.turbo.modules.ai.agent.Agent;
+import cc.allio.turbo.modules.ai.agent.ResourceAgent;
+import cc.allio.turbo.modules.ai.driver.DriverModel;
+import cc.allio.turbo.modules.ai.agent.runtime.action.ActionRegistry;
+import cc.allio.turbo.modules.ai.chat.tool.ToolRegistry;
 import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.bus.Pathway;
 import com.google.common.collect.Sets;
@@ -23,6 +25,7 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.ClassUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Set;
 
 /**
@@ -56,6 +59,7 @@ public class AgentBuiltInRegister implements BeanDefinitionRegistryPostProcessor
             if (agentClass == null) {
                 continue;
             }
+
             String beanName = "Agent" + StringPool.UNDERSCORE + agentClass.getSimpleName();
 
             if (registry.containsBeanDefinition(beanName)) {
@@ -86,6 +90,9 @@ public class AgentBuiltInRegister implements BeanDefinitionRegistryPostProcessor
         static final String DEFAULT_RESOURCE_PATTERN = "**/*.class";
         static final String AGENT_BUILT_IN_REGISTER_NAME = AgentBuiltInRegister.class.getSimpleName();
         static final String BUILT_IN_AGENT_SCANNER = BuiltInAgentScanner.class.getSimpleName();
+
+        static final String AGENT_CLASS_NAME = Agent.class.getName();
+        static final String RESOURCE_AGENT_CLASS_NAME = ResourceAgent.class.getName();
 
         public BuiltInAgentScanner() {
             this.resourcePatternResolver = new PathMatchingResourcePatternResolver();
@@ -119,8 +126,15 @@ public class AgentBuiltInRegister implements BeanDefinitionRegistryPostProcessor
                     MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(resource);
                     ClassMetadata classMetadata = metadataReader.getClassMetadata();
 
+                    String[] interfaceNames = classMetadata.getInterfaceNames();
+                    String superClassName = classMetadata.getSuperClassName();
 
-                    candidate.add(classMetadata.getClassName());
+                    // agent must extend ResourceAgent or implements Agent
+                    if (RESOURCE_AGENT_CLASS_NAME.equals(superClassName) ||
+                            Arrays.asList(interfaceNames).contains(AGENT_CLASS_NAME)) {
+                        candidate.add(classMetadata.getClassName());
+                    }
+
                 }
             } catch (IOException ex) {
                 log.error("I/O failure during classpath [{}] scanning", BACK_PACKAGE, ex);

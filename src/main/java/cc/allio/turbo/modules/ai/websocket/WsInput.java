@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.ai.websocket;
 
-import cc.allio.turbo.modules.ai.Input;
+import cc.allio.turbo.modules.ai.driver.model.Input;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.web.socket.WebSocketSession;

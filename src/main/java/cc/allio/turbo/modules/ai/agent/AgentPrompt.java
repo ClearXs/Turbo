@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.ai.agent;
 
-import cc.allio.turbo.modules.ai.runtime.Environment;
+import cc.allio.turbo.modules.ai.agent.runtime.Environment;
 import cc.allio.uno.core.util.StringUtils;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;

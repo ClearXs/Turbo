@@ -1,8 +1,10 @@
 package cc.allio.turbo.modules.ai.websocket;
 
 import cc.allio.turbo.common.util.WebUtil;
-import cc.allio.turbo.modules.ai.*;
-import cc.allio.turbo.modules.ai.Message;
+import cc.allio.turbo.modules.ai.driver.Driver;
+import cc.allio.turbo.modules.ai.driver.Topics;
+import cc.allio.turbo.modules.ai.driver.model.Input;
+import cc.allio.turbo.modules.ai.driver.model.Output;
 import cc.allio.turbo.modules.auth.jwt.TurboJwtDecoder;
 import cc.allio.turbo.modules.auth.jwt.TurboJwtEncoder;
 import cc.allio.uno.core.util.JsonUtils;
@@ -83,7 +85,7 @@ public class ChatHandlerTest extends BaseTestCase {
                 .subscribe();
 
         Driver.from(Input.class)
-                .subscribeOn(Topics.USER_INPUT_PATTERNS)
+                .subscribeOn(Topics.USER_CHAT_INPUT_PATTERNS)
                 .observeMany()
                 .flatMap(subscription ->
                         Mono.justOrEmpty(subscription.getDomain().flatMap(input -> input.getMessages().stream().findFirst())))

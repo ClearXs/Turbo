@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.ai.agent;
 
-import cc.allio.turbo.modules.ai.agent.builtin.ChatAgent;
-import cc.allio.turbo.modules.ai.agent.builtin.SMAAgent;
+import cc.allio.turbo.modules.ai.agent.builtin.chat.ChatAgent;
+import cc.allio.turbo.modules.ai.agent.builtin.sma.SMAAgent;
 import cc.allio.uno.test.BaseTestCase;
 import cc.allio.uno.test.Inject;
 import cc.allio.uno.test.RunTest;

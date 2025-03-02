@@ -1,12 +1,12 @@
 package cc.allio.turbo.modules.ai.agent;
 
 import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
-import cc.allio.turbo.modules.ai.resources.AIResources;
-import cc.allio.turbo.modules.ai.runtime.action.Action;
-import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
-import cc.allio.turbo.modules.ai.runtime.tool.FunctionTool;
-import cc.allio.turbo.modules.ai.runtime.tool.Tool;
-import cc.allio.turbo.modules.ai.runtime.tool.ToolRegistry;
+import cc.allio.turbo.modules.ai.chat.resources.AIResources;
+import cc.allio.turbo.modules.ai.agent.runtime.action.Action;
+import cc.allio.turbo.modules.ai.agent.runtime.action.ActionRegistry;
+import cc.allio.turbo.modules.ai.chat.tool.FunctionTool;
+import cc.allio.turbo.modules.ai.chat.tool.Tool;
+import cc.allio.turbo.modules.ai.chat.tool.ToolRegistry;
 import cc.allio.uno.core.util.CollectionUtils;
 import com.google.common.collect.Sets;
 import lombok.Getter;
@@ -49,41 +49,40 @@ public abstract class ResourceAgent implements Agent {
 
         AIResources.LiteralAgent literalAgent = resources.detectOfAgent(name()).orElse(null);
 
-        if (literalAgent == null) {
-            throw new AgentInitializationException("Agent not found");
-        }
+        if (literalAgent != null) {
 
-        // set prompt template
-        this.promptTemplate = literalAgent.getPrompt();
+            // set prompt template
+            this.promptTemplate = literalAgent.getPrompt();
 
-        // set actions
-        List<String> actions = literalAgent.getActions();
-        if (CollectionUtils.isNotEmpty(actions)) {
-            this.dispatchActionNames = Sets.newHashSet(actions);
-        }
+            // set actions
+            List<String> actions = literalAgent.getActions();
+            if (CollectionUtils.isNotEmpty(actions)) {
+                this.dispatchActionNames = Sets.newHashSet(actions);
+            }
 
-        // set tools
-        List<Map<String, Object>> toolListMap = literalAgent.getTools();
-        if (CollectionUtils.isEmpty(toolListMap)) {
-            List<FunctionTool> fileTools = toolListMap.stream().map(FunctionTool::of).toList();
-            this.tools.addAll(fileTools);
-        }
+            // set tools
+            List<Map<String, Object>> toolListMap = literalAgent.getTools();
+            if (CollectionUtils.isEmpty(toolListMap)) {
+                List<FunctionTool> fileTools = toolListMap.stream().map(FunctionTool::of).toList();
+                this.tools.addAll(fileTools);
+            }
 
 
-        // load external-tools
-        List<String> externalTools = literalAgent.getExternalTools();
+            // load external-tools
+            List<String> externalTools = literalAgent.getExternalTools();
 
-        if (CollectionUtils.isNotEmpty(externalTools)) {
-            for (String externalTool : externalTools) {
-                FunctionTool functionTool = toolRegistry.get(externalTool);
-                if (functionTool != null) {
-                    this.tools.add(functionTool);
+            if (CollectionUtils.isNotEmpty(externalTools)) {
+                for (String externalTool : externalTools) {
+                    FunctionTool functionTool = toolRegistry.get(externalTool);
+                    if (functionTool != null) {
+                        this.tools.add(functionTool);
+                    }
                 }
             }
-        }
 
-        // set description
-        this.description = literalAgent.getDescription();
+            // set description
+            this.description = literalAgent.getDescription();
+        }
 
         // load implementation setup method.
         setup();

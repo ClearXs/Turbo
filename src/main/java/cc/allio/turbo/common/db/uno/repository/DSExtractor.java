@@ -5,7 +5,6 @@ import cc.allio.uno.core.exception.Exceptions;
 import cc.allio.uno.data.orm.dsl.type.DBType;
 import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import cc.allio.uno.data.orm.executor.CommandExecutorFactory;
-import cc.allio.uno.data.orm.executor.options.ExecutorKey;
 import org.springframework.core.annotation.AnnotationUtils;
 
 /**

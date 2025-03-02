@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.ai.agent;
 
-import cc.allio.turbo.modules.ai.CompositeComponentRegistry;
-import cc.allio.turbo.modules.ai.Registry;
+import cc.allio.turbo.modules.ai.registry.CompositeComponentRegistry;
+import cc.allio.turbo.modules.ai.registry.Registry;
 
 /**
  * {@link Agent} of {@link Registry}

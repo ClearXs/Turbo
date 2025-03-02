@@ -2,10 +2,13 @@ package cc.allio.turbo.modules.ai;
 
 import cc.allio.turbo.common.domain.DomainEventConfiguration;
 import cc.allio.turbo.modules.ai.agent.AgentConfiguration;
-import cc.allio.turbo.modules.ai.evaluation.EvaluationController;
-import cc.allio.turbo.modules.ai.resources.ResourceConfiguration;
-import cc.allio.turbo.modules.ai.runtime.action.ActionConfiguration;
-import cc.allio.turbo.modules.ai.runtime.tool.ToolConfiguration;
+import cc.allio.turbo.modules.ai.driver.Driver;
+import cc.allio.turbo.modules.ai.driver.DriverConfiguration;
+import cc.allio.turbo.modules.ai.chat.evaluation.EvaluationController;
+import cc.allio.turbo.modules.ai.chat.resources.ResourceConfiguration;
+import cc.allio.turbo.modules.ai.agent.runtime.action.ActionConfiguration;
+import cc.allio.turbo.modules.ai.chat.tool.ToolConfiguration;
+import cc.allio.turbo.modules.ai.driver.model.Output;
 import cc.allio.turbo.modules.ai.websocket.WsConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;

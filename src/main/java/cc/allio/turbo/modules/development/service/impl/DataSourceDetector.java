@@ -90,8 +90,6 @@ public class DataSourceDetector implements DisposableBean, ApplicationListener<A
      *     <li>基于{@link CommandExecutorRegistry}的默认信息与数据库的默认数据源进行差异分析，做增加更新等操作</li>
      *     <li>把非默认数据源放入{@link CommandExecutorRegistry}中</li>
      * </ul>
-     *
-     * @param subscription subscription
      */
     void onInitialization() {
         TransactionContext.execute(() -> {

@@ -4,14 +4,18 @@ import cc.allio.turbo.common.domain.DomainEventContext;
 import cc.allio.turbo.common.domain.GeneralDomain;
 import cc.allio.turbo.common.domain.Subscription;
 import cc.allio.turbo.common.util.WebUtil;
-import cc.allio.turbo.modules.ai.*;
-import cc.allio.turbo.modules.ai.Message;
+import cc.allio.turbo.modules.ai.agent.Agent;
+import cc.allio.turbo.modules.ai.driver.Driver;
+import cc.allio.turbo.modules.ai.driver.Topics;
+import cc.allio.turbo.modules.ai.driver.model.Input;
+import cc.allio.turbo.modules.ai.driver.model.Output;
 import cc.allio.turbo.modules.ai.model.ModelOptions;
-import cc.allio.turbo.modules.ai.runtime.Variable;
+import cc.allio.turbo.modules.ai.agent.runtime.Variable;
 import cc.allio.uno.core.bus.TopicKey;
 import cc.allio.uno.core.util.DateUtil;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.uno.core.util.id.IdGenerator;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -30,7 +34,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -59,7 +62,7 @@ public class ChatHandler extends TextWebSocketHandler implements InitializingBea
     @Override
     public void afterPropertiesSet() throws Exception {
         this.disposable =
-                outputDriver.subscribeOn(Topics.OUTPUT_PATTERNS)
+                outputDriver.subscribeOn(Topics.USER_CHAT_OUTPUT_PATTERNS)
                         .observeMany()
                         .doOnNext(this::handleOutput)
                         .subscribe();
@@ -105,12 +108,12 @@ public class ChatHandler extends TextWebSocketHandler implements InitializingBea
         input.setSession(session);
         input.setSessionId(sessionId);
         input.setVariable(msg == null ? new Variable() : msg.getVariable());
-        input.setAgents(msg == null ? Set.of("Chat") : msg.getAgents());
+        input.setAgent(msg == null ? Agent.CHAT_AGENT : msg.getAgent());
         input.setModelOptions(msg == null ? ModelOptions.getDefaultForOllama() : msg.getModelOptions());
-        input.setMessage(msg == null ? message.getPayload() : msg.getMsg());
+        input.setMessages(msg == null ? Sets.newHashSet(message.getPayload()) : msg.getMsgs());
         GeneralDomain<Input> domain = new GeneralDomain<>(input, inputDriver.getDomainEventBus());
         DomainEventContext context = new DomainEventContext(domain);
-        TopicKey topicKey = Topics.USER_INPUT.copy().append(input.getSessionId());
+        TopicKey topicKey = Topics.USER_CHAT_INPUT.copy().append(input.getSessionId());
         inputDriver.publishOn(topicKey, context).subscribe();
     }
 
