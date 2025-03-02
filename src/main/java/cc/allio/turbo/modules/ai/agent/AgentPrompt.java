@@ -11,7 +11,6 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * bridge between {@link Prompt} and {@link Agent}
@@ -20,11 +19,10 @@ import java.util.Set;
  * @since 0.2.0
  */
 @AllArgsConstructor
-@EqualsAndHashCode(of = {"systemPromptTemplate", "userMessages"}, callSuper = false)
+@EqualsAndHashCode(of = {"systemPromptTemplate"}, callSuper = false)
 public class AgentPrompt extends Prompt {
 
     private final String systemPromptTemplate;
-    private final Set<String> userMessages;
     private final Environment environment;
 
     @Override
@@ -36,38 +34,26 @@ public class AgentPrompt extends Prompt {
             Message systemMessage = new SystemMessage(systemTemplate.render(environment));
             messages.add(systemMessage);
         }
-        if (userMessages != null) {
-            messages.addAll(
-                    userMessages.stream()
-                            .map(msg -> {
-                                // user message
-                                PromptTemplate userTemplate = new PromptTemplate(msg);
-                                return userTemplate.createMessage(environment);
-                            })
-                            .toList()
-            );
-        }
         return messages;
     }
 
     /**
      * static method create {@link AgentPrompt} from {@link Agent}
      *
-     * @see #from(String, Set, Environment)
+     * @see #from(String, Environment)
      */
-    public static AgentPrompt fromAgent(Agent agent, Set<String> userMessages, Environment environment) {
-        return from(agent.getPromptTemplate(), userMessages, environment);
+    public static AgentPrompt fromAgent(Agent agent, Environment environment) {
+        return from(agent.getPromptTemplate(), environment);
     }
 
     /**
      * static method create {@link AgentPrompt}
      *
      * @param systemPromptTemplate the system prompt template
-     * @param userMessages         the user message
      * @param environment          the runtime environment.
      * @return {@link AgentPrompt} instance
      */
-    public static AgentPrompt from(String systemPromptTemplate, Set<String> userMessages, Environment environment) {
-        return new AgentPrompt(systemPromptTemplate, userMessages, environment);
+    public static AgentPrompt from(String systemPromptTemplate, Environment environment) {
+        return new AgentPrompt(systemPromptTemplate, environment);
     }
 }

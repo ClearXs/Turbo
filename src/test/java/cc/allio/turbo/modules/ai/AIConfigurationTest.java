@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.ai;
 
-import cc.allio.turbo.modules.ai.agent.AgentController;
+import cc.allio.turbo.modules.ai.agent.Supervisor;
 import cc.allio.turbo.modules.ai.evaluation.EvaluationController;
 import cc.allio.uno.test.BaseTestCase;
 import cc.allio.uno.test.Inject;
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 public class AIConfigurationTest extends BaseTestCase {
 
     @Inject
-    private AgentController agentController;
+    private Supervisor agentController;
 
     @Inject
     private EvaluationController evaluationController;

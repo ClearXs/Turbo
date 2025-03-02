@@ -1,9 +1,13 @@
 package cc.allio.turbo.modules.ai.runtime;
 
 import cc.allio.turbo.common.db.entity.MapEntity;
+import cc.allio.turbo.modules.ai.Input;
 import cc.allio.turbo.modules.ai.agent.Agent;
+import cc.allio.turbo.modules.ai.model.AgentModel;
 import cc.allio.uno.core.api.Copyable;
 import cc.allio.uno.core.api.Self;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Agent runtime environment
@@ -11,12 +15,18 @@ import cc.allio.uno.core.api.Self;
  * @author j.x
  * @since 0.2.0
  */
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class Environment extends MapEntity implements Self<Environment>, Copyable<Environment> {
 
     // default name
     public static final String AGENT_NAME = "AGENT_NAME";
     public static final String AGENT_DESCRIPTION = "AGENT_DESCRIPTION";
     public static final String TASK_ID = "TASK_ID";
+
+    private Input input;
+    private AgentModel agentModel;
+    private Agent agent;
 
     public Environment() {
         // set all os environment

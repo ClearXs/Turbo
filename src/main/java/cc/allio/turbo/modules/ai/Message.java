@@ -1,4 +1,4 @@
-package cc.allio.turbo.modules.ai.websocket;
+package cc.allio.turbo.modules.ai;
 
 import cc.allio.turbo.modules.ai.model.ModelOptions;
 import cc.allio.turbo.modules.ai.runtime.Variable;
@@ -10,7 +10,7 @@ import java.util.Set;
 public class Message {
 
     // the use message
-    private Set<String> msg;
+    private String msg;
 
     // use choose agents
     private Set<String> agents;
@@ -25,19 +25,7 @@ public class Message {
      */
     public static Message fromSingle(String msg) {
         Message message = new Message();
-        message.setMsg(Set.of(msg));
-        return message;
-    }
-
-    /**
-     * creat {@link Message} instance
-     *
-     * @param messages the list of messages
-     * @return {@link Message}
-     */
-    public static Message fromMulti(String... messages) {
-        Message message = new Message();
-        message.setMsg(Set.of(messages));
+        message.setMsg(msg);
         return message;
     }
 }

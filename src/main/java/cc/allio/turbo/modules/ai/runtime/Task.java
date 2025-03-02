@@ -44,20 +44,13 @@ public class Task {
     }
 
     /**
-     * @see #execute(Mono, ExecutionMode)
-     */
-    public Observable<Output> execute(Mono<Input> inputMono) {
-        return execute(inputMono, ExecutionMode.STREAM);
-    }
-
-    /**
      * do execute current user task
      *
      * @param inputMono the input
      * @param mode      the execution mode
      * @return the {@link Observable} for {@link Output}
      */
-    public Observable<Output> execute(Mono<Input> inputMono, ExecutionMode mode) {
+    public Observable<Output> execute(Mono<Input> inputMono) {
         return Observable.from(
                 inputMono.flatMapMany(
                         input -> {
@@ -66,17 +59,11 @@ public class Task {
                                 newEnvironment.injectOf(input.getVariable());
                             }
                             AgentModel agentModel = new AgentModel(input.getModelOptions());
-                            TaskContext taskContext =
-                                    TaskContext.builder()
-                                            .agentModel(agentModel)
-                                            .input(input)
-                                            .environment(newEnvironment)
-                                            .agent(formAgent)
-                                            .task(this)
-                                            .build();
-                            Chain<TaskContext, Output> planning = buildPlaning();
-                            ActionContext actionContext = new ActionContext(taskContext);
-                            actionContext.setMode(mode);
+                            newEnvironment.setAgent(formAgent);
+                            newEnvironment.setInput(input);
+                            newEnvironment.setAgentModel(agentModel);
+                            Chain<Environment, Output> planning = buildPlaning();
+                            ActionContext actionContext = new ActionContext(newEnvironment, input.getExecutionMode());
                             return planning.processMany(actionContext);
                         })
         );
@@ -85,7 +72,7 @@ public class Task {
     /**
      * specific task planing chain.
      */
-    public Chain<TaskContext, Output> buildPlaning() {
+    public Chain<Environment, Output> buildPlaning() {
         Set<String> dispatchActionNames = formAgent.getDispatchActionNames();
         List<Action> actions = Lists.newCopyOnWriteArrayList();
         // check action

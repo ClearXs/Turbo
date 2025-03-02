@@ -1,7 +1,9 @@
 package cc.allio.turbo.modules.ai;
 
 import cc.allio.turbo.modules.ai.annotation.DriverModel;
+import cc.allio.turbo.modules.ai.enums.Role;
 import cc.allio.turbo.modules.ai.model.ModelOptions;
+import cc.allio.turbo.modules.ai.runtime.ExecutionMode;
 import cc.allio.turbo.modules.ai.runtime.Variable;
 import cc.allio.uno.core.api.Copyable;
 import cc.allio.uno.core.util.CollectionUtils;
@@ -21,12 +23,15 @@ public class Input implements Copyable<Input> {
     private Long id;
     private String sessionId;
     // the use message
-    private Set<String> messages;
+    private String message;
 
     // use choose agents
     private Set<String> agents;
     private Variable variable;
     private ModelOptions modelOptions;
+    private Role role = Role.USER;
+    // execute model
+    ExecutionMode executionMode = ExecutionMode.STREAM;
 
     @Override
     public Input copy() {
@@ -34,10 +39,6 @@ public class Input implements Copyable<Input> {
 
         if (StringUtils.isNotEmpty(sessionId)) {
             input.setSessionId(sessionId);
-        }
-
-        if (CollectionUtils.isNotEmpty(messages)) {
-            input.setMessages(Sets.newHashSet(messages));
         }
 
         if (CollectionUtils.isNotEmpty(agents)) {
@@ -53,18 +54,6 @@ public class Input implements Copyable<Input> {
         }
 
         return input;
-    }
-
-    /**
-     * add user input message
-     *
-     * @param message the message
-     */
-    public void addMessage(String message) {
-        if (CollectionUtils.isEmpty(messages)) {
-            messages = Sets.newHashSet();
-        }
-        messages.add(message);
     }
 
     /**
@@ -90,5 +79,20 @@ public class Input implements Copyable<Input> {
             variable = new Variable();
         }
         variable.put(key, value);
+    }
+
+    /**
+     * create {@link Input} instance from {@link Message}
+     *
+     * @param message the {@link Message} instance
+     * @return the {@link Input} instance
+     */
+    public static Input fromMessage(Message message) {
+        Input input = new Input();
+        input.setMessage(message.getMsg());
+        input.setModelOptions(message.getModelOptions());
+        input.setVariable(message.getVariable());
+        input.setAgents(message.getAgents());
+        return input;
     }
 }

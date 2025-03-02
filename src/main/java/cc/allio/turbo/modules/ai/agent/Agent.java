@@ -3,9 +3,6 @@ package cc.allio.turbo.modules.ai.agent;
 import cc.allio.turbo.common.domain.Observable;
 import cc.allio.turbo.modules.ai.Input;
 import cc.allio.turbo.modules.ai.Output;
-import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
-import cc.allio.turbo.modules.ai.resources.AIResources;
-import cc.allio.turbo.modules.ai.runtime.ExecutionMode;
 import cc.allio.turbo.modules.ai.runtime.tool.FunctionTool;
 import cc.allio.turbo.modules.ai.runtime.tool.Tool;
 
@@ -35,10 +32,9 @@ public interface Agent {
      * accept user input{@link Input}. and generate task for planning and execute current task.
      *
      * @param input the user input
-     * @param mode  the {@link ExecutionMode} mode
      * @return {@link Observable} for {@link Output}
      */
-    Observable<Output> call(Mono<Input> input, ExecutionMode mode);
+    Observable<Output> call(Mono<Input> input);
 
     /**
      * add temporal tool

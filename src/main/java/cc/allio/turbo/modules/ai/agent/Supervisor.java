@@ -4,7 +4,6 @@ import cc.allio.turbo.common.domain.*;
 import cc.allio.turbo.modules.ai.*;
 import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
 import cc.allio.turbo.modules.ai.resources.AIResources;
-import cc.allio.turbo.modules.ai.runtime.ExecutionMode;
 import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
 import cc.allio.turbo.modules.ai.runtime.tool.ToolRegistry;
 import cc.allio.uno.core.bus.Topic;
@@ -27,7 +26,7 @@ import java.util.concurrent.Executors;
  * @since 0.2.0
  */
 @Slf4j
-public class AgentController implements InitializingBean, Disposable {
+public class Supervisor implements InitializingBean, Disposable {
 
     final AgentRegistry agentRegistry;
     final ActionRegistry actionRegistry;
@@ -38,12 +37,12 @@ public class AgentController implements InitializingBean, Disposable {
 
     Disposable disposable;
 
-    public AgentController(Driver<Input> inputDriver,
-                           Driver<Output> outputDriver,
-                           AgentRegistry agentRegistry,
-                           ActionRegistry actionRegistry,
-                           ToolRegistry toolRegistry,
-                           AIResources resources) {
+    public Supervisor(Driver<Input> inputDriver,
+                      Driver<Output> outputDriver,
+                      AgentRegistry agentRegistry,
+                      ActionRegistry actionRegistry,
+                      ToolRegistry toolRegistry,
+                      AIResources resources) {
         this.inputDriver = inputDriver;
         this.outputDriver = outputDriver;
         this.agentRegistry = agentRegistry;
@@ -92,16 +91,12 @@ public class AgentController implements InitializingBean, Disposable {
             return Flux.empty();
         }
 
-        Set<String> message = input.getMessages();
         Set<String> agents = input.getAgents();
-        if (log.isInfoEnabled()) {
-            log.info("subscribe user input message {}, use by agents is {}", message, agents);
-        }
         MultiObservable<Output> observable = new MultiObservable<>();
         for (String agentName : agents) {
             Agent agent = agentRegistry.get(agentName);
             if (agent != null) {
-                observable.concat(agent.call(Mono.just(input), ExecutionMode.STREAM));
+                observable.concat(agent.call(Mono.just(input)));
             }
         }
         return observable.observeMany();

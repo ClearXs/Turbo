@@ -4,10 +4,8 @@ import cc.allio.turbo.common.domain.DomainEventContext;
 import cc.allio.turbo.common.domain.GeneralDomain;
 import cc.allio.turbo.common.domain.Subscription;
 import cc.allio.turbo.common.util.WebUtil;
-import cc.allio.turbo.modules.ai.Driver;
-import cc.allio.turbo.modules.ai.Input;
-import cc.allio.turbo.modules.ai.Output;
-import cc.allio.turbo.modules.ai.Topics;
+import cc.allio.turbo.modules.ai.*;
+import cc.allio.turbo.modules.ai.Message;
 import cc.allio.turbo.modules.ai.model.ModelOptions;
 import cc.allio.turbo.modules.ai.runtime.Variable;
 import cc.allio.uno.core.bus.TopicKey;
@@ -22,7 +20,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
-import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -80,7 +77,7 @@ public class ChatHandler extends TextWebSocketHandler implements InitializingBea
                                 return Optional.empty();
                             })
                             .ifPresent(session -> {
-                                String message = output.getMessage();
+                                String message = JsonUtils.toJson(output);
                                 TextMessage textMessage = new TextMessage(message.getBytes(StandardCharsets.UTF_8));
                                 try {
                                     session.sendMessage(textMessage);
@@ -104,17 +101,16 @@ public class ChatHandler extends TextWebSocketHandler implements InitializingBea
             // user send msg is literal string
         }
         WsInput input = new WsInput();
-        String sessionId = session.getId();
-        input.setId(IdGenerator.defaultGenerator().getNextId());
+        String sessionId = IdGenerator.defaultGenerator().toHex();
         input.setSession(session);
         input.setSessionId(sessionId);
         input.setVariable(msg == null ? new Variable() : msg.getVariable());
         input.setAgents(msg == null ? Set.of("Chat") : msg.getAgents());
         input.setModelOptions(msg == null ? ModelOptions.getDefaultForOllama() : msg.getModelOptions());
-        input.setMessages(msg == null ? Set.of(message.getPayload()) : msg.getMsg());
+        input.setMessage(msg == null ? message.getPayload() : msg.getMsg());
         GeneralDomain<Input> domain = new GeneralDomain<>(input, inputDriver.getDomainEventBus());
         DomainEventContext context = new DomainEventContext(domain);
-        TopicKey topicKey = Topics.USER_INPUT.copy().append(input.getId());
+        TopicKey topicKey = Topics.USER_INPUT.copy().append(input.getSessionId());
         inputDriver.publishOn(topicKey, context).subscribe();
     }
 

@@ -34,12 +34,12 @@ public class AgentConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AgentController agentController(@Qualifier("Driver_Input") Driver<Input> inputDriver,
-                                           @Qualifier("Driver_Output") Driver<Output> outputDriver,
-                                           AgentRegistry agentRegistry,
-                                           ActionRegistry actionRegistry,
-                                           ToolRegistry toolRegistry,
-                                           AIResources resources) {
-        return new AgentController(inputDriver, outputDriver, agentRegistry, actionRegistry, toolRegistry, resources);
+    public Supervisor agentController(@Qualifier("Driver_Input") Driver<Input> inputDriver,
+                                      @Qualifier("Driver_Output") Driver<Output> outputDriver,
+                                      AgentRegistry agentRegistry,
+                                      ActionRegistry actionRegistry,
+                                      ToolRegistry toolRegistry,
+                                      AIResources resources) {
+        return new Supervisor(inputDriver, outputDriver, agentRegistry, actionRegistry, toolRegistry, resources);
     }
 }

@@ -4,7 +4,6 @@ import cc.allio.turbo.common.domain.Observable;
 import cc.allio.turbo.modules.ai.Input;
 import cc.allio.turbo.modules.ai.Output;
 import cc.allio.turbo.modules.ai.agent.ResourceAgent;
-import cc.allio.turbo.modules.ai.runtime.ExecutionMode;
 import cc.allio.turbo.modules.ai.runtime.Task;
 import cc.allio.turbo.modules.ai.runtime.action.ActionRegistry;
 import cc.allio.turbo.modules.ai.runtime.tool.ToolRegistry;
@@ -28,7 +27,7 @@ public class SMAAgent extends ResourceAgent {
     }
 
     @Override
-    public Observable<Output> call(Mono<Input> input, ExecutionMode mode) {
-        return new Task(this, actionRegistry).execute(input, mode);
+    public Observable<Output> call(Mono<Input> input) {
+        return new Task(this, actionRegistry).execute(input);
     }
 }

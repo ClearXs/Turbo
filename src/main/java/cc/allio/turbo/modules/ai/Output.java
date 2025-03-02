@@ -1,6 +1,8 @@
 package cc.allio.turbo.modules.ai;
 
 import cc.allio.turbo.modules.ai.annotation.DriverModel;
+import cc.allio.turbo.modules.ai.enums.MessageStatus;
+import cc.allio.turbo.modules.ai.enums.Role;
 import cc.allio.turbo.modules.ai.runtime.ExecutionMode;
 import cc.allio.uno.core.api.Copyable;
 import cc.allio.uno.core.util.StringUtils;
@@ -16,9 +18,14 @@ public class Output implements Copyable<Output> {
     // agent name
     private String agent;
 
+    private long createAt;
+    private Role role;
     // the response message
     private String message;
     private ExecutionMode executionMode;
+
+    // message status
+    private MessageStatus status;
 
     @JsonIgnore
     private Input input;

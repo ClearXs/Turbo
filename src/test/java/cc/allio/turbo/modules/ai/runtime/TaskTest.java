@@ -80,8 +80,8 @@ public class TaskTest extends BaseTestCase {
 
     @Test
     void testBuildPlanning() {
-        Chain<TaskContext, Output> chain = new Task(mockTestAgent, actionRegistry).buildPlaning();
-        List<? extends Node<TaskContext, Output>> nodes = chain.getNodes();
+        Chain<Environment, Output> chain = new Task(mockTestAgent, actionRegistry).buildPlaning();
+        List<? extends Node<Environment, Output>> nodes = chain.getNodes();
 
         assertEquals(3, nodes.size());
     }
@@ -99,9 +99,9 @@ public class TaskTest extends BaseTestCase {
     void testPlanningOfLocalChat() {
         Mockito.when(mockTestAgent.getDispatchActionNames()).thenReturn(Sets.newHashSet("chat"));
         Input input = templateInput.copy();
-        input.addMessage("what's english grammar?");
+        input.setMessage("what's english grammar?");
 
-        new Task(mockTestAgent, actionRegistry).execute(Mono.just(input), ExecutionMode.CALL)
+        new Task(mockTestAgent, actionRegistry).execute(Mono.just(input))
                 .observeMany()
                 .as(StepVerifier::create)
                 .expectNextCount(1L)
@@ -112,10 +112,10 @@ public class TaskTest extends BaseTestCase {
     void testPlanningOfToolChat() {
         Mockito.when(mockTemperatureAgent.getDispatchActionNames()).thenReturn(Sets.newHashSet("chat"));
         Input input = templateInput.copy();
-        input.addMessage("what's today temperature?");
+        input.setMessage("what's today temperature?");
 
         new Task(mockTemperatureAgent, actionRegistry)
-                .execute(Mono.just(input), ExecutionMode.CALL)
+                .execute(Mono.just(input))
                 .observeMany()
                 .flatMap(subscription -> Mono.justOrEmpty(subscription.getDomain()))
                 .map(Output::getMessage)
