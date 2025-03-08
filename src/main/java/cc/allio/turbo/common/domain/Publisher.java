@@ -105,29 +105,28 @@ public interface Publisher<D> extends InitializingBean, DisposableBean, Domain<D
     /**
      * publish event to {@link EventBus}
      *
-     * @param topicKey the topic key
-     * @param context  the event context
+     * @param path    the topic path key
+     * @param context the event context
      * @return
      */
-    default Flux<Topic<DomainEventContext>> publishOn(TopicKey topicKey, DomainEventContext context) {
+    default Flux<Topic<DomainEventContext>> publishOn(TopicKey path, DomainEventContext context) {
         // like DomainName/event
-        String domainPath = buildEventPath(topicKey.getPath());
-        return getDomainEventBus().publish(TopicKey.of(domainPath), context);
+        TopicKey domainPath = buildEventPath(path);
+        return getDomainEventBus().publish(domainPath, context);
     }
 
     /**
      * batch publish to {@link EventBus}
      *
-     * @param topicKeys the list of {@link TopicKey}
-     * @param context   the {@link DomainEventContext}
+     * @param paths   the list of {@link TopicKey}
+     * @param context the {@link DomainEventContext}
      * @return
      */
-    default Flux<Topic<DomainEventContext>> publishOn(List<TopicKey> topicKeys, DomainEventContext context) {
+    default Flux<Topic<DomainEventContext>> publishOn(List<TopicKey> paths, DomainEventContext context) {
         return getDomainEventBus()
                 .batchPublish(
-                        topicKeys.stream()
-                                .map(topicKey -> TopicKey.of(buildEventPath(topicKey.getPath())))
-                                .toList(),
+                        // append event name for each path
+                        paths.stream().map(this::buildEventPath).toList(),
                         context
                 );
     }

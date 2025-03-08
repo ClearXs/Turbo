@@ -1,6 +1,6 @@
 package cc.allio.turbo.common.db.mybatis.service.impl;
 
-import cc.allio.turbo.common.db.entity.IdEntity;
+import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
 import cc.allio.turbo.common.domain.DomainEventContext;
 import cc.allio.uno.core.bus.EventBus;
@@ -10,7 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import java.io.Serializable;
 
-public abstract class TurboCrudServiceImpl<M extends BaseMapper<T>, T extends IdEntity>
+public abstract class TurboCrudServiceImpl<M extends BaseMapper<T>, T extends Entity>
         extends ServiceImpl<M, T>
         implements ITurboCrudService<T> {
 

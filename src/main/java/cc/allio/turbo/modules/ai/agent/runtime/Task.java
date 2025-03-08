@@ -1,6 +1,7 @@
 package cc.allio.turbo.modules.ai.agent.runtime;
 
 import cc.allio.turbo.common.domain.Observable;
+import cc.allio.turbo.modules.ai.agent.runtime.action.builtin.EndAction;
 import cc.allio.turbo.modules.ai.driver.model.Input;
 import cc.allio.turbo.modules.ai.driver.model.Output;
 import cc.allio.turbo.modules.ai.agent.Agent;
@@ -92,6 +93,9 @@ public class Task {
                 new ChatService(agentModel, new PersistentSessionChatMemory(sessionId), conversationId, sessionId);
         ChatAction chatAction = new ChatAction(chatService);
         actions.add(chatAction);
+
+        EndAction endAction = new EndAction();
+        actions.addLast(endAction);
 
         return new DefaultChain<>(actions);
     }

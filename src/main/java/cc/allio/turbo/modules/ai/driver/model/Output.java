@@ -9,12 +9,14 @@ import cc.allio.uno.core.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 @DriverModel
 public class Output implements Copyable<Output> {
 
-    private Long id;
-    private Long inputId;
+    private String conversationId;
+    private String sessionId;
     // agent name
     private String agent;
 
@@ -27,16 +29,14 @@ public class Output implements Copyable<Output> {
     // message status
     private MessageStatus status;
 
+    private Map<String,Object> metadata;
+
     @JsonIgnore
     private Input input;
 
     @Override
     public Output copy() {
         Output output = new Output();
-
-        if (inputId != null) {
-            output.setInputId(inputId);
-        }
 
         if (StringUtils.isNotEmpty(agent)) {
             output.setAgent(agent);

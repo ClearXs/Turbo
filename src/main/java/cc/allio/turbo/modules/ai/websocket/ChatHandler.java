@@ -2,36 +2,44 @@ package cc.allio.turbo.modules.ai.websocket;
 
 import cc.allio.turbo.common.domain.DomainEventContext;
 import cc.allio.turbo.common.domain.GeneralDomain;
-import cc.allio.turbo.common.domain.Subscription;
+import cc.allio.turbo.common.util.AuthUtil;
 import cc.allio.turbo.common.util.WebUtil;
 import cc.allio.turbo.modules.ai.agent.Agent;
+import cc.allio.turbo.modules.ai.api.entity.AIChatSession;
 import cc.allio.turbo.modules.ai.driver.Driver;
 import cc.allio.turbo.modules.ai.driver.Topics;
 import cc.allio.turbo.modules.ai.driver.model.Input;
 import cc.allio.turbo.modules.ai.driver.model.Output;
 import cc.allio.turbo.modules.ai.model.ModelOptions;
 import cc.allio.turbo.modules.ai.agent.runtime.Variable;
+import cc.allio.uno.core.StringPool;
+import cc.allio.uno.core.bus.Pathway;
 import cc.allio.uno.core.bus.TopicKey;
 import cc.allio.uno.core.util.DateUtil;
 import cc.allio.uno.core.util.JsonUtils;
-import cc.allio.uno.core.util.id.IdGenerator;
+import cc.allio.uno.core.util.StringUtils;
+import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
+import cc.allio.uno.data.orm.executor.CommandExecutorFactory;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.util.Optionals;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import reactor.core.publisher.Mono;
 import reactor.core.Disposable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -43,43 +51,57 @@ import java.util.function.Supplier;
  * @since 0.2.0
  */
 @Slf4j
-public class ChatHandler extends TextWebSocketHandler implements InitializingBean, DisposableBean {
+public class ChatHandler extends TextWebSocketHandler implements DisposableBean {
 
     private final Driver<Input> inputDriver;
     private final Driver<Output> outputDriver;
-    private final JwtDecoder jwtDecoder;
 
-    private Disposable disposable;
+    private final Map<String, Disposable> sessionDisposable;
 
-    public ChatHandler(Driver<Input> inputDriver,
-                       Driver<Output> outputDriver,
-                       JwtDecoder jwtDecoder) {
+    public static final String CONVERSATION_ID_NAME = "conversation-id";
+
+    public ChatHandler(Driver<Input> inputDriver, Driver<Output> outputDriver) {
         this.inputDriver = inputDriver;
         this.outputDriver = outputDriver;
-        this.jwtDecoder = jwtDecoder;
+        this.sessionDisposable = Maps.newConcurrentMap();
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        this.disposable =
-                outputDriver.subscribeOn(Topics.USER_CHAT_OUTPUT_PATTERNS)
-                        .observeMany()
-                        .doOnNext(this::handleOutput)
-                        .subscribe();
-    }
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        AggregateCommandExecutor executor = CommandExecutorFactory.getDSLExecutor();
+        String conversationId = getConversationId(session);
 
-    void handleOutput(Subscription<Output> subscription) {
-        subscription.getDomain()
-                .ifPresent(output -> {
+        if (StringUtils.isBlank(conversationId)) {
+            session.close(CloseStatus.NOT_ACCEPTABLE);
+            return;
+        }
+
+        String sessionId = session.getId();
+
+        if (executor != null) {
+            AIChatSession chatSession = new AIChatSession();
+            chatSession.setId(sessionId);
+            chatSession.setChatId(Long.valueOf(conversationId));
+            Long userId = AuthUtil.getUserId();
+            chatSession.setUserId(userId);
+            executor.saveOrUpdate(chatSession);
+        }
+
+        TopicKey outputTopic = Topics.USER_CHAT_OUTPUT.append(conversationId).append(TopicKey.of(sessionId, Pathway.EMPTY));
+
+        var disposable = outputDriver.subscribeOn(outputTopic)
+                .observeMany()
+                .flatMap(subscription -> Mono.justOrEmpty(subscription.getDomain()))
+                .flatMap(output -> {
                     Input input = output.getInput();
-                    Optional.ofNullable(input)
+                    return Mono.justOrEmpty(input)
                             .flatMap(i -> {
                                 if (i instanceof WsInput wsInput) {
-                                    return Optional.ofNullable(wsInput.getSession());
+                                    return Mono.just(wsInput.getSession());
                                 }
-                                return Optional.empty();
+                                return Mono.empty();
                             })
-                            .ifPresent(session -> {
+                            .doOnNext(webSocketSession -> {
                                 String message = JsonUtils.toJson(output);
                                 TextMessage textMessage = new TextMessage(message.getBytes(StandardCharsets.UTF_8));
                                 try {
@@ -88,7 +110,25 @@ public class ChatHandler extends TextWebSocketHandler implements InitializingBea
                                     log.error("failed ws send msg: {}", message, ex);
                                 }
                             });
-                });
+                })
+                .subscribe();
+
+        sessionDisposable.put(sessionId, disposable);
+    }
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        String sessionId = session.getId();
+
+        if (sessionDisposable.containsKey(sessionId)) {
+            Disposable disposable = sessionDisposable.get(sessionId);
+
+            if (disposable != null) {
+                disposable.dispose();
+            }
+
+            sessionDisposable.remove(sessionId);
+        }
     }
 
     @Override
@@ -96,6 +136,7 @@ public class ChatHandler extends TextWebSocketHandler implements InitializingBea
         if (log.isInfoEnabled()) {
             log.info("receive message: {}", message.getPayload());
         }
+
         Message msg = null;
         try {
             msg = JsonUtils.parse(message.getPayload(), Message.class);
@@ -104,59 +145,51 @@ public class ChatHandler extends TextWebSocketHandler implements InitializingBea
             // user send msg is literal string
         }
         WsInput input = new WsInput();
-        String sessionId = IdGenerator.defaultGenerator().toHex();
+
+        String conversationId = getConversationId(session);
+        input.setConversationId(conversationId);
+
+        String sessionId = session.getId();
         input.setSession(session);
         input.setSessionId(sessionId);
+
         input.setVariable(msg == null ? new Variable() : msg.getVariable());
         input.setAgent(msg == null ? Agent.CHAT_AGENT : msg.getAgent());
         input.setModelOptions(msg == null ? ModelOptions.getDefaultForOllama() : msg.getModelOptions());
         input.setMessages(msg == null ? Sets.newHashSet(message.getPayload()) : msg.getMsgs());
         GeneralDomain<Input> domain = new GeneralDomain<>(input, inputDriver.getDomainEventBus());
         DomainEventContext context = new DomainEventContext(domain);
-        TopicKey topicKey = Topics.USER_CHAT_INPUT.copy().append(input.getSessionId());
-        inputDriver.publishOn(topicKey, context).subscribe();
+
+        TopicKey inputTopic = Topics.USER_CHAT_INPUT.append(conversationId).append(TopicKey.of(sessionId, Pathway.EMPTY));
+
+        inputDriver.publishOn(inputTopic, context).subscribe();
     }
 
-    /**
-     * from WebSocketSession info to check is authentication.
-     *
-     * @param session the {@link WebSocketSession} instance.
-     * @return true if is authentication.
-     */
-    public boolean isAuthentication(WebSocketSession session) {
+    String getConversationId(WebSocketSession session) {
         Map<String, Object> attributes = session.getAttributes();
         HttpHeaders headers = session.getHandshakeHeaders();
-        if (headers.containsKey(WebUtil.X_AUTHENTICATION) || attributes.containsKey(WebUtil.X_AUTHENTICATION)) {
-            // from header get token
-            Supplier<Optional<String>> getHeaderOpt =
-                    () -> Optional.ofNullable(headers.getFirst(WebUtil.X_AUTHENTICATION));
 
-            // from attributes get token
-            Supplier<Optional<String>> getAttributesOpt =
-                    () -> Optional.ofNullable(attributes.get(WebUtil.X_AUTHENTICATION)).map(Object::toString);
+        // from header get token
+        Supplier<Optional<String>> getHeaderOpt =
+                () -> Optional.ofNullable(headers.getFirst(CONVERSATION_ID_NAME));
 
-            return Optionals.firstNonEmpty(getHeaderOpt, getAttributesOpt)
-                    .map(token -> {
-                        Jwt jwt;
-                        try {
-                            jwt = jwtDecoder.decode(token);
-                        } catch (JwtException ex) {
-                            log.error("websocket authentication error", ex);
-                            return false;
-                        }
-                        Instant expiresAt = jwt.getExpiresAt();
-                        // check expires
-                        return expiresAt == null || expiresAt.isAfter(DateUtil.now().toInstant());
-                    })
-                    .orElse(false);
-        }
-        return false;
+        // from attributes get token
+        Supplier<Optional<String>> getAttributesOpt =
+                () -> Optional.ofNullable(attributes.get(CONVERSATION_ID_NAME)).map(Object::toString);
+
+        return Optionals.firstNonEmpty(getHeaderOpt, getAttributesOpt).orElse(StringPool.EMPTY);
     }
 
     @Override
     public void destroy() throws Exception {
-        if (disposable != null) {
-            disposable.dispose();
+        if (!sessionDisposable.isEmpty()) {
+            Collection<Disposable> disposables = sessionDisposable.values();
+
+            for (Disposable disposable : disposables) {
+                disposable.dispose();
+            }
         }
+        // clear
+        sessionDisposable.clear();
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.reactive.socket.server.WebSocketService;
 import org.springframework.web.reactive.socket.server.support.HandshakeWebSocketService;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
@@ -27,9 +26,8 @@ public class WsConfiguration {
 
     @Bean
     public ChatHandler chatHandler(@Qualifier("Driver_Input") Driver<Input> inputDriver,
-                                   @Qualifier("Driver_Output") Driver<Output> outputDriver,
-                                   JwtDecoder jwtDecoder) {
-        return new ChatHandler(inputDriver, outputDriver, jwtDecoder);
+                                   @Qualifier("Driver_Output") Driver<Output> outputDriver) {
+        return new ChatHandler(inputDriver, outputDriver);
     }
 
     @Bean

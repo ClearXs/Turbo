@@ -9,7 +9,9 @@ import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
 import cc.allio.turbo.modules.ai.chat.resources.AIResources;
 import cc.allio.turbo.modules.ai.agent.runtime.action.ActionRegistry;
 import cc.allio.turbo.modules.ai.chat.tool.ToolRegistry;
+import cc.allio.uno.core.bus.Pathway;
 import cc.allio.uno.core.bus.Topic;
+import cc.allio.uno.core.bus.TopicKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import reactor.core.Disposable;
@@ -111,11 +113,23 @@ public class Supervisor implements InitializingBean, Disposable {
             return Flux.empty();
         }
         Output output = domainOptional.get();
+
         GeneralDomain<Output> domain = new GeneralDomain<>(output, outputDriver.getDomainEventBus());
-        Long inputId = output.getInputId();
         // publish to evaluation and output.
         DomainEventContext eventContext = new DomainEventContext(domain);
-        return outputDriver.publishOn(List.of(Topics.EVALUATION.append(inputId), Topics.USER_CHAT_OUTPUT.append(inputId)), eventContext);
+
+        String conversationId = output.getConversationId();
+        String sessionId = output.getSessionId();
+
+        TopicKey evalTopic =
+                Topics.EVALUATION.append(conversationId)
+                        .append(builder -> builder.text(sessionId).pathway(Pathway.EMPTY));
+
+        TopicKey outputTopic =
+                Topics.USER_CHAT_OUTPUT.append(conversationId)
+                        .append(builder -> builder.text(sessionId).pathway(Pathway.EMPTY));
+
+        return outputDriver.publishOn(List.of(evalTopic, outputTopic), eventContext);
     }
 
     @Override

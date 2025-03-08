@@ -5,12 +5,10 @@ import cc.allio.turbo.modules.ai.driver.Driver;
 import cc.allio.turbo.modules.ai.driver.Topics;
 import cc.allio.turbo.modules.ai.driver.model.Input;
 import cc.allio.turbo.modules.ai.driver.model.Output;
-import cc.allio.turbo.modules.auth.jwt.TurboJwtDecoder;
 import cc.allio.turbo.modules.auth.jwt.TurboJwtEncoder;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.uno.test.BaseTestCase;
 import com.google.common.collect.Maps;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.io.buffer.DefaultDataBuffer;
@@ -40,35 +38,7 @@ public class ChatHandlerTest extends BaseTestCase {
     protected void onInit() throws Throwable {
         Driver<Input> inputDriver = Driver.from(Input.class);
         Driver<Output> outputDriver = Driver.from(Output.class);
-        chatHandler = new ChatHandler(inputDriver, outputDriver, TurboJwtDecoder.getInstance());
-    }
-
-    @Test
-    void testAuthentication() {
-        WebSocketSession session = Mockito.mock(WebSocketSession.class);
-        Map<String, Object> attributes = Maps.newConcurrentMap();
-        HttpHeaders headers = new HttpHeaders();
-
-        Mockito.when(session.getAttributes()).thenReturn(attributes);
-        Mockito.when(session.getHandshakeHeaders()).thenReturn(headers);
-
-        boolean a1 = chatHandler.isAuthentication(session);
-        Assertions.assertFalse(a1);
-
-        attributes.put(WebUtil.X_AUTHENTICATION, "");
-        boolean a2 = chatHandler.isAuthentication(session);
-        Assertions.assertFalse(a2);
-
-        String validToken = buildToken(new Date().toInstant().plus(1000L, ChronoUnit.MILLIS));
-        attributes.put(WebUtil.X_AUTHENTICATION, validToken);
-        boolean a3 = chatHandler.isAuthentication(session);
-        Assertions.assertTrue(a3);
-
-
-        String expiredToken = buildToken(new Date().toInstant().minus(1000L, ChronoUnit.MILLIS));
-        attributes.put(WebUtil.X_AUTHENTICATION, expiredToken);
-        boolean a4 = chatHandler.isAuthentication(session);
-        Assertions.assertFalse(a4);
+        chatHandler = new ChatHandler(inputDriver, outputDriver);
     }
 
     @Test

@@ -28,6 +28,7 @@ public interface Topics {
 
     /**
      * subscribe output
+     * typically user:chat/output/{conversationId}/{sessionId}
      */
     TopicKey USER_CHAT_OUTPUT = TopicKey.of("user:chat/output");
 

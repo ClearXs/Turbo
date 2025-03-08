@@ -256,11 +256,11 @@ public interface Subscriber<D> extends InitializingBean, DisposableBean, Domain<
     /**
      * 基于事件方法的订阅
      *
-     * @param topicKey topicKey
+     * @param path the topic path
      */
-    default Observable<D> subscribeOn(TopicKey topicKey) {
-        String eventPath = buildEventPath(topicKey.getPath());
-        return new BehaviorObservable<>(this, TopicKey.of(eventPath), getDomainEventBus());
+    default Observable<D> subscribeOn(TopicKey path) {
+        TopicKey eventPath = buildEventPath(path);
+        return new BehaviorObservable<>(this, eventPath, getDomainEventBus());
     }
 
     /**

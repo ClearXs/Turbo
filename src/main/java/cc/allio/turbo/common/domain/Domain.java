@@ -2,6 +2,8 @@ package cc.allio.turbo.common.domain;
 
 import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.bus.EventBus;
+import cc.allio.uno.core.bus.Pathway;
+import cc.allio.uno.core.bus.TopicKey;
 import cc.allio.uno.core.reflect.ReflectTools;
 
 /**
@@ -47,6 +49,17 @@ public interface Domain<D> extends DomainEventBusAware, DomainEventBusGetter {
     default String buildEventPath(String path) {
         // like as {DomainName}/{path}
         return getDomainName() + StringPool.SLASH + path;
+    }
+
+    /**
+     * build domain event path. use by {@link Subscriber} {@link Publisher} in {@link EventBus}
+     *
+     * @param path the original path
+     * @return event path
+     */
+    default TopicKey buildEventPath(TopicKey path) {
+        // like as {DomainName}/{path}
+        return TopicKey.of(getDomainName()).append(path);
     }
 
     /**

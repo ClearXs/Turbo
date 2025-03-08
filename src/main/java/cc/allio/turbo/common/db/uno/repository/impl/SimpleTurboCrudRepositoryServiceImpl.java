@@ -3,8 +3,6 @@ package cc.allio.turbo.common.db.uno.repository.impl;
 import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepositoryService;
 import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
-import cc.allio.uno.data.orm.executor.CommandExecutor;
-import cc.allio.uno.data.orm.executor.CommandExecutorFactory;
 
 /**
  * default impl class for {@link ITurboCrudRepositoryService}

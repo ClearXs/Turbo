@@ -25,10 +25,7 @@ import reactor.core.Disposable;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * 数据源检测器。
@@ -63,7 +60,8 @@ public class DataSourceDetector implements DisposableBean, ApplicationListener<A
     @Override
     public void onApplicationEvent(ApplicationStartedEvent event) {
 
-        onInitialization();
+        CompletableFuture.runAsync(this::onInitialization, Executors.newVirtualThreadPerTaskExecutor());
+
         // save
         discards.add(dataSourceService.subscribeOn(dataSourceService::save).observe(this::onSaveOrUpdate));
         // update

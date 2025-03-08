@@ -15,6 +15,7 @@ import cc.allio.turbo.modules.ai.agent.runtime.ExecutionMode;
 import cc.allio.turbo.modules.ai.chat.tool.FunctionTool;
 import cc.allio.uno.core.chain.Chain;
 import cc.allio.uno.core.chain.ChainContext;
+import cc.allio.uno.core.util.StringUtils;
 import cc.allio.uno.core.util.id.IdGenerator;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -78,18 +79,19 @@ public class ChatAction extends MessageAction {
         public Flux<Output> apply(AdvancedMessage message) {
             Output output = new Output();
 
-            output.setId(IdGenerator.defaultGenerator().getNextId());
             output.setAgent(agent.name());
-            output.setInputId(input.getId());
             output.setMessage(message.content());
             output.setInput(input);
             output.setExecutionMode(mode);
-            output.setCreateAt(message.createAt());
             output.setRole(message.role());
+            output.setConversationId(input.getConversationId());
+            output.setSessionId(input.getSessionId());
+            output.setCreateAt(message.createAt());
+            output.setMetadata(message.getMetadata());
 
             String finish = message.finish();
 
-            if (Objects.equals(AdvancedMessage.UNFINISH, finish)) {
+            if (StringUtils.isBlank(finish)) {
                 output.setStatus(MessageStatus.INCOMPLETE);
             } else if (Objects.equals(AdvancedMessage.FINISH_STOP, finish)) {
                 output.setStatus(MessageStatus.COMPLETE);

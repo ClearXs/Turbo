@@ -21,7 +21,6 @@ import java.util.Set;
 @DriverModel
 public class Input implements Copyable<Input> {
 
-    private Long id;
     private String conversationId;
     private String sessionId;
     // the use message

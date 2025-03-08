@@ -15,7 +15,6 @@ import org.springframework.security.oauth2.jwt.*;
 public class TurboJwtEncoder implements JwtEncoder {
 
     private final JwtEncoder actual;
-
     private static TurboJwtEncoder instance;
 
     private TurboJwtEncoder() {
