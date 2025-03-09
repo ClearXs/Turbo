@@ -1,6 +1,7 @@
 package cc.allio.turbo.modules.ai.api.entity;
 
 import cc.allio.turbo.common.db.entity.TenantEntity;
+import cc.allio.turbo.modules.ai.api.enums.Capability;
 import cc.allio.turbo.modules.ai.enums.ModelType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -33,23 +34,30 @@ public class AIModel extends TenantEntity {
     private Long manufacturerId;
 
     /**
-     * 模型类型
-     */
-    @TableField("type")
-    @Schema(description = "模型类型")
-    private List<ModelType> type;
-
-    /**
-     * 模型参数
-     */
-    @TableField("parameters")
-    @Schema(description = "模型参数")
-    private String parameters;
-
-    /**
      * 是否内置
      */
     @TableField("built_id")
     @Schema(description = "是否内置")
     private Boolean builtIn;
+
+    /**
+     *
+     */
+    @TableField("quantity")
+    @Schema(description = "参数量")
+    private String quantity;
+
+    /**
+     * 模型能力
+     */
+    @TableField("capabilities")
+    @Schema(description = "模型能力")
+    private List<Capability> capabilities;
+
+    /**
+     * readme
+     */
+    @TableField("readme")
+    @Schema(description = "readme")
+    private String readme;
 }

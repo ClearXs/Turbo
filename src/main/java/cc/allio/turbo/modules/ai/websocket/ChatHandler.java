@@ -3,19 +3,19 @@ package cc.allio.turbo.modules.ai.websocket;
 import cc.allio.turbo.common.domain.DomainEventContext;
 import cc.allio.turbo.common.domain.GeneralDomain;
 import cc.allio.turbo.common.util.AuthUtil;
-import cc.allio.turbo.common.util.WebUtil;
 import cc.allio.turbo.modules.ai.agent.Agent;
 import cc.allio.turbo.modules.ai.api.entity.AIChatSession;
 import cc.allio.turbo.modules.ai.driver.Driver;
 import cc.allio.turbo.modules.ai.driver.Topics;
 import cc.allio.turbo.modules.ai.driver.model.Input;
+import cc.allio.turbo.modules.ai.driver.model.Options;
+import cc.allio.turbo.modules.ai.driver.model.Order;
 import cc.allio.turbo.modules.ai.driver.model.Output;
 import cc.allio.turbo.modules.ai.model.ModelOptions;
 import cc.allio.turbo.modules.ai.agent.runtime.Variable;
 import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.bus.Pathway;
 import cc.allio.uno.core.bus.TopicKey;
-import cc.allio.uno.core.util.DateUtil;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.uno.core.util.StringUtils;
 import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
@@ -26,9 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.data.util.Optionals;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -38,7 +35,6 @@ import reactor.core.Disposable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -55,7 +51,6 @@ public class ChatHandler extends TextWebSocketHandler implements DisposableBean 
 
     private final Driver<Input> inputDriver;
     private final Driver<Output> outputDriver;
-
     private final Map<String, Disposable> sessionDisposable;
 
     public static final String CONVERSATION_ID_NAME = "conversation-id";
@@ -155,8 +150,11 @@ public class ChatHandler extends TextWebSocketHandler implements DisposableBean 
 
         input.setVariable(msg == null ? new Variable() : msg.getVariable());
         input.setAgent(msg == null ? Agent.CHAT_AGENT : msg.getAgent());
-        input.setModelOptions(msg == null ? ModelOptions.getDefaultForOllama() : msg.getModelOptions());
-        input.setMessages(msg == null ? Sets.newHashSet(message.getPayload()) : msg.getMsgs());
+        input.setModelOptions(msg == null ? ModelOptions.getDefaultForLlama() : msg.getModelOptions());
+        input.setInstructions(msg == null ? Sets.newHashSet(Order.toUser((message.getPayload()))) : msg.getInstructions());
+        input.setOptions(msg == null ? new Options() : msg.getOptions());
+
+
         GeneralDomain<Input> domain = new GeneralDomain<>(input, inputDriver.getDomainEventBus());
         DomainEventContext context = new DomainEventContext(domain);
 

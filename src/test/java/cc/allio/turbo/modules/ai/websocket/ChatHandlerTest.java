@@ -58,7 +58,7 @@ public class ChatHandlerTest extends BaseTestCase {
                 .subscribeOn(Topics.USER_CHAT_INPUT_PATTERNS)
                 .observeMany()
                 .flatMap(subscription ->
-                        Mono.justOrEmpty(subscription.getDomain().flatMap(input -> input.getMessages().stream().findFirst())))
+                        Mono.justOrEmpty(subscription.getDomain().flatMap(input -> input.getInstructions().stream().findFirst())))
                 .take(1L)
                 .parallel()
                 .as(StepVerifier::create)

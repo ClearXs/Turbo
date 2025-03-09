@@ -10,6 +10,7 @@ import org.springframework.ai.chat.messages.MessageType;
 @AllArgsConstructor
 public enum Role {
 
+    INSTRUCTION("instruction", "instruction"),
     USER("user", "user"),
     SYSTEM("system", "system"),
     ASSISTANT("assistant", "assistant"),

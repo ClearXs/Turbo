@@ -28,8 +28,8 @@ public class Output implements Copyable<Output> {
 
     // message status
     private MessageStatus status;
-
-    private Map<String,Object> metadata;
+    // output metadata
+    private Map<String, Object> metadata;
 
     @JsonIgnore
     private Input input;

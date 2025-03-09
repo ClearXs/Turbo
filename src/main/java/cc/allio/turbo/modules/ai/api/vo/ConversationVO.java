@@ -15,6 +15,6 @@ public class ConversationVO extends AIChat {
     @Schema(description = "latest user message")
     private String latestUserMessage;
 
-    @Schema(description = "all messages")
+    @Schema(description = "all instructions")
     private List<AIMessage> messages;
 }

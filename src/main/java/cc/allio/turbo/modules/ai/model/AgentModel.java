@@ -51,9 +51,9 @@ public class AgentModel {
     }
 
     /**
-     * use {@link ModelOptions#getDefaultForOllama()} options to create {@link AgentModel}
+     * use {@link ModelOptions#getDefaultForLlama()} options to create {@link AgentModel}
      */
     public static AgentModel ollama() {
-        return new AgentModel(ModelOptions.getDefaultForOllama());
+        return new AgentModel(ModelOptions.getDefaultForLlama());
     }
 }

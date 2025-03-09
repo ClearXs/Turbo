@@ -38,6 +38,12 @@ public class AIModelManufacturer extends TenantEntity {
     private String icon;
 
     /**
+     * readme
+     */
+    @TableField("readme")
+    private String readme;
+
+    /**
      * 名称
      */
     @TableField("credential_id")

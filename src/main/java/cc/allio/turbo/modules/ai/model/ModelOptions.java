@@ -54,7 +54,7 @@ public class ModelOptions extends MapEntity implements ChatOptions {
      *
      * @return {@link ModelOptions}
      */
-    public static ModelOptions getDefaultForOllama() {
+    public static ModelOptions getDefaultForLlama() {
         ModelOptions modelOptions = new ModelOptions();
         modelOptions.setManufacturer(ModelManufacturer.OLLAMA);
         modelOptions.setAddress("http://localhost:11434");

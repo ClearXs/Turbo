@@ -4,6 +4,7 @@ import cc.allio.turbo.modules.ai.chat.instruction.Help;
 import cc.allio.turbo.modules.ai.chat.memory.PersistentSessionChatMemory;
 import cc.allio.turbo.modules.ai.chat.message.AdvancedMessage;
 import cc.allio.turbo.modules.ai.chat.message.StreamMessage;
+import cc.allio.turbo.modules.ai.driver.model.Order;
 import cc.allio.turbo.modules.ai.model.AgentModel;
 import cc.allio.uno.test.BaseTestCase;
 import org.junit.jupiter.api.Test;
@@ -11,12 +12,16 @@ import reactor.test.StepVerifier;
 
 public class ChatServiceTest extends BaseTestCase {
 
+
+    Order userOrder = Order.toUser("hello");
+    Order instructionOrder = Order.toInstruction("/help");
+
     @Test
     void testCall() {
         ChatService chatService = new ChatService(AgentModel.ollama(), new PersistentSessionChatMemory("1"));
 
         // chat with instruction
-        chatService.call("/help")
+        chatService.call(instructionOrder)
                 .take(1)
                 .single()
                 .map(AdvancedMessage::content)
@@ -25,13 +30,13 @@ public class ChatServiceTest extends BaseTestCase {
                 .verifyComplete();
 
         // chat with llm
-        chatService.call("hello")
+        chatService.call(userOrder)
                 .as(StepVerifier::create)
                 .expectNextCount(1L)
                 .verifyComplete();
 
         // chat wit complex message
-        chatService.call("/help", "hello")
+        chatService.call(instructionOrder, userOrder)
                 .as(StepVerifier::create)
                 .expectNextCount(2L)
                 .verifyComplete();
@@ -42,7 +47,7 @@ public class ChatServiceTest extends BaseTestCase {
     void testStream() {
         ChatService chatService = new ChatService(AgentModel.ollama(), new PersistentSessionChatMemory("1"));
 
-        chatService.stream("/help")
+        chatService.stream(instructionOrder)
                 .flatMapMany(StreamMessage::observe)
                 .take(1)
                 .single()
@@ -52,7 +57,7 @@ public class ChatServiceTest extends BaseTestCase {
                 .verifyComplete();
 
 
-        chatService.stream("hello")
+        chatService.stream(instructionOrder)
                 .flatMapMany(StreamMessage::observe)
                 .take(10)
                 .as(StepVerifier::create)

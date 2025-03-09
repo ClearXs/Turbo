@@ -27,13 +27,13 @@ public class ChatActionTest extends BaseTestCase {
 
     @Override
     public void onInit() {
-        ChatAction chatAction = new ChatAction(new ChatService(new AgentModel(ModelOptions.getDefaultForOllama())));
+        ChatAction chatAction = new ChatAction(new ChatService(new AgentModel(ModelOptions.getDefaultForLlama())));
         chain = new DefaultChain<>(List.of(chatAction));
         agent = Mockito.mock(Agent.class);
 
         Mockito.when(agent.name()).thenReturn("test");
 
-        agentModel = new AgentModel(ModelOptions.getDefaultForOllama());
+        agentModel = new AgentModel(ModelOptions.getDefaultForLlama());
     }
 
     @Test

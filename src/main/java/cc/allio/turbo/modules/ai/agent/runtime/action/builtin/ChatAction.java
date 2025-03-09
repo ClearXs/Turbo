@@ -1,6 +1,7 @@
 package cc.allio.turbo.modules.ai.agent.runtime.action.builtin;
 
 import cc.allio.turbo.modules.ai.driver.model.Input;
+import cc.allio.turbo.modules.ai.driver.model.Order;
 import cc.allio.turbo.modules.ai.driver.model.Output;
 import cc.allio.turbo.modules.ai.agent.Agent;
 import cc.allio.turbo.modules.ai.agent.AgentPrompt;
@@ -16,7 +17,6 @@ import cc.allio.turbo.modules.ai.chat.tool.FunctionTool;
 import cc.allio.uno.core.chain.Chain;
 import cc.allio.uno.core.chain.ChainContext;
 import cc.allio.uno.core.util.StringUtils;
-import cc.allio.uno.core.util.id.IdGenerator;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
 
@@ -46,18 +46,18 @@ public class ChatAction extends MessageAction {
         AgentPrompt prompt = AgentPrompt.fromAgent(agent, environment);
         Set<FunctionTool> tools = agent.getTools();
 
-        Set<String> message = input.getMessages();
+        Set<Order> orders = input.getInstructions();
 
         Flux<Output> out = Flux.empty();
 
         if (context instanceof ActionContext actionContext) {
             ExecutionMode mode = actionContext.getMode();
             if (mode == ExecutionMode.STREAM) {
-                out = chatService.stream(prompt, message, tools)
+                out = chatService.stream(prompt, orders, tools, input.getOptions())
                         .flatMapMany(StreamMessage::observe)
                         .flatMap(new ChatProcess(chain, agent, input, mode, actionContext));
             } else if (mode == ExecutionMode.CALL) {
-                out = chatService.call(prompt, message, tools)
+                out = chatService.call(prompt, orders, tools, input.getOptions())
                         .flatMap(new ChatProcess(chain, agent, input, mode, actionContext));
             }
         } else {

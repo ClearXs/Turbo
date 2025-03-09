@@ -6,6 +6,9 @@ import cc.allio.turbo.modules.ai.chat.memory.MetricSupervisor;
 import cc.allio.turbo.modules.ai.chat.message.AdvancedMessage;
 import cc.allio.turbo.modules.ai.chat.message.StreamMessage;
 import cc.allio.turbo.modules.ai.chat.tool.MethodFunctionTool;
+import cc.allio.turbo.modules.ai.driver.model.Options;
+import cc.allio.turbo.modules.ai.driver.model.Order;
+import cc.allio.turbo.modules.ai.enums.Role;
 import cc.allio.turbo.modules.ai.model.AgentModel;
 import cc.allio.turbo.modules.ai.chat.tool.FunctionTool;
 import cc.allio.uno.core.util.CollectionUtils;
@@ -19,6 +22,7 @@ import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -36,8 +40,8 @@ import java.util.*;
  * AI Chat service. support stream chat and call chat.
  *
  * @author j.x
- * @see #call(Prompt, Set, Set)
- * @see #stream(Prompt, Set, Set)
+ * @see #call(Prompt, Set, Set, Options)
+ * @see #stream(Prompt, Set, Set, Options)
  * @since 0.2.0
  */
 public class ChatService {
@@ -72,130 +76,131 @@ public class ChatService {
     }
 
     /**
-     * @see #stream(Prompt, Set, Set)
+     * @see #stream(Prompt, Set, Set, Options)
      */
-    public Mono<StreamMessage> stream(String... instructions) {
-        return stream(null, Sets.newHashSet(instructions));
+    public Mono<StreamMessage> stream(Order... orders) {
+        return stream(null, Sets.newHashSet(orders));
     }
 
     /**
-     * @see #stream(Prompt, Set, Set)
+     * @see #stream(Prompt, Set, Set, Options)
      */
-    public Mono<StreamMessage> stream(Set<String> instructions) {
-        return stream(null, instructions);
+    public Mono<StreamMessage> stream(Set<Order> orders) {
+        return stream(null, orders);
     }
 
     /**
-     * @see #stream(Prompt, Set, Set)
+     * @see #stream(Prompt, Set, Set, Options)
      */
-    public Mono<StreamMessage> stream(@Nullable Prompt prompt, String... instructions) {
-        return stream(prompt, Sets.newHashSet(instructions), Collections.emptySet());
+    public Mono<StreamMessage> stream(@Nullable Prompt prompt, Order... orders) {
+        return stream(prompt, Sets.newHashSet(orders), Collections.emptySet(), new Options());
     }
 
     /**
-     * @see #stream(Prompt, Set, Set)
+     * @see #stream(Prompt, Set, Set, Options)
      */
-    public Mono<StreamMessage> stream(@Nullable Prompt prompt, Set<String> instructions) {
-        return stream(prompt, Sets.newHashSet(instructions), Collections.emptySet());
+    public Mono<StreamMessage> stream(@Nullable Prompt prompt, Set<Order> orders) {
+        return stream(prompt, Sets.newHashSet(orders), Collections.emptySet(), new Options());
     }
 
     /**
      * stream chat.
      *
-     * @param prompt       the chat agentPrompt
-     * @param instructions instruction or user message
-     * @param tools        the list of tools
+     * @param prompt  the chat agentPrompt
+     * @param orders  orders
+     * @param tools   the list of tools
+     * @param options the chat with llm options
      * @return stream of chat response
      */
-    public Mono<StreamMessage> stream(@Nullable Prompt prompt, Set<String> instructions, Set<FunctionTool> tools) {
+    public Mono<StreamMessage> stream(@Nullable Prompt prompt, Set<Order> orders, Set<FunctionTool> tools, Options options) {
         return Mono.defer(() -> {
-            Set<String> userMessages = new HashSet<>();
+            Set<Order> messages = new HashSet<>();
 
             // built in Instruction instance
             List<Instruction> builtinInstruction = new ArrayList<>();
-            for (String instructionName : instructions) {
-                Instruction builtin = getInstruction(instructionName);
-                if (builtin != null) {
+            for (Order order : orders) {
+                Instruction builtin = getInstruction(order.getMessage());
+                if (order.getRole() == Role.INSTRUCTION && builtin != null) {
                     builtinInstruction.add(builtin);
                 } else {
-                    userMessages.add(instructionName);
+                    messages.add(order);
                 }
             }
 
             if (CollectionUtils.isEmpty(builtinInstruction)) {
-                return chat.stream(prompt, userMessages, tools);
+                return chat.stream(prompt, messages, tools, options);
             }
 
             return Flux.fromIterable(builtinInstruction)
                     .flatMap(builtin -> builtin.stream(prompt, tools))
                     .collectList()
                     .flatMap(upstream -> {
-                        if (CollectionUtils.isEmpty(userMessages)) {
+                        if (CollectionUtils.isEmpty(messages)) {
                             return StreamMessage.fromOthers(upstream);
                         }
-                        return chat.stream(prompt, userMessages, tools)
+                        return chat.stream(prompt, messages, tools, options)
                                 .doOnNext(streamMessage -> streamMessage.concat(upstream));
                     });
         });
     }
 
     /**
-     * @see #call(Prompt, Set, Set)
+     * @see #call(Prompt, Set, Set, Options)
      */
-    public Flux<AdvancedMessage> call(String... instructions) {
-        return call(null, Sets.newHashSet(instructions));
+    public Flux<AdvancedMessage> call(Order... orders) {
+        return call(null, Sets.newHashSet(orders));
     }
 
     /**
-     * @see #call(Prompt, Set, Set)
+     * @see #call(Prompt, Set, Set, Options)
      */
-    public Flux<AdvancedMessage> call(Set<String> instructions) {
-        return call(null, instructions);
+    public Flux<AdvancedMessage> call(Set<Order> orders) {
+        return call(null, orders);
     }
 
     /**
-     * @see #call(Prompt, Set, Set)
+     * @see #call(Prompt, Set, Set, Options)
      */
-    public Flux<AdvancedMessage> call(@Nullable Prompt prompt, String... instructions) {
-        return call(prompt, Sets.newHashSet(instructions), Collections.emptySet());
+    public Flux<AdvancedMessage> call(@Nullable Prompt prompt, Order... orders) {
+        return call(prompt, Sets.newHashSet(orders), Collections.emptySet(), new Options());
     }
 
     /**
-     * @see #call(Prompt, Set, Set)
+     * @see #call(Prompt, Set, Set, Options)
      */
-    public Flux<AdvancedMessage> call(@Nullable Prompt prompt, Set<String> instructions) {
-        return call(prompt, instructions, Collections.emptySet());
+    public Flux<AdvancedMessage> call(@Nullable Prompt prompt, Set<Order> orders) {
+        return call(prompt, orders, Collections.emptySet(), new Options());
     }
 
     /**
      * call model for chat
      *
-     * @param prompt       the chat agentPrompt
-     * @param instructions instruction or user message
-     * @param tools        the list of {@link FunctionTool}
+     * @param prompt the chat agentPrompt
+     * @param orders instruction or user message
+     * @param tools  the list of {@link FunctionTool}
      * @return stream of chat response
      */
-    public Flux<AdvancedMessage> call(Prompt prompt, Set<String> instructions, Set<FunctionTool> tools) {
+    public Flux<AdvancedMessage> call(Prompt prompt, Set<Order> orders, Set<FunctionTool> tools, Options options) {
         return Flux.defer(() -> {
-            Set<String> userMessages = new HashSet<>();
+            Set<Order> messages = new HashSet<>();
 
             List<Instruction> builtinInstruction = new ArrayList<>();
-            for (String instructionName : instructions) {
-                Instruction builtin = getInstruction(instructionName);
-                if (builtin != null) {
+            for (Order order : orders) {
+                Instruction builtin = getInstruction(order.getMessage());
+                if (order.getRole() == Role.INSTRUCTION && builtin != null) {
                     builtinInstruction.add(builtin);
                 } else {
-                    userMessages.add(instructionName);
+                    messages.add(order);
                 }
             }
 
             if (CollectionUtils.isEmpty(builtinInstruction)) {
-                return chat.call(prompt, userMessages, tools);
+                return chat.call(prompt, messages, tools, options);
             }
 
             return Flux.fromIterable(builtinInstruction)
                     .flatMap(builtin -> builtin.call(prompt, tools))
-                    .concatWith(chat.call(prompt, userMessages, tools));
+                    .concatWith(chat.call(prompt, messages, tools, options));
         });
     }
 
@@ -213,24 +218,28 @@ public class ChatService {
     static class ChatWithLLM {
 
         private final AgentModel agentModel;
-        private final List<Advisor> advisors;
         private final String conversationId;
         private final String sessionId;
+        private final ChatMemory chatMemory;
 
         public ChatWithLLM(AgentModel agentModel,
                            ChatMemory chatMemory,
                            String conversationId,
                            String sessionId) {
             this.agentModel = agentModel;
-            this.advisors = buildAdvisors(chatMemory);
+            this.chatMemory = chatMemory;
             this.conversationId = conversationId;
             this.sessionId = sessionId;
         }
 
-        public Mono<StreamMessage> stream(Prompt prompt, Collection<String> userMessages, Set<FunctionTool> tools) {
+        public Mono<StreamMessage> stream(Prompt prompt,
+                                          Collection<Order> messages,
+                                          Set<FunctionTool> tools,
+                                          Options options) {
             return Mono.defer(() -> {
                 StreamMessage streamMessage = new StreamMessage();
-                return buildRequest(prompt, userMessages, tools)
+                ChatClient.ChatClientRequestSpec request = buildRequest(prompt, messages, tools, options);
+                return request
                         .stream()
                         .chatResponse()
                         .flatMap(response ->
@@ -242,9 +251,13 @@ public class ChatService {
             });
         }
 
-        public Flux<AdvancedMessage> call(Prompt prompt, Collection<String> userMessages, Set<FunctionTool> tools) {
+        public Flux<AdvancedMessage> call(Prompt prompt,
+                                          Collection<Order> messages,
+                                          Set<FunctionTool> tools,
+                                          Options options) {
             return Flux.defer(() -> {
-                ChatResponse response = buildRequest(prompt, userMessages, tools).call().chatResponse();
+                ChatClient.ChatClientRequestSpec request = buildRequest(prompt, messages, tools, options);
+                ChatResponse response = request.call().chatResponse();
                 if (response == null) {
                     return Flux.empty();
                 }
@@ -252,24 +265,39 @@ public class ChatService {
             });
         }
 
-        ChatClient.ChatClientRequestSpec buildRequest(Prompt prompt, Collection<String> userMessages, Set<FunctionTool> tools) {
+        ChatClient.ChatClientRequestSpec buildRequest(Prompt prompt,
+                                                      Collection<Order> messages,
+                                                      Set<FunctionTool> tools,
+                                                      Options options) {
+
+            List<Advisor> advisors = buildAdvisors(chatMemory, options);
 
             ChatModel chatModel = agentModel.getChatModel(tools);
             ChatClient client = ChatClient.create(chatModel);
 
-            List<Message> messages =
-                    new ArrayList<>(userMessages.stream().map(UserMessage::new).map(Message.class::cast).toList());
+            List<Message> callMessages = new ArrayList<>();
+
+
+            for (Order message : messages) {
+                if (message.getRole() == Role.USER) {
+                    callMessages.add(new UserMessage(message.getMessage()));
+                } else if (message.getRole() == Role.SYSTEM) {
+                    SystemMessage systemMessage = new SystemMessage(message.getMessage());
+                    callMessages.add(systemMessage);
+                }
+            }
+
 
             if (prompt == null) {
-                return client.prompt(new Prompt(messages))
+                return client.prompt(new Prompt(callMessages))
                         .tools(getToolsCallbackFromFunctionTool(tools))
                         .advisors(advisors);
             }
 
-            // combine user messages and prompt instructions
-            messages.addAll(prompt.getInstructions());
+            // combine user instructions and prompt instructions
+            callMessages.addAll(prompt.getInstructions());
 
-            return client.prompt(new Prompt(messages))
+            return client.prompt(new Prompt(callMessages))
                     .tools(getToolsCallbackFromFunctionTool(tools))
                     .advisors(advisors);
         }
@@ -307,10 +335,30 @@ public class ChatService {
                     .toList();
         }
 
-        List<Advisor> buildAdvisors(ChatMemory chatMemory) {
-            MessageChatMemoryAdvisor messageChatMemoryAdvisor = new MessageChatMemoryAdvisor(chatMemory);
+        /**
+         * add chat with LLM request and response advisors.
+         * <p>
+         * generally, add {@link MessageChatMemoryAdvisor}, {@link SimpleLoggerAdvisor} and {@link MetricSupervisor}
+         * <p>
+         * TODO consider RAG knowledge how add to chat with LLM
+         *
+         * @param chatMemory use for build chat memory messages in one conversation.
+         * @param options    build advisor options
+         * @return
+         */
+        List<Advisor> buildAdvisors(ChatMemory chatMemory, Options options) {
+
+            // build memory
+            int chatHistoryWindowSize = options.isEnableLimitHistoryMessages() ? options.getMaxHistoryMessageNums() : 0;
+            MessageChatMemoryAdvisor messageChatMemoryAdvisor =
+                    new MessageChatMemoryAdvisor(chatMemory, conversationId, chatHistoryWindowSize);
+
+            // build log
             SimpleLoggerAdvisor simpleLoggerAdvisor = new SimpleLoggerAdvisor();
+
+            // build metric token
             MetricSupervisor metricSupervisor = new MetricSupervisor();
+
             return List.of(messageChatMemoryAdvisor, simpleLoggerAdvisor, metricSupervisor);
         }
     }

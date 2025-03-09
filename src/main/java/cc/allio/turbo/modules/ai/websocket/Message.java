@@ -1,5 +1,7 @@
 package cc.allio.turbo.modules.ai.websocket;
 
+import cc.allio.turbo.modules.ai.driver.model.Options;
+import cc.allio.turbo.modules.ai.driver.model.Order;
 import cc.allio.turbo.modules.ai.model.ModelOptions;
 import cc.allio.turbo.modules.ai.agent.runtime.Variable;
 import com.google.common.collect.Sets;
@@ -11,12 +13,13 @@ import java.util.Set;
 public class Message {
 
     // the use message
-    private Set<String> msgs;
+    private Set<Order> instructions;
 
     // use choose agent
     private String agent;
     private Variable variable;
     private ModelOptions modelOptions;
+    private Options options;
 
     /**
      * create {@link Message} instance
@@ -26,7 +29,7 @@ public class Message {
      */
     public static Message fromSingle(String msg) {
         Message message = new Message();
-        message.setMsgs(Sets.newHashSet(msg));
+        message.setInstructions(Sets.newHashSet(Order.toUser(msg)));
         return message;
     }
 }

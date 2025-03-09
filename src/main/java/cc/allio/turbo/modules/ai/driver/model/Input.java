@@ -24,16 +24,17 @@ public class Input implements Copyable<Input> {
     private String conversationId;
     private String sessionId;
     // the use message
-    private Set<String> messages = Sets.newHashSet();
+    private Set<Order> instructions = Sets.newHashSet();
 
     // use choose agents
     private String agent;
-    private Variable variable = new Variable();
     // default use ollama model
-    private ModelOptions modelOptions = ModelOptions.getDefaultForOllama();
-    private Role role = Role.USER;
+    private ModelOptions modelOptions = ModelOptions.getDefaultForLlama();
     // execute model
-    ExecutionMode executionMode = ExecutionMode.STREAM;
+    private ExecutionMode executionMode = ExecutionMode.STREAM;
+    private Options options;
+
+    private Variable variable = new Variable();
 
     @Override
     public Input copy() {
@@ -75,7 +76,7 @@ public class Input implements Copyable<Input> {
      */
     public static Input fromMessage(Message message) {
         Input input = new Input();
-        input.setMessages(message.getMsgs());
+        input.setInstructions(message.getInstructions());
         input.setModelOptions(message.getModelOptions());
         input.setVariable(message.getVariable());
         input.setAgent(message.getAgent());
@@ -83,9 +84,15 @@ public class Input implements Copyable<Input> {
     }
 
     /**
-     * add message
+     * add message. default the message role is {@link Role#USER}
      */
     public void addMessage(String message) {
-        this.messages.add(message);
+
+        Order instruction = new Order();
+        instruction.setMessage(message);
+        instruction.setRole(Role.USER);
+
+        this.instructions.add(instruction);
     }
+
 }
