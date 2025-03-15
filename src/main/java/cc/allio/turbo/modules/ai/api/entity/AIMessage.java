@@ -20,7 +20,7 @@ public class AIMessage extends TenantEntity {
 
     @TableField("session_id")
     @Schema(description = "session id")
-    private Long sessionId;
+    private String sessionId;
 
     /**
      * role

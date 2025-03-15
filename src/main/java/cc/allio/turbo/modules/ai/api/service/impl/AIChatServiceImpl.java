@@ -8,6 +8,7 @@ import cc.allio.turbo.modules.ai.api.dto.ConversationDTO;
 import cc.allio.turbo.modules.ai.api.entity.AIChat;
 import cc.allio.turbo.modules.ai.api.mapper.AIChatMapper;
 import cc.allio.turbo.modules.ai.api.service.IAIChatService;
+import cc.allio.turbo.modules.ai.api.service.IAIMessageService;
 import cc.allio.turbo.modules.ai.api.vo.ConversationVO;
 import cc.allio.turbo.modules.ai.driver.Driver;
 import cc.allio.turbo.modules.ai.driver.Topics;
@@ -27,6 +28,8 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class AIChatServiceImpl extends TurboCrudServiceImpl<AIChatMapper, AIChat> implements IAIChatService {
+
+    private final IAIMessageService messageService;
 
     @Override
     public void doOnSubscribe() throws Throwable {
@@ -67,7 +70,7 @@ public class AIChatServiceImpl extends TurboCrudServiceImpl<AIChatMapper, AIChat
     }
 
     @Override
-    public IPage<ConversationDTO> queryMineConversationPage(IPage<AIChat> page, Long userId) {
+    public IPage<ConversationDTO> queryMineConversationsPage(IPage<AIChat> page, Long userId) {
         IPage<ConversationVO> conversationPage = getBaseMapper().selectMineConversationPage(page, userId);
         List<ConversationVO> records = conversationPage.getRecords();
         List<ConversationDTO> result = ConversationConvert.INSTANCE.vo2DTOList(records);

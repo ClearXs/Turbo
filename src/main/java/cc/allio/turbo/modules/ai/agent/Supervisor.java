@@ -73,6 +73,7 @@ public class Supervisor implements InitializingBean, Disposable {
                         .flatMap(this::dispatch)
                         // receive upstream output and publish to evaluation and output
                         .flatMap(this::transform)
+                        .onErrorContinue((err, obj) -> log.error("failed handle message", err))
                         .subscribe();
     }
 

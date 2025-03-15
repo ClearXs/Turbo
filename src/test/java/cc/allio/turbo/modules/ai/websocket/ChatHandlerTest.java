@@ -4,6 +4,7 @@ import cc.allio.turbo.common.util.WebUtil;
 import cc.allio.turbo.modules.ai.driver.Driver;
 import cc.allio.turbo.modules.ai.driver.Topics;
 import cc.allio.turbo.modules.ai.driver.model.Input;
+import cc.allio.turbo.modules.ai.driver.model.Order;
 import cc.allio.turbo.modules.ai.driver.model.Output;
 import cc.allio.turbo.modules.auth.jwt.TurboJwtEncoder;
 import cc.allio.uno.core.util.JsonUtils;
@@ -60,6 +61,7 @@ public class ChatHandlerTest extends BaseTestCase {
                 .flatMap(subscription ->
                         Mono.justOrEmpty(subscription.getDomain().flatMap(input -> input.getInstructions().stream().findFirst())))
                 .take(1L)
+                .map(Order::getMessage)
                 .parallel()
                 .as(StepVerifier::create)
                 .expectNext("hello")

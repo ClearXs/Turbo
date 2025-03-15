@@ -3,7 +3,6 @@ package cc.allio.turbo.common.util;
 import cc.allio.turbo.common.web.App;
 import cc.allio.turbo.modules.auth.oauth2.TenantSessionAuthorizationRequestRepository;
 import cc.allio.uno.core.StringPool;
-import cc.allio.uno.core.env.Env;
 import cc.allio.uno.core.env.Envs;
 import cc.allio.uno.core.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,6 +38,8 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
     public static final String X_LOGIN_MODE = "X-LOGIN-MODE";
     public static final String X_APP = "X-APP";
     public static final String X_USER_IDENTIFIER = "X-USER";
+    public static final String X_CIPHER_USER = "X-CIPHER-USER";
+    public static final String X_CIPHER = "X-CIPHER";
 
     /**
      * from {@link HttpServletRequest} header to get {@link #X_USER_IDENTIFIER}

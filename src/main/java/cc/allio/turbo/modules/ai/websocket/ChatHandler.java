@@ -16,6 +16,7 @@ import cc.allio.turbo.modules.ai.agent.runtime.Variable;
 import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.bus.Pathway;
 import cc.allio.uno.core.bus.TopicKey;
+import cc.allio.uno.core.exception.Trys;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.uno.core.util.StringUtils;
 import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
@@ -34,6 +35,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.Disposable;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
@@ -77,8 +79,8 @@ public class ChatHandler extends TextWebSocketHandler implements DisposableBean 
             AIChatSession chatSession = new AIChatSession();
             chatSession.setId(sessionId);
             chatSession.setChatId(Long.valueOf(conversationId));
-            Long userId = AuthUtil.getUserId();
-            chatSession.setUserId(userId);
+            String userId = AuthUtil.getUserId();
+            chatSession.setUserId(Trys.onContinue(() -> Long.valueOf(userId)));
             executor.saveOrUpdate(chatSession);
         }
 
@@ -175,7 +177,12 @@ public class ChatHandler extends TextWebSocketHandler implements DisposableBean 
         Supplier<Optional<String>> getAttributesOpt =
                 () -> Optional.ofNullable(attributes.get(CONVERSATION_ID_NAME)).map(Object::toString);
 
-        return Optionals.firstNonEmpty(getHeaderOpt, getAttributesOpt).orElse(StringPool.EMPTY);
+        Supplier<Optional<String>> getUrlOpt =
+                () -> Optional.ofNullable(session.getUri())
+                        .map(URI::getRawPath)
+                        .map(path -> path.substring(path.lastIndexOf(StringPool.SLASH) + 1));
+
+        return Optionals.firstNonEmpty(getUrlOpt, getHeaderOpt, getAttributesOpt).orElse(StringPool.EMPTY);
     }
 
     @Override

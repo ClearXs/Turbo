@@ -36,7 +36,7 @@ import java.util.Map;
  * @since 0.1.1
  */
 @Slf4j
-public class InternalOAuth2AuthenticationFilter extends OncePerRequestFilter {
+public class OAuth2AuthenticationFilter extends OncePerRequestFilter {
 
     private final OAuth2TokenGenerator tokenGenerator;
 
@@ -44,7 +44,7 @@ public class InternalOAuth2AuthenticationFilter extends OncePerRequestFilter {
             .getContextHolderStrategy();
     private final JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
 
-    public InternalOAuth2AuthenticationFilter(OAuth2TokenGenerator tokenGenerator) {
+    public OAuth2AuthenticationFilter(OAuth2TokenGenerator tokenGenerator) {
         this.tokenGenerator = tokenGenerator;
     }
 
@@ -69,6 +69,11 @@ public class InternalOAuth2AuthenticationFilter extends OncePerRequestFilter {
                 }
                 context.setAuthentication(authentication);
                 this.securityContextHolderStrategy.setContext(context);
+
+                // set token to attributes
+                String tokenValue = jwt.getTokenValue();
+                request.setAttribute(WebUtil.X_AUTHENTICATION, tokenValue);
+
             }
         }
 

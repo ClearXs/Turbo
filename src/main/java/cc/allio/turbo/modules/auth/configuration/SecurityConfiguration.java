@@ -2,7 +2,8 @@ package cc.allio.turbo.modules.auth.configuration;
 
 import cc.allio.turbo.modules.auth.exception.AccessDeniedExceptionHandler;
 import cc.allio.turbo.modules.auth.exception.AuthenticationExceptionHandler;
-import cc.allio.turbo.modules.auth.filter.InternalOAuth2AuthenticationFilter;
+import cc.allio.turbo.modules.auth.filter.CipherFilter;
+import cc.allio.turbo.modules.auth.filter.OAuth2AuthenticationFilter;
 import cc.allio.turbo.modules.auth.filter.JwtTokenFilter;
 import cc.allio.turbo.modules.auth.handler.JwtAuthenticationSuccessHandler;
 import cc.allio.turbo.modules.auth.jwt.JwtAuthentication;
@@ -49,8 +50,12 @@ public class SecurityConfiguration {
         TurboUserDetailsService userDetailsService = new TurboUserDetailsService(userService);
         TurboPasswordEncoder passwordEncoder = new TurboPasswordEncoder(secureProperties);
         TurboJwtAuthenticationProvider jwtAuthenticationProvider = new TurboJwtAuthenticationProvider(userDetailsService, passwordEncoder, jwtAuthentication);
-        InternalOAuth2AuthenticationFilter internalOAuth2AuthenticationFilter = new InternalOAuth2AuthenticationFilter(tokenGenerator);
+
+        // filter
+        OAuth2AuthenticationFilter oAuth2AuthenticationFilter = new OAuth2AuthenticationFilter(tokenGenerator);
         JwtTokenFilter jwtTokenFilter = new JwtTokenFilter(jwtAuthentication);
+        CipherFilter cipherFilter = new CipherFilter(secureProperties, jwtAuthentication);
+
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
                         // 忽略放行请求路径
@@ -61,7 +66,8 @@ public class SecurityConfiguration {
                                 .authenticated())
                 // jwt token验证
                 .addFilterBefore(jwtTokenFilter, AuthorizationFilter.class)
-                .addFilterBefore(internalOAuth2AuthenticationFilter, JwtTokenFilter.class)
+                .addFilterBefore(oAuth2AuthenticationFilter, JwtTokenFilter.class)
+                .addFilterBefore(cipherFilter, JwtTokenFilter.class)
                 .exceptionHandling(ex ->
                         // 异常处理器
                         ex.authenticationEntryPoint(authenticationExceptionHandler)

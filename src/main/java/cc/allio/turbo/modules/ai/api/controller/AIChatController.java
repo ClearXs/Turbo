@@ -17,6 +17,7 @@ import cc.allio.turbo.modules.ai.driver.Topics;
 import cc.allio.turbo.modules.ai.api.entity.AIChat;
 import cc.allio.turbo.modules.auth.provider.TurboUser;
 import cc.allio.uno.core.bus.TopicKey;
+import cc.allio.uno.core.exception.Trys;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -28,12 +29,13 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @RequestMapping("/ai/chat")
 @Tag(name = "chat")
 @RestController
-public class AIChatController extends TurboCrudController<AIChat,AIChat, IAIChatService> {
+public class AIChatController extends TurboCrudController<AIChat, AIChat, IAIChatService> {
 
     @Qualifier("Driver_Input")
     private Driver<Input> inputDriver;
@@ -50,7 +52,8 @@ public class AIChatController extends TurboCrudController<AIChat,AIChat, IAIChat
         // save the new session
         AIChatSession chatSession = new AIChatSession();
         chatSession.setChatId(conversationId);
-        chatSession.setUserId(user.getUserId());
+        String userId = user.getUserId();
+        chatSession.setUserId(Trys.onContinue(() -> Long.valueOf(userId)));
         chatSessionService.save(chatSession);
 
         input.setConversationId(String.valueOf(conversationId));
@@ -90,18 +93,18 @@ public class AIChatController extends TurboCrudController<AIChat,AIChat, IAIChat
         return sseEmitter;
     }
 
-    @PostMapping("/newConversation")
-    public R<AIChat> newConversation(TurboUser user) {
-        AIChat chat = new AIChat();
-        Long userId = user.getUserId();
-        chat.setUserId(userId);
+    @PostMapping("/new-conversation")
+    public R<AIChat> newConversation(TurboUser user, @RequestBody AIChat chat) {
+        String userId = user.getUserId();
+        chat.setUserId(Trys.onContinue(() -> Long.valueOf(userId)));
         getService().save(chat);
         return R.ok(chat);
     }
 
-    @PostMapping("/mineConversation")
-    public R<IPage<ConversationDTO>> mineConversation(TurboUser user, @RequestBody QueryParam<AIChat> params) {
-        IPage<ConversationDTO> page = getService().queryMineConversationPage(params.getPage(), user.getUserId());
+    @PostMapping("/get-mine-conversations")
+    public R<IPage<ConversationDTO>> getMineConversations(TurboUser user, @RequestBody QueryParam<AIChat> params) {
+        String userId = user.getUserId();
+        IPage<ConversationDTO> page = getService().queryMineConversationsPage(params.getPage(), Trys.onContinue(() -> Long.valueOf(userId)));
         return R.ok(page);
     }
 }

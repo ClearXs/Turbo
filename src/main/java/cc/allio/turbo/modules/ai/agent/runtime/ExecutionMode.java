@@ -18,7 +18,7 @@ public enum ExecutionMode {
      */
     CALL("call", "call");
 
-    private final String name;
     @JsonValue
     private final String value;
+    private final String name;
 }

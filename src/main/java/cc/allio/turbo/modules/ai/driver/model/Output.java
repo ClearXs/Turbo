@@ -15,6 +15,7 @@ import java.util.Map;
 @DriverModel
 public class Output implements Copyable<Output> {
 
+    private Long id;
     private String conversationId;
     private String sessionId;
     // agent name

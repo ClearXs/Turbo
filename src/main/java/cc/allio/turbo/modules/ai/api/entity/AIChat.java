@@ -6,6 +6,7 @@ import cc.allio.turbo.modules.ai.driver.model.Options;
 import cc.allio.turbo.modules.ai.model.ModelOptions;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,7 +33,7 @@ public class AIChat extends TenantEntity {
     /**
      * model options
      */
-    @TableField("model_options")
+    @TableField(value = "model_options", typeHandler = JacksonTypeHandler.class)
     private ModelOptions modelOptions;
 
     /**
@@ -44,6 +45,6 @@ public class AIChat extends TenantEntity {
     /**
      * options
      */
-    @TableField("options")
+    @TableField(value = "options", typeHandler = JacksonTypeHandler.class)
     private Options options;
 }

@@ -35,7 +35,7 @@ public class PersistentSessionChatMemory extends SessionChatMemory implements Ch
                         .map(message -> {
                             AIMessage aiMessage = new AIMessage();
                             aiMessage.setChatId(Long.valueOf(conversationId));
-                            aiMessage.setSessionId(Long.valueOf(getSessionId()));
+                            aiMessage.setSessionId(getSessionId());
                             aiMessage.setContent(message.getText());
                             aiMessage.setRole(Role.fromMessageType(message.getMessageType()));
                             return aiMessage;

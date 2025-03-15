@@ -31,7 +31,7 @@ public final class AuthUtil {
      *
      * @return Long may be null
      */
-    public static Long getUserId() {
+    public static String getUserId() {
         return getAuthenticationWrapper().getUserId();
     }
 
@@ -91,7 +91,6 @@ public final class AuthUtil {
 
     /**
      * quickly grab {@link Authentication} information.
-     *
      */
     public static class AuthenticationWrapper {
 
@@ -125,8 +124,8 @@ public final class AuthUtil {
             return wrapper.getForce(Secures.ACCOUNT_ENABLED_FIELD, Boolean.class);
         }
 
-        public Long getUserId() {
-            return wrapper.getForce(Secures.USER_ID_FIELD, Long.class);
+        public String getUserId() {
+            return wrapper.getForce(Secures.USER_ID_FIELD, String.class);
         }
 
         public String getUsername() {

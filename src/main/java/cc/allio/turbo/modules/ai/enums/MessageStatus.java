@@ -8,6 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum MessageStatus {
 
+    LOADING("loading", "loading"),
     COMPLETE("complete", "complete"),
     INCOMPLETE("incomplete,", "incomplete"),
     ERROR("error", "error");

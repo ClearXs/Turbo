@@ -17,6 +17,7 @@ import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAd
 import org.springframework.web.reactive.socket.server.upgrade.UndertowRequestUpgradeStrategy;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistration;
 
 @AutoConfiguration
 @ImportAutoConfiguration({DriverConfiguration.class, JwtCodecConfiguration.class})
@@ -32,7 +33,11 @@ public class WsConfiguration {
 
     @Bean
     public WebSocketConfigurer webSocketConfigurer(ChatHandler chatHandler) {
-        return registry -> registry.addHandler(chatHandler, "/ai/ws/chat/**");
+        return registry -> {
+            WebSocketHandlerRegistration registration = registry.addHandler(chatHandler, "/ai/ws/chat/**");
+            // allow all origins
+            registration.setAllowedOrigins("*");
+        };
     }
 
     @Bean

@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>cc.allio</groupId>
+    <groupId>cc.allio.turbo</groupId>
     <artifactId>Turbo</artifactId>
     <version>0.2.0</version>
     <name>Turbo</name>

@@ -19,6 +19,7 @@ import cc.allio.turbo.modules.message.service.ISysMessageTemplateService;
 import cc.allio.turbo.modules.message.template.Extension;
 import cc.allio.turbo.modules.message.template.MessageTemplate;
 import cc.allio.turbo.modules.message.template.TemporaryTemplate;
+import cc.allio.uno.core.exception.Trys;
 import cc.allio.uno.core.metadata.endpoint.source.SourceCollector;
 import cc.allio.uno.core.util.BeanUtils;
 import cc.allio.uno.core.util.DateUtil;
@@ -115,7 +116,8 @@ public class MessageCollector implements SourceCollector<ReceiveMetadata> {
                                         sysMessage.setMessageStatus(Status.UNREAD);
                                         sysMessage.setMessageSource(Source.SYSTEM);
                                         // 发送人、接收人
-                                        sysMessage.setSendUser(AuthUtil.getUserId());
+                                        String userId = AuthUtil.getUserId();
+                                        sysMessage.setSendUser(Trys.onContinue(() -> Long.valueOf(userId)));
                                         sysMessage.setSendTime(DateUtil.parse(String.valueOf(variables
                                                 .getOrDefault("sendTime", DateUtil.format(DateUtil.now(), DateUtil.PATTERN_DATETIME))), DateUtil.PATTERN_DATETIME));
                                         sysMessage.setReceiver(target);

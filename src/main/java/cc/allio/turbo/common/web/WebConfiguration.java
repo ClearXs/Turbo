@@ -11,6 +11,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -22,6 +23,12 @@ import java.util.List;
 public class WebConfiguration implements WebMvcConfigurer {
 
     private final ObjectMapper objectMapper;
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        // support all cross-origin requests
+        registry.addMapping("*");
+    }
 
     /**
      * 默认的转换器由{@link RestTemplate}进行创建

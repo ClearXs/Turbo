@@ -19,7 +19,7 @@ public class OpenAIModelLoader implements ModelLoader {
 
     @Override
     public ChatModel load(ModelOptions options, Set<FunctionTool> tools) {
-        OpenAiApi openAiApi = new OpenAiApi(options.getAddress(), options.getApiKey());
+        OpenAiApi openAiApi = OpenAiApi.builder().baseUrl(options.getAddress()).apiKey(options.getApiKey()).build();
         // build tools
         List<OpenAiApi.FunctionTool> openAITools = tools.stream()
                 .map(tool -> {
@@ -46,6 +46,7 @@ public class OpenAIModelLoader implements ModelLoader {
                         .tools(openAITools)
                         .model(options.getModel())
                         .build();
-        return new OpenAiChatModel(openAiApi, openAIOptions);
+
+        return OpenAiChatModel.builder().openAiApi(openAiApi).defaultOptions(openAIOptions).build();
     }
 }
