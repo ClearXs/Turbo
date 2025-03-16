@@ -1,6 +1,7 @@
 package cc.allio.turbo.modules.ai.websocket;
 
 import cc.allio.turbo.common.util.WebUtil;
+import cc.allio.turbo.modules.ai.agent.Supervisor;
 import cc.allio.turbo.modules.ai.driver.Driver;
 import cc.allio.turbo.modules.ai.driver.Topics;
 import cc.allio.turbo.modules.ai.driver.model.Input;
@@ -39,7 +40,8 @@ public class ChatHandlerTest extends BaseTestCase {
     protected void onInit() throws Throwable {
         Driver<Input> inputDriver = Driver.from(Input.class);
         Driver<Output> outputDriver = Driver.from(Output.class);
-        chatHandler = new ChatHandler(inputDriver, outputDriver);
+        Supervisor supervisor = Mockito.mock(Supervisor.class);
+        chatHandler = new ChatHandler(supervisor, inputDriver, outputDriver);
     }
 
     @Test

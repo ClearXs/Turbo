@@ -63,14 +63,14 @@ public class DataSourceDetector implements DisposableBean, ApplicationListener<A
         CompletableFuture.runAsync(this::onInitialization, Executors.newVirtualThreadPerTaskExecutor());
 
         // save
-        discards.add(dataSourceService.subscribeOn(dataSourceService::save).observe(this::onSaveOrUpdate));
+        discards.add(dataSourceService.subscribeOn(dataSourceService::save).observeOnConsummation(this::onSaveOrUpdate));
         // update
-        discards.add(dataSourceService.subscribeOn("update").observe(this::onSaveOrUpdate));
-        discards.add(dataSourceService.subscribeOn("saveOrUpdate").observe(this::onSaveOrUpdate));
+        discards.add(dataSourceService.subscribeOn("update").observeOnConsummation(this::onSaveOrUpdate));
+        discards.add(dataSourceService.subscribeOn("saveOrUpdate").observeOnConsummation(this::onSaveOrUpdate));
         // remove
-        discards.add(dataSourceService.subscribeOn(dataSourceService::remove).observe(this::onRemove));
-        discards.add(dataSourceService.subscribeOn("removeById").observe(this::onRemove));
-        discards.add(dataSourceService.subscribeOn("removeByIds").observe(this::onRemove));
+        discards.add(dataSourceService.subscribeOn(dataSourceService::remove).observeOnConsummation(this::onRemove));
+        discards.add(dataSourceService.subscribeOn("removeById").observeOnConsummation(this::onRemove));
+        discards.add(dataSourceService.subscribeOn("removeByIds").observeOnConsummation(this::onRemove));
 
         ThreadFactory virtualThreadFactory = Thread.ofVirtual().factory();
         // 注册表数据，状态检查服务

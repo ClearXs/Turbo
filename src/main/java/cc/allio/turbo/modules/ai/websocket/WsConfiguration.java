@@ -1,5 +1,6 @@
 package cc.allio.turbo.modules.ai.websocket;
 
+import cc.allio.turbo.modules.ai.agent.Supervisor;
 import cc.allio.turbo.modules.ai.driver.Driver;
 import cc.allio.turbo.modules.ai.driver.DriverConfiguration;
 import cc.allio.turbo.modules.ai.driver.model.Input;
@@ -26,9 +27,11 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistra
 public class WsConfiguration {
 
     @Bean
-    public ChatHandler chatHandler(@Qualifier("Driver_Input") Driver<Input> inputDriver,
-                                   @Qualifier("Driver_Output") Driver<Output> outputDriver) {
-        return new ChatHandler(inputDriver, outputDriver);
+    public ChatHandler chatHandler(
+            Supervisor supervisor,
+            @Qualifier("Driver_Input") Driver<Input> inputDriver,
+            @Qualifier("Driver_Output") Driver<Output> outputDriver) {
+        return new ChatHandler(supervisor, inputDriver, outputDriver);
     }
 
     @Bean

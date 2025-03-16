@@ -19,7 +19,7 @@ public class ObservableTest extends BaseTestCase {
                 .expectNext("1")
                 .verifyComplete();
 
-        // observe many
+        // observeOnConsummation many
 
         Observable.from(Mono.just("1"))
                 .observeMany()

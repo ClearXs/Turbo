@@ -89,7 +89,7 @@ public final class DomainServiceRegistryImpl implements DomainServiceRegistry, S
     public void start() {
         // 订阅boSchema改变时同步更改aop repository，避免数据不一致
         this.disposable = devBoService.subscribeOn(devBoService::saveBoSchema)
-                .observe(subscription -> {
+                .observeOnConsummation(subscription -> {
                             Optional<BoSchema> boSchemaOptional = Optional.empty();
                             if (subscription instanceof BehaviorSubscription<DevBo> behaviorSubscription) {
                                 boSchemaOptional = behaviorSubscription.getParameter("boSchema", BoSchema.class);

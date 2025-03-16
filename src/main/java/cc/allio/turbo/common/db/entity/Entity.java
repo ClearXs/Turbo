@@ -4,7 +4,7 @@ import cc.allio.uno.core.util.concurrent.LockContext;
 
 import java.io.Serializable;
 
-public interface Entity {
+public interface Entity extends EntityResolver {
 
     ThreadLocal<LockContext> LOCAL_LOCK_CONTEXT = new ThreadLocal<>();
 

@@ -195,14 +195,14 @@ public class DevBoServiceImpl extends TurboCacheCrudServiceImpl<DevBoMapper, Dev
 
     @Override
     public void doOnSubscribe() {
-        boAttributeService.subscribeOn("saveOrUpdate").observe(this::onPushToSchema);
-        boAttributeService.subscribeOn(boAttributeService::save).observe(this::onPushToSchema);
-        boAttributeService.subscribeOn("saveBatch").observe(this::onPushToSchema);
-        boAttributeService.subscribeOn(boAttributeService::updateById).observe(this::onPushToSchema);
+        boAttributeService.subscribeOn("saveOrUpdate").observeOnConsummation(this::onPushToSchema);
+        boAttributeService.subscribeOn(boAttributeService::save).observeOnConsummation(this::onPushToSchema);
+        boAttributeService.subscribeOn("saveBatch").observeOnConsummation(this::onPushToSchema);
+        boAttributeService.subscribeOn(boAttributeService::updateById).observeOnConsummation(this::onPushToSchema);
 
-        subscribeOn("removeByIds").observe(this::onRemove);
+        subscribeOn("removeByIds").observeOnConsummation(this::onRemove);
         subscribeOn(IDevBoService::materialize)
-                .observe(subscription -> {
+                .observeOnConsummation(subscription -> {
                     if (subscription instanceof BehaviorSubscription<DevBo> behaviorSubscription) {
                         behaviorSubscription.getParameter("boId", Long.class)
                                 .ifPresent(boId -> {

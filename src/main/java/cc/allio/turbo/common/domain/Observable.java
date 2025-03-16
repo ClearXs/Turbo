@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 /**
  * domain behavior observer, Encapsulation{@link org.reactivestreams.Subscription}
@@ -18,29 +19,58 @@ import java.util.function.Consumer;
 public interface Observable<D> {
 
     /**
-     * execute observe.
-     *
-     * @param acceptor when exiting active observe callback.
-     * @return the {@link Disposable} instance
-     * @see #observeMany()
+     * @see #observeOnConsummation(Consumer, UnaryOperator)
      */
-    default Disposable observe(Consumer<Subscription<D>> acceptor) {
-        return observeMany().subscribe(acceptor);
+    default Disposable observeOnConsummation(Consumer<Subscription<D>> acceptor) {
+        return observeOnConsummation(acceptor, ThreadLocalWebDomainEventContext::new);
     }
 
     /**
-     * observe domain behavior
+     * execute observeOnConsummation.
      *
-     * @return the mono
+     * @param acceptor when exiting active observeOnConsummation callback.
+     * @return the {@link Disposable} instance
+     * @see #observeMany()
      */
-    Mono<Subscription<D>> observe();
+    default Disposable observeOnConsummation(Consumer<Subscription<D>> acceptor, UnaryOperator<DomainEventContext> eventContext) {
+        return observeMany(eventContext).subscribe(acceptor);
+    }
 
     /**
-     * observe many domain behavior
+     * @see #observe(UnaryOperator)
+     */
+    default Mono<Subscription<D>> observe() {
+        return observe(ThreadLocalWebDomainEventContext::new);
+    }
+
+    /**
+     * observeOnConsummation many domain behavior
      *
      * @return the flux
      */
-    Flux<Subscription<D>> observeMany();
+    default Flux<Subscription<D>> observeMany() {
+        return observeMany(ThreadLocalWebDomainEventContext::new)
+                .onErrorContinue((err, obj) -> ThreadLocalWebDomainEventContext.remove())
+                .doOnComplete(ThreadLocalWebDomainEventContext::remove);
+    }
+
+    /**
+     * observeOnConsummation domain behavior
+     *
+     * @param refineEventContext when subscribe element emit the allow user refine event context, and add more features
+     *                           like use {@link ThreadLocalWebDomainEventContext} to solve the problem of losing web domain data when asynchronous subscription
+     * @return the mono
+     */
+    Mono<Subscription<D>> observe(UnaryOperator<DomainEventContext> refineEventContext);
+
+    /**
+     * observeOnConsummation many domain behavior
+     *
+     * @param refineEventContext when subscribe element emit the allow user refine event context, and add more features
+     *                           like use {@link ThreadLocalWebDomainEventContext} to solve the problem of losing web domain data when asynchronous subscription
+     * @return the flux
+     */
+    Flux<Subscription<D>> observeMany(UnaryOperator<DomainEventContext> refineEventContext);
 
     /**
      * basic on {@link Mono} create new {@link Observable}
@@ -73,12 +103,12 @@ public interface Observable<D> {
         }
 
         @Override
-        public Mono<Subscription<D>> observe() {
+        public Mono<Subscription<D>> observe(UnaryOperator<DomainEventContext> refineEventContext) {
             return mono.map(domain -> () -> Optional.ofNullable(domain));
         }
 
         @Override
-        public Flux<Subscription<D>> observeMany() {
+        public Flux<Subscription<D>> observeMany(UnaryOperator<DomainEventContext> refineEventContext) {
             return Flux.from(observe());
         }
     }
@@ -92,12 +122,12 @@ public interface Observable<D> {
         }
 
         @Override
-        public Mono<Subscription<D>> observe() {
+        public Mono<Subscription<D>> observe(UnaryOperator<DomainEventContext> refineEventContext) {
             return observeMany().take(1).single();
         }
 
         @Override
-        public Flux<Subscription<D>> observeMany() {
+        public Flux<Subscription<D>> observeMany(UnaryOperator<DomainEventContext> refineEventContext) {
             return flux.map(domain -> () -> Optional.ofNullable(domain));
         }
     }

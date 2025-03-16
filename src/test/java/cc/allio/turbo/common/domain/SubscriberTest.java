@@ -29,7 +29,7 @@ public class SubscriberTest extends BaseTestCase {
 
         DomainTools<Double> tools = DomainTools.fromActual(creditCard);
         tools.subscribeOn(CreditCard::pay)
-                .observe(subscription -> {
+                .observeOnConsummation(subscription -> {
                     if (subscription instanceof BehaviorSubscription<?> behaviorSubscription) {
                         Double balance = behaviorSubscription.getBehaviorResult(Double.class).orElseThrow(NullPointerException::new);
                         assertEquals(90.0, balance);
@@ -48,7 +48,7 @@ public class SubscriberTest extends BaseTestCase {
     @Test
     public void testEmptyParameterMethod() {
         orgService.subscribeOn(orgService::getName)
-                .observe(subscription -> {
+                .observeOnConsummation(subscription -> {
                     Optional<Object> behaviorResult = Optional.empty();
                     if (subscription instanceof BehaviorSubscription<Org> behaviorSubscription) {
                         behaviorResult = behaviorSubscription.getBehaviorResult();

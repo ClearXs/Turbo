@@ -8,6 +8,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * possess multi {@link BehaviorObservable}
@@ -42,12 +43,12 @@ public class MultiObservable<D> implements Observable<D>, Self<MultiObservable<D
     }
 
     @Override
-    public Mono<Subscription<D>> observe() {
-        return Flux.fromIterable(observableList).flatMap(Observable::observe).singleOrEmpty();
+    public Mono<Subscription<D>> observe(UnaryOperator<DomainEventContext> refineEventContext) {
+        return Flux.fromIterable(observableList).flatMap(observable -> observable.observe(refineEventContext)).singleOrEmpty();
     }
 
     @Override
-    public Flux<Subscription<D>> observeMany() {
-        return Flux.fromIterable(observableList).flatMap(Observable::observeMany);
+    public Flux<Subscription<D>> observeMany(UnaryOperator<DomainEventContext> refineEventContext) {
+        return Flux.fromIterable(observableList).flatMap(observable -> observable.observeMany(refineEventContext));
     }
 }

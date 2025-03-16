@@ -4,6 +4,7 @@ import cc.allio.turbo.common.domain.DomainEventContext;
 import cc.allio.turbo.common.domain.GeneralDomain;
 import cc.allio.turbo.common.util.AuthUtil;
 import cc.allio.turbo.modules.ai.agent.Agent;
+import cc.allio.turbo.modules.ai.agent.Supervisor;
 import cc.allio.turbo.modules.ai.api.entity.AIChatSession;
 import cc.allio.turbo.modules.ai.driver.Driver;
 import cc.allio.turbo.modules.ai.driver.Topics;
@@ -13,6 +14,8 @@ import cc.allio.turbo.modules.ai.driver.model.Order;
 import cc.allio.turbo.modules.ai.driver.model.Output;
 import cc.allio.turbo.modules.ai.model.ModelOptions;
 import cc.allio.turbo.modules.ai.agent.runtime.Variable;
+import cc.allio.turbo.modules.auth.domain.AuthThreadLocalWebDomainEventContext;
+import cc.allio.turbo.modules.auth.web.websocket.AuthenticationWebSocketHandler;
 import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.bus.Pathway;
 import cc.allio.uno.core.bus.TopicKey;
@@ -21,12 +24,14 @@ import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.uno.core.util.StringUtils;
 import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 import cc.allio.uno.data.orm.executor.CommandExecutorFactory;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.data.util.Optionals;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -37,10 +42,12 @@ import reactor.core.Disposable;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 /**
  * websocket for chat handler.
@@ -49,15 +56,17 @@ import java.util.function.Supplier;
  * @since 0.2.0
  */
 @Slf4j
-public class ChatHandler extends TextWebSocketHandler implements DisposableBean {
+public class ChatHandler extends AuthenticationWebSocketHandler implements DisposableBean {
 
+    private final Supervisor supervisor;
     private final Driver<Input> inputDriver;
     private final Driver<Output> outputDriver;
-    private final Map<String, Disposable> sessionDisposable;
+    private final Map<String, CombineDisposable> sessionDisposable;
 
     public static final String CONVERSATION_ID_NAME = "conversation-id";
 
-    public ChatHandler(Driver<Input> inputDriver, Driver<Output> outputDriver) {
+    public ChatHandler(Supervisor supervisor, Driver<Input> inputDriver, Driver<Output> outputDriver) {
+        this.supervisor = supervisor;
         this.inputDriver = inputDriver;
         this.outputDriver = outputDriver;
         this.sessionDisposable = Maps.newConcurrentMap();
@@ -65,7 +74,9 @@ public class ChatHandler extends TextWebSocketHandler implements DisposableBean 
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        AggregateCommandExecutor executor = CommandExecutorFactory.getDSLExecutor();
+        // ensure authentication in context
+        super.afterConnectionEstablished(session);
+
         String conversationId = getConversationId(session);
 
         if (StringUtils.isBlank(conversationId)) {
@@ -75,7 +86,14 @@ public class ChatHandler extends TextWebSocketHandler implements DisposableBean 
 
         String sessionId = session.getId();
 
+        AggregateCommandExecutor executor = CommandExecutorFactory.getDSLExecutor();
         if (executor != null) {
+
+            boolean exist = executor.existTable(AIChatSession.class);
+            if (!exist) {
+                executor.createTable(AIChatSession.class);
+            }
+
             AIChatSession chatSession = new AIChatSession();
             chatSession.setId(sessionId);
             chatSession.setChatId(Long.valueOf(conversationId));
@@ -84,33 +102,42 @@ public class ChatHandler extends TextWebSocketHandler implements DisposableBean 
             executor.saveOrUpdate(chatSession);
         }
 
+        Authentication principal = (Authentication) session.getPrincipal();
+        UnaryOperator<DomainEventContext> refineFunc = context -> new AuthThreadLocalWebDomainEventContext(context, principal);
+
+        // agent handle user input
+
+        TopicKey inputTopic = Topics.USER_CHAT_INPUT.append(conversationId).append(TopicKey.of(sessionId, Pathway.EMPTY));
+        Disposable inputDisposable = supervisor.doSupervise(inputTopic, refineFunc);
+
+        // subscribe output
         TopicKey outputTopic = Topics.USER_CHAT_OUTPUT.append(conversationId).append(TopicKey.of(sessionId, Pathway.EMPTY));
+        var outputDisposable =
+                outputDriver.subscribeOn(outputTopic)
+                        .observeMany(refineFunc)
+                        .flatMap(subscription -> Mono.justOrEmpty(subscription.getDomain()))
+                        .flatMap(output -> {
+                            Input input = output.getInput();
+                            return Mono.justOrEmpty(input)
+                                    .flatMap(i -> {
+                                        if (i instanceof WsInput wsInput) {
+                                            return Mono.just(wsInput.getSession());
+                                        }
+                                        return Mono.empty();
+                                    })
+                                    .doOnNext(webSocketSession -> {
+                                        String message = JsonUtils.toJson(output);
+                                        TextMessage textMessage = new TextMessage(message.getBytes(StandardCharsets.UTF_8));
+                                        try {
+                                            session.sendMessage(textMessage);
+                                        } catch (IOException ex) {
+                                            log.error("failed ws send msg: {}", message, ex);
+                                        }
+                                    });
+                        })
+                        .subscribe();
 
-        var disposable = outputDriver.subscribeOn(outputTopic)
-                .observeMany()
-                .flatMap(subscription -> Mono.justOrEmpty(subscription.getDomain()))
-                .flatMap(output -> {
-                    Input input = output.getInput();
-                    return Mono.justOrEmpty(input)
-                            .flatMap(i -> {
-                                if (i instanceof WsInput wsInput) {
-                                    return Mono.just(wsInput.getSession());
-                                }
-                                return Mono.empty();
-                            })
-                            .doOnNext(webSocketSession -> {
-                                String message = JsonUtils.toJson(output);
-                                TextMessage textMessage = new TextMessage(message.getBytes(StandardCharsets.UTF_8));
-                                try {
-                                    session.sendMessage(textMessage);
-                                } catch (IOException ex) {
-                                    log.error("failed ws send msg: {}", message, ex);
-                                }
-                            });
-                })
-                .subscribe();
-
-        sessionDisposable.put(sessionId, disposable);
+        sessionDisposable.put(sessionId, new CombineDisposable(inputDisposable, outputDisposable));
     }
 
     @Override
@@ -130,8 +157,9 @@ public class ChatHandler extends TextWebSocketHandler implements DisposableBean 
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        if (log.isInfoEnabled()) {
-            log.info("receive message: {}", message.getPayload());
+
+        if (log.isDebugEnabled()) {
+            log.debug("receive message: {}", message.getPayload());
         }
 
         Message msg = null;
@@ -188,7 +216,7 @@ public class ChatHandler extends TextWebSocketHandler implements DisposableBean 
     @Override
     public void destroy() throws Exception {
         if (!sessionDisposable.isEmpty()) {
-            Collection<Disposable> disposables = sessionDisposable.values();
+            Collection<CombineDisposable> disposables = sessionDisposable.values();
 
             for (Disposable disposable : disposables) {
                 disposable.dispose();
@@ -196,5 +224,29 @@ public class ChatHandler extends TextWebSocketHandler implements DisposableBean 
         }
         // clear
         sessionDisposable.clear();
+    }
+
+    static class CombineDisposable implements Disposable {
+        private final Collection<Disposable> disposables;
+
+        public CombineDisposable(Disposable... disposables) {
+            this(Lists.newArrayList(disposables));
+        }
+
+        public CombineDisposable(Collection<Disposable> disposables) {
+            this.disposables = disposables;
+        }
+
+        @Override
+        public void dispose() {
+            for (Disposable disposable : disposables) {
+                disposable.dispose();
+            }
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return disposables.stream().allMatch(Disposable::isDisposed);
+        }
     }
 }

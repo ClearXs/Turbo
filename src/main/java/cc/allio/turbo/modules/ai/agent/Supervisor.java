@@ -22,6 +22,7 @@ import reactor.core.scheduler.Schedulers;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
+import java.util.function.UnaryOperator;
 
 /**
  * control several agents.
@@ -30,7 +31,7 @@ import java.util.concurrent.Executors;
  * @since 0.2.0
  */
 @Slf4j
-public class Supervisor implements InitializingBean, Disposable {
+public class Supervisor implements InitializingBean {
 
     final Driver<Input> inputDriver;
     final Driver<Output> outputDriver;
@@ -39,14 +40,8 @@ public class Supervisor implements InitializingBean, Disposable {
     final ToolRegistry toolRegistry;
     final AIResources resources;
 
-    Disposable disposable;
-
-    public Supervisor(Driver<Input> inputDriver,
-                      Driver<Output> outputDriver,
-                      AgentRegistry agentRegistry,
-                      ActionRegistry actionRegistry,
-                      ToolRegistry toolRegistry,
-                      AIResources resources) {
+    public Supervisor(Driver<Input> inputDriver, Driver<Output> outputDriver, AgentRegistry agentRegistry,
+                      ActionRegistry actionRegistry, ToolRegistry toolRegistry, AIResources resources) {
         this.inputDriver = inputDriver;
         this.outputDriver = outputDriver;
         this.agentRegistry = agentRegistry;
@@ -62,22 +57,6 @@ public class Supervisor implements InitializingBean, Disposable {
         // load resource
         resources.readNow();
 
-        initiateResourceAgents();
-
-        // subscribe user input
-        this.disposable =
-                inputDriver.subscribeOn(Topics.USER_CHAT_INPUT_PATTERNS)
-                        .observeMany()
-                        .subscribeOn(Schedulers.fromExecutor(Executors.newVirtualThreadPerTaskExecutor()))
-                        // handle user input
-                        .flatMap(this::dispatch)
-                        // receive upstream output and publish to evaluation and output
-                        .flatMap(this::transform)
-                        .onErrorContinue((err, obj) -> log.error("failed handle message", err))
-                        .subscribe();
-    }
-
-    void initiateResourceAgents() throws AgentInitializationException {
         for (Agent agent : agentRegistry.getAll()) {
             if (agent instanceof ResourceAgent resourceAgent) {
                 resourceAgent.install(resources);
@@ -86,11 +65,38 @@ public class Supervisor implements InitializingBean, Disposable {
     }
 
     /**
+     * @see #doSupervise(TopicKey, UnaryOperator)
+     */
+    public Disposable doSupervise(TopicKey userChatInputTopic) {
+        return doSupervise(userChatInputTopic, ThreadLocalWebDomainEventContext::new);
+    }
+
+    /**
+     * from user input start topic build and supervise agent.
+     *
+     * @param userChatInputTopic user chat input topic.
+     * @param refineEventContext according environment define chat in authentication web or otherwise environment execution.
+     * @return {@link Disposable}
+     */
+    public Disposable doSupervise(TopicKey userChatInputTopic, UnaryOperator<DomainEventContext> refineEventContext) {
+        return inputDriver.subscribeOn(userChatInputTopic)
+                .observeMany(refineEventContext)
+                .subscribeOn(Schedulers.fromExecutor(Executors.newVirtualThreadPerTaskExecutor()))
+                // handle user input
+                .flatMap(subscription -> this.dispatch(subscription, refineEventContext))
+                // receive upstream output and publish to evaluation and output
+                .flatMap(this::transform)
+                .onErrorContinue((err, obj) -> log.error("failed handle message", err))
+                .subscribe();
+    }
+
+    /**
      * dispatch the user input.
      *
      * @param subscription the subscription instance.
      */
-    Flux<Subscription<Output>> dispatch(Subscription<Input> subscription) {
+    Flux<Subscription<Output>> dispatch(Subscription<Input> subscription,
+                                        UnaryOperator<DomainEventContext> refineEventContext) {
         Input input = subscription.getDomain().orElse(null);
         if (input == null) {
             return Flux.empty();
@@ -98,7 +104,7 @@ public class Supervisor implements InitializingBean, Disposable {
         String agentName = input.getAgent();
         Agent agent = agentRegistry.get(agentName);
         if (agent != null) {
-            return agent.call(Mono.just(input)).observeMany();
+            return agent.call(Mono.just(input)).observeMany(refineEventContext);
         }
         return Flux.empty();
     }
@@ -138,10 +144,4 @@ public class Supervisor implements InitializingBean, Disposable {
         setup();
     }
 
-    @Override
-    public void dispose() {
-        if (disposable != null) {
-            disposable.dispose();
-        }
-    }
 }
