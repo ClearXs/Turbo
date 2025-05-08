@@ -87,8 +87,10 @@ public class TaskTest extends BaseTestCase {
         Mockito.when(input.getSessionId()).thenReturn("1");
         Mockito.when(input.getConversationId()).thenReturn("2");
         AgentModel agentModel = Mockito.mock(AgentModel.class);
-
-        Chain<Environment, Output> chain = new Task(mockTestAgent, actionRegistry, new InMemoryChatMessageStore()).buildPlaning(agentModel, input);
+        Environment environment = new Environment();
+        Chain<Environment, Output> chain =
+                new Task(mockTestAgent, actionRegistry, new InMemoryChatMessageStore())
+                        .buildPlaning(agentModel, input, environment);
         List<? extends Node<Environment, Output>> nodes = chain.getNodes();
 
         assertEquals(3, nodes.size());

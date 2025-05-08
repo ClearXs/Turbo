@@ -18,6 +18,6 @@ public class InMemoryTurboCrudRepository<T extends Entity> implements ITurboCrud
 
     @Override
     public AggregateCommandExecutor getExecutor() {
-        return AggregateCommandExecutor.getDefault();
+        return null;
     }
 }

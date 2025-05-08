@@ -2,14 +2,11 @@ package cc.allio.turbo.extension.oss;
 
 import cc.allio.turbo.extension.oss.request.OssPutRequest;
 import cc.allio.uno.core.util.FileUtils;
-import cc.allio.uno.core.util.ResourceUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 
 public class MinioOssExecutorTest {
@@ -27,7 +24,7 @@ public class MinioOssExecutorTest {
     }
 
     @Test
-    void testUpload() throws FileNotFoundException {
+    void testUpload() {
         FileUtils.FileReadResult fileReadResult = FileUtils.readSingleClassFileForce("logback.xml");
         String content = fileReadResult.getContent();
 
@@ -37,7 +34,7 @@ public class MinioOssExecutorTest {
                         .inputStream(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)))
                         .build();
 
-        Path upload = minioOssExecutor.upload(ossPutRequest, new OssProperties());
+        Path upload = minioOssExecutor.upload(ossPutRequest);
         Assertions.assertNotNull(upload);
     }
 }
