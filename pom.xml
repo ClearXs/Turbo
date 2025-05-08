@@ -310,11 +310,6 @@
             <artifactId>uno-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>cc.allio.uno</groupId>
-            <artifactId>uno-data-test</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
