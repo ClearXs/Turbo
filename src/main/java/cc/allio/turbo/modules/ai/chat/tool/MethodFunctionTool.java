@@ -2,6 +2,7 @@ package cc.allio.turbo.modules.ai.chat.tool;
 
 import cc.allio.uno.core.util.JsonUtils;
 import lombok.Getter;
+import org.springframework.ai.tool.definition.DefaultToolDefinition;
 import org.springframework.ai.tool.definition.ToolDefinition;
 
 import java.lang.reflect.Method;
@@ -36,11 +37,12 @@ public interface MethodFunctionTool extends FunctionTool {
      * @return
      */
     static MethodFunctionTool from(Method method, Object target) {
-        ToolDefinition definition = ToolDefinition.from(method);
-        String name = definition.name();
-        String description = definition.description();
-        String jsonSchema = definition.inputSchema();
-        return new MethodFunctionToolImpl(name, description, JsonUtils.toMap(jsonSchema), method, target);
+//        ToolDefinition definition = DefaultToolDefinition.from(method);
+//        String name = definition.name();
+//        String description = definition.description();
+//        String jsonSchema = definition.inputSchema();
+//        return new MethodFunctionToolImpl(name, description, JsonUtils.toMap(jsonSchema), method, target);
+        return null;
     }
 
     @Getter

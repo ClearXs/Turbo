@@ -31,6 +31,7 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.tool.definition.DefaultToolDefinition;
 import org.springframework.ai.tool.definition.ToolDefinition;
 import org.springframework.ai.tool.metadata.ToolMetadata;
 import org.springframework.ai.tool.method.MethodToolCallback;
@@ -325,7 +326,7 @@ public class ChatService {
                         Object target = methodFunctionTool.getTarget();
                         return MethodToolCallback.builder()
                                 .toolDefinition(
-                                        ToolDefinition.builder()
+                                        DefaultToolDefinition.builder()
                                                 .name(functionName)
                                                 .description(description)
                                                 .inputSchema(JsonUtils.toJson(parameters))
