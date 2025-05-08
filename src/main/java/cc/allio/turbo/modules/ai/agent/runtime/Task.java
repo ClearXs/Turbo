@@ -1,22 +1,26 @@
 package cc.allio.turbo.modules.ai.agent.runtime;
 
 import cc.allio.turbo.common.domain.Observable;
+import cc.allio.turbo.common.util.AuthUtil;
 import cc.allio.turbo.modules.ai.agent.runtime.action.builtin.EndAction;
+import cc.allio.turbo.modules.ai.agent.runtime.action.builtin.StoreAction;
 import cc.allio.turbo.modules.ai.driver.model.Input;
 import cc.allio.turbo.modules.ai.driver.model.Output;
 import cc.allio.turbo.modules.ai.agent.Agent;
 import cc.allio.turbo.modules.ai.agent.runtime.action.builtin.ChatAction;
 import cc.allio.turbo.modules.ai.chat.ChatService;
-import cc.allio.turbo.modules.ai.chat.memory.PersistentSessionChatMemory;
 import cc.allio.turbo.modules.ai.model.AgentModel;
 import cc.allio.turbo.modules.ai.agent.runtime.action.Action;
 import cc.allio.turbo.modules.ai.agent.runtime.action.ActionContext;
 import cc.allio.turbo.modules.ai.agent.runtime.action.ActionRegistry;
+import cc.allio.turbo.modules.ai.store.ChatMessageStore;
 import cc.allio.uno.core.chain.Chain;
 import cc.allio.uno.core.chain.DefaultChain;
 import cc.allio.uno.core.util.id.IdGenerator;
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.memory.ChatMemoryRepository;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -38,12 +42,16 @@ public class Task {
     private final ActionRegistry actionRegistry;
     @Getter
     private final Environment environment;
+    private final ChatMessageStore chatMessageStore;
 
-    public Task(Agent formAgent, ActionRegistry actionRegistry) {
+    public Task(Agent formAgent,
+                ActionRegistry actionRegistry,
+                ChatMessageStore chatMessageStore) {
         this.id = IdGenerator.defaultGenerator().getNextId();
         this.formAgent = formAgent;
         this.actionRegistry = actionRegistry;
         this.environment = new Environment().injectOf(formAgent).injectOf(this);
+        this.chatMessageStore = chatMessageStore;
     }
 
     /**
@@ -64,7 +72,7 @@ public class Task {
                             newEnvironment.setAgent(formAgent);
                             newEnvironment.setInput(input);
                             newEnvironment.setAgentModel(agentModel);
-                            Chain<Environment, Output> planning = buildPlaning(agentModel, input);
+                            Chain<Environment, Output> planning = buildPlaning(agentModel, input, environment);
                             ActionContext actionContext = new ActionContext(newEnvironment, input.getExecutionMode());
                             return planning.processMany(actionContext);
                         })
@@ -74,7 +82,7 @@ public class Task {
     /**
      * specific task planing chain.
      */
-    public Chain<Environment, Output> buildPlaning(AgentModel agentModel, Input input) {
+    public Chain<Environment, Output> buildPlaning(AgentModel agentModel, Input input, Environment environment) {
         Set<String> dispatchActionNames = formAgent.getDispatchActionNames();
         List<Action> actions = Lists.newCopyOnWriteArrayList();
         // get action
@@ -89,11 +97,21 @@ public class Task {
         // add default agent capability
         String conversationId = input.getConversationId();
         String sessionId = input.getSessionId();
-        ChatService chatService =
-                new ChatService(agentModel, new PersistentSessionChatMemory(sessionId), conversationId, sessionId);
+        ChatMemory chatMemory =
+                new EnvironmentPersistentSessionChatMemory(
+                        AuthUtil.getAuthentication(),
+                        sessionId,
+                        chatMessageStore,
+                        environment);
+        ChatService chatService = new ChatService(agentModel, chatMemory, conversationId, sessionId);
         ChatAction chatAction = new ChatAction(chatService);
         actions.add(chatAction);
 
+        // add store
+        StoreAction storeAction = new StoreAction(chatMessageStore);
+        actions.addFirst(storeAction);
+
+        // add end
         EndAction endAction = new EndAction();
         actions.addLast(endAction);
 

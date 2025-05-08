@@ -1,4 +1,4 @@
-package cc.allio.turbo.modules.ai.api.entity;
+package cc.allio.turbo.modules.ai.entity;
 
 import cc.allio.turbo.common.db.entity.TenantEntity;
 import cc.allio.turbo.modules.ai.api.enums.Capability;

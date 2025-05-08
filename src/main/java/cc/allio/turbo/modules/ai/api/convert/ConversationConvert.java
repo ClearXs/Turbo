@@ -2,7 +2,7 @@ package cc.allio.turbo.modules.ai.api.convert;
 
 import cc.allio.turbo.common.convert.Convert;
 import cc.allio.turbo.modules.ai.api.dto.ConversationDTO;
-import cc.allio.turbo.modules.ai.api.entity.AIChat;
+import cc.allio.turbo.modules.ai.entity.AIChat;
 import cc.allio.turbo.modules.ai.api.vo.ConversationVO;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;

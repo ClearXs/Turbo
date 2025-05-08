@@ -257,7 +257,7 @@ public final class WebUtil extends org.springframework.web.util.WebUtils {
             response.setCharacterEncoding("UTF-8");
             IOUtil.copy(io, response.getOutputStream());
         } catch (IOException ex) {
-            log.error("Failed to input stream to output stream", ex);
+            log.error("Failed to input withStream to output withStream", ex);
         } finally {
             IOUtil.close(io);
         }

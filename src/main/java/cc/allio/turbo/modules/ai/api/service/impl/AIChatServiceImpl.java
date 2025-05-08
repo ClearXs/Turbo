@@ -5,7 +5,7 @@ import cc.allio.turbo.common.domain.Subscription;
 import cc.allio.turbo.modules.ai.agent.runtime.ExecutionMode;
 import cc.allio.turbo.modules.ai.api.convert.ConversationConvert;
 import cc.allio.turbo.modules.ai.api.dto.ConversationDTO;
-import cc.allio.turbo.modules.ai.api.entity.AIChat;
+import cc.allio.turbo.modules.ai.entity.AIChat;
 import cc.allio.turbo.modules.ai.api.mapper.AIChatMapper;
 import cc.allio.turbo.modules.ai.api.service.IAIChatService;
 import cc.allio.turbo.modules.ai.api.service.IAIMessageService;

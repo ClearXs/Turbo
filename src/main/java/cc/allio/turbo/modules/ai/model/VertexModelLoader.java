@@ -8,8 +8,6 @@ import java.util.Set;
 public class VertexModelLoader implements ModelLoader {
     @Override
     public ChatModel load(ModelOptions options, Set<FunctionTool> tools) {
-
-
         return null;
     }
 }

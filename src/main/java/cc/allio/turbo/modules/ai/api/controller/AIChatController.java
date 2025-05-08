@@ -7,14 +7,14 @@ import cc.allio.turbo.common.web.R;
 import cc.allio.turbo.common.web.TurboCrudController;
 import cc.allio.turbo.common.web.params.QueryParam;
 import cc.allio.turbo.modules.ai.api.dto.ConversationDTO;
-import cc.allio.turbo.modules.ai.api.entity.AIChatSession;
+import cc.allio.turbo.modules.ai.entity.AIChatSession;
 import cc.allio.turbo.modules.ai.api.service.IAIChatService;
 import cc.allio.turbo.modules.ai.api.service.IAIChatSessionService;
 import cc.allio.turbo.modules.ai.driver.Driver;
 import cc.allio.turbo.modules.ai.driver.model.Input;
 import cc.allio.turbo.modules.ai.driver.model.Output;
 import cc.allio.turbo.modules.ai.driver.Topics;
-import cc.allio.turbo.modules.ai.api.entity.AIChat;
+import cc.allio.turbo.modules.ai.entity.AIChat;
 import cc.allio.turbo.modules.auth.provider.TurboUser;
 import cc.allio.uno.core.bus.TopicKey;
 import cc.allio.uno.core.exception.Trys;
@@ -29,7 +29,6 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @RequestMapping("/ai/chat")

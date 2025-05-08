@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.ai.chat;
 
 import cc.allio.turbo.modules.ai.chat.instruction.Help;
-import cc.allio.turbo.modules.ai.chat.memory.PersistentSessionChatMemory;
+import cc.allio.turbo.modules.ai.chat.memory.SessionInMemoryChatMemory;
 import cc.allio.turbo.modules.ai.chat.message.AdvancedMessage;
 import cc.allio.turbo.modules.ai.chat.message.StreamMessage;
 import cc.allio.turbo.modules.ai.driver.model.Order;
@@ -18,7 +18,7 @@ public class ChatServiceTest extends BaseTestCase {
 
     @Test
     void testCall() {
-        ChatService chatService = new ChatService(AgentModel.ollama(), new PersistentSessionChatMemory("1"));
+        ChatService chatService = new ChatService(AgentModel.ollama(), new SessionInMemoryChatMemory("1"));
 
         // chat with instruction
         chatService.call(instructionOrder)
@@ -45,7 +45,7 @@ public class ChatServiceTest extends BaseTestCase {
 
     @Test
     void testStream() {
-        ChatService chatService = new ChatService(AgentModel.ollama(), new PersistentSessionChatMemory("1"));
+        ChatService chatService = new ChatService(AgentModel.ollama(), new SessionInMemoryChatMemory("1"));
 
         chatService.stream(instructionOrder)
                 .flatMapMany(StreamMessage::observe)

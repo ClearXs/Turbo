@@ -1,7 +1,7 @@
 package cc.allio.turbo.modules.ai.api.controller;
 
 import cc.allio.turbo.common.web.GenericTurboCrudController;
-import cc.allio.turbo.modules.ai.api.entity.AICredential;
+import cc.allio.turbo.modules.ai.entity.AICredential;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;

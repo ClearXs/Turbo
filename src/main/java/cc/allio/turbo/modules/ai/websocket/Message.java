@@ -1,5 +1,6 @@
 package cc.allio.turbo.modules.ai.websocket;
 
+import cc.allio.turbo.modules.ai.agent.runtime.ExecutionMode;
 import cc.allio.turbo.modules.ai.driver.model.Options;
 import cc.allio.turbo.modules.ai.driver.model.Order;
 import cc.allio.turbo.modules.ai.model.ModelOptions;
@@ -20,7 +21,7 @@ public class Message {
     private Variable variable;
     private ModelOptions modelOptions;
     private Options options;
-
+    private ExecutionMode executionMode;
     /**
      * create {@link Message} instance
      *

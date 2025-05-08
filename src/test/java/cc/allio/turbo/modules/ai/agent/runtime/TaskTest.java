@@ -11,6 +11,7 @@ import cc.allio.turbo.modules.ai.agent.runtime.action.ActionRegistry;
 import cc.allio.turbo.modules.ai.agent.runtime.action.TestAction;
 import cc.allio.turbo.modules.ai.chat.tool.FunctionTool;
 import cc.allio.turbo.modules.ai.chat.tool.TestToolObject;
+import cc.allio.turbo.modules.ai.store.InMemoryChatMessageStore;
 import cc.allio.uno.core.chain.Chain;
 import cc.allio.uno.core.chain.Node;
 import cc.allio.uno.test.BaseTestCase;
@@ -72,7 +73,7 @@ public class TaskTest extends BaseTestCase {
 
     @Test
     void testEnvironment() {
-        Environment environment = new Task(mockTestAgent, actionRegistry).getEnvironment();
+        Environment environment = new Task(mockTestAgent, actionRegistry, new InMemoryChatMessageStore()).getEnvironment();
 
         assertNotNull(environment);
         Object agentName = environment.get(Environment.AGENT_NAME);
@@ -87,7 +88,7 @@ public class TaskTest extends BaseTestCase {
         Mockito.when(input.getConversationId()).thenReturn("2");
         AgentModel agentModel = Mockito.mock(AgentModel.class);
 
-        Chain<Environment, Output> chain = new Task(mockTestAgent, actionRegistry).buildPlaning(agentModel, input);
+        Chain<Environment, Output> chain = new Task(mockTestAgent, actionRegistry, new InMemoryChatMessageStore()).buildPlaning(agentModel, input);
         List<? extends Node<Environment, Output>> nodes = chain.getNodes();
 
         assertEquals(3, nodes.size());
@@ -95,7 +96,8 @@ public class TaskTest extends BaseTestCase {
 
     @Test
     void testPlanningOfEnd() {
-        new Task(mockTestAgent, actionRegistry).execute(Mono.just(templateInput))
+        new Task(mockTestAgent, actionRegistry, new InMemoryChatMessageStore())
+                .execute(Mono.just(templateInput))
                 .observeMany()
                 .as(StepVerifier::create)
                 .expectComplete()
@@ -108,7 +110,8 @@ public class TaskTest extends BaseTestCase {
         Input input = templateInput.copy();
         input.addMessage("what's english grammar?");
 
-        new Task(mockTestAgent, actionRegistry).execute(Mono.just(input))
+        new Task(mockTestAgent, actionRegistry, new InMemoryChatMessageStore())
+                .execute(Mono.just(input))
                 .observeMany()
                 .as(StepVerifier::create)
                 .expectNextCount(1L)
@@ -121,11 +124,11 @@ public class TaskTest extends BaseTestCase {
         Input input = templateInput.copy();
         input.addMessage("what's today temperature?");
 
-        new Task(mockTemperatureAgent, actionRegistry)
+        new Task(mockTemperatureAgent, actionRegistry, new InMemoryChatMessageStore())
                 .execute(Mono.just(input))
                 .observeMany()
                 .flatMap(subscription -> Mono.justOrEmpty(subscription.getDomain()))
-                .map(Output::getMessage)
+                .map(Output::getContent)
                 .as(StepVerifier::create)
                 .expectNextCount(1L)
                 .verifyComplete();

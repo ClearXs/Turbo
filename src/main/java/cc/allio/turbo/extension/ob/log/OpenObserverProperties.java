@@ -41,7 +41,7 @@ public class OpenObserverProperties {
     private String organization = "default";
 
     /**
-     * use the stream, default is 'default'
+     * use the withStream, default is 'default'
      */
     private String stream = "default";
 

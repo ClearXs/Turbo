@@ -65,7 +65,7 @@ public class LockRepositoryMethodInterceptor implements MethodInterceptor {
      *
      * @param invocation  invocation
      * @param lockContext lockContext
-     * @return call result
+     * @return withCall result
      * @throws RuntimeException 当出现异常时抛出
      */
     protected Object doInvoke(MethodInvocation invocation, OptionalMap<String> lockContext) {

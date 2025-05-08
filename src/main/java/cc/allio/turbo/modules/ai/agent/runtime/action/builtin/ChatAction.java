@@ -47,9 +47,7 @@ public class ChatAction extends MessageAction {
         Set<FunctionTool> tools = agent.getTools();
 
         Set<Order> orders = input.getInstructions();
-
         Flux<Output> out = Flux.empty();
-
         if (context instanceof ActionContext actionContext) {
             ExecutionMode mode = actionContext.getMode();
             if (mode == ExecutionMode.STREAM) {
@@ -78,9 +76,9 @@ public class ChatAction extends MessageAction {
         @Override
         public Flux<Output> apply(AdvancedMessage message) {
             Output output = new Output();
-
+            output.setId(message.id());
             output.setAgent(agent.name());
-            output.setMessage(message.content());
+            output.setContent(message.content());
             output.setInput(input);
             output.setExecutionMode(mode);
             output.setRole(message.role());

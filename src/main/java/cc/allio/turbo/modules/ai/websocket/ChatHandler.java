@@ -5,7 +5,8 @@ import cc.allio.turbo.common.domain.GeneralDomain;
 import cc.allio.turbo.common.util.AuthUtil;
 import cc.allio.turbo.modules.ai.agent.Agent;
 import cc.allio.turbo.modules.ai.agent.Supervisor;
-import cc.allio.turbo.modules.ai.api.entity.AIChatSession;
+import cc.allio.turbo.modules.ai.agent.runtime.ExecutionMode;
+import cc.allio.turbo.modules.ai.entity.AIChatSession;
 import cc.allio.turbo.modules.ai.driver.Driver;
 import cc.allio.turbo.modules.ai.driver.Topics;
 import cc.allio.turbo.modules.ai.driver.model.Input;
@@ -14,6 +15,8 @@ import cc.allio.turbo.modules.ai.driver.model.Order;
 import cc.allio.turbo.modules.ai.driver.model.Output;
 import cc.allio.turbo.modules.ai.model.ModelOptions;
 import cc.allio.turbo.modules.ai.agent.runtime.Variable;
+import cc.allio.turbo.modules.ai.store.ChatSessionStore;
+import cc.allio.turbo.modules.ai.store.InMemoryChatSessionStore;
 import cc.allio.turbo.modules.auth.domain.AuthThreadLocalWebDomainEventContext;
 import cc.allio.turbo.modules.auth.web.websocket.AuthenticationWebSocketHandler;
 import cc.allio.uno.core.StringPool;
@@ -22,27 +25,24 @@ import cc.allio.uno.core.bus.TopicKey;
 import cc.allio.uno.core.exception.Trys;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.uno.core.util.StringUtils;
-import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
-import cc.allio.uno.data.orm.executor.CommandExecutorFactory;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.util.Optionals;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
 import reactor.core.publisher.Mono;
 import reactor.core.Disposable;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -62,14 +62,19 @@ public class ChatHandler extends AuthenticationWebSocketHandler implements Dispo
     private final Driver<Input> inputDriver;
     private final Driver<Output> outputDriver;
     private final Map<String, CombineDisposable> sessionDisposable;
+    private final ChatSessionStore chatSessionStorage;
 
     public static final String CONVERSATION_ID_NAME = "conversation-id";
 
-    public ChatHandler(Supervisor supervisor, Driver<Input> inputDriver, Driver<Output> outputDriver) {
+    public ChatHandler(Supervisor supervisor,
+                       Driver<Input> inputDriver,
+                       Driver<Output> outputDriver,
+                       ObjectProvider<ChatSessionStore> chatSessionStorageObjectProvider) {
         this.supervisor = supervisor;
         this.inputDriver = inputDriver;
         this.outputDriver = outputDriver;
         this.sessionDisposable = Maps.newConcurrentMap();
+        this.chatSessionStorage = chatSessionStorageObjectProvider.getIfAvailable(InMemoryChatSessionStore::new);
     }
 
     @Override
@@ -86,21 +91,12 @@ public class ChatHandler extends AuthenticationWebSocketHandler implements Dispo
 
         String sessionId = session.getId();
 
-        AggregateCommandExecutor executor = CommandExecutorFactory.getDSLExecutor();
-        if (executor != null) {
-
-            boolean exist = executor.existTable(AIChatSession.class);
-            if (!exist) {
-                executor.createTable(AIChatSession.class);
-            }
-
-            AIChatSession chatSession = new AIChatSession();
-            chatSession.setId(sessionId);
-            chatSession.setChatId(Long.valueOf(conversationId));
-            String userId = AuthUtil.getUserId();
-            chatSession.setUserId(Trys.onContinue(() -> Long.valueOf(userId)));
-            executor.saveOrUpdate(chatSession);
-        }
+        AIChatSession chatSession = new AIChatSession();
+        chatSession.setId(sessionId);
+        chatSession.setChatId(Long.valueOf(conversationId));
+        String userId = AuthUtil.getUserId();
+        chatSession.setUserId(Trys.onContinue(() -> Long.valueOf(userId)));
+        chatSessionStorage.save(chatSession);
 
         Authentication principal = (Authentication) session.getPrincipal();
         UnaryOperator<DomainEventContext> refineFunc = context -> new AuthThreadLocalWebDomainEventContext(context, principal);
@@ -183,7 +179,7 @@ public class ChatHandler extends AuthenticationWebSocketHandler implements Dispo
         input.setModelOptions(msg == null ? ModelOptions.getDefaultForLlama() : msg.getModelOptions());
         input.setInstructions(msg == null ? Sets.newHashSet(Order.toUser((message.getPayload()))) : msg.getInstructions());
         input.setOptions(msg == null ? new Options() : msg.getOptions());
-
+        input.setExecutionMode(msg == null ? ExecutionMode.STREAM : msg.getExecutionMode());
 
         GeneralDomain<Input> domain = new GeneralDomain<>(input, inputDriver.getDomainEventBus());
         DomainEventContext context = new DomainEventContext(domain);

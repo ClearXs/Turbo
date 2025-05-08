@@ -1,5 +1,6 @@
 package cc.allio.turbo.common.domain;
 
+import jakarta.annotation.Nullable;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
@@ -25,5 +26,16 @@ public interface Subscription<D> {
      */
     default Mono<D> getMonoDomain() {
         return Mono.justOrEmpty(getDomain());
+    }
+
+    /**
+     * create default {@link Subscription}
+     *
+     * @param domain the domain instance
+     * @param <D>    domain type
+     * @return
+     */
+    static <D> Subscription<D> of(@Nullable D domain) {
+        return () -> Optional.ofNullable(domain);
     }
 }

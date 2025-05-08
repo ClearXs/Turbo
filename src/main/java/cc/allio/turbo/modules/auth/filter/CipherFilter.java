@@ -24,6 +24,8 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -81,8 +83,15 @@ public class CipherFilter extends OncePerRequestFilter {
                         if (log.isDebugEnabled()) {
                             log.debug("cipher user parse error, cipher user: {}", cipherUserString);
                         }
-
-                        return Optional.empty();
+                        String decodeCipherUserString = URLDecoder.decode(cipherUserString, StandardCharsets.UTF_8);
+                        try {
+                            cipherUser = JsonUtils.parse(decodeCipherUserString, CipherUser.class);
+                        } catch (Exception ex) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("decode cipher user parse error, cipher user: {}", decodeCipherUserString);
+                            }
+                            return Optional.empty();
+                        }
                     }
                     return Optional.of(cipherUser);
                 })

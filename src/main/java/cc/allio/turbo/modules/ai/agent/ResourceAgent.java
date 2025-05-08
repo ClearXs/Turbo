@@ -7,9 +7,12 @@ import cc.allio.turbo.modules.ai.agent.runtime.action.ActionRegistry;
 import cc.allio.turbo.modules.ai.chat.tool.FunctionTool;
 import cc.allio.turbo.modules.ai.chat.tool.Tool;
 import cc.allio.turbo.modules.ai.chat.tool.ToolRegistry;
+import cc.allio.turbo.modules.ai.store.ChatMessageStore;
+import cc.allio.turbo.modules.ai.store.InMemoryChatMessageStore;
 import cc.allio.uno.core.util.CollectionUtils;
 import com.google.common.collect.Sets;
 import lombok.Getter;
+import org.springframework.beans.factory.ObjectProvider;
 
 import java.util.List;
 import java.util.Map;
@@ -34,6 +37,7 @@ public abstract class ResourceAgent implements Agent {
 
     protected final ActionRegistry actionRegistry;
     protected final ToolRegistry toolRegistry;
+    protected ChatMessageStore chatMessageStore = new InMemoryChatMessageStore();
 
     private String description;
 
@@ -42,10 +46,12 @@ public abstract class ResourceAgent implements Agent {
         this.toolRegistry = toolRegistry;
     }
 
-    public void install(AIResources  resources) throws AgentInitializationException {
+    public void install(AIResources resources, ChatMessageStore chatMessageStore) throws AgentInitializationException {
         if (resources == null) {
             throw new AgentInitializationException("Resources not found");
         }
+
+        this.chatMessageStore = chatMessageStore;
 
         AIResources.LiteralAgent literalAgent = resources.detectOfAgent(name()).orElse(null);
 

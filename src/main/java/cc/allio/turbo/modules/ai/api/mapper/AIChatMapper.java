@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.ai.api.mapper;
 
-import cc.allio.turbo.modules.ai.api.entity.AIChat;
+import cc.allio.turbo.modules.ai.entity.AIChat;
 import cc.allio.turbo.modules.ai.api.vo.ConversationVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;

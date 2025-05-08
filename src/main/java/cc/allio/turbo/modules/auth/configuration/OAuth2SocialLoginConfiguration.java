@@ -38,20 +38,20 @@ import java.util.stream.Collectors;
  */
 @Configuration
 @EnableConfigurationProperties(TurboOAuth2ClientProperties.class)
-public class OAuth2LoginConfiguration {
+public class OAuth2SocialLoginConfiguration {
 
     @Bean
     @Order(0)
-    public SecurityFilterChain oauth2loginFilterChain(HttpSecurity http,
-                                                      OAuth2TokenGenerator oAuth2TokenGenerator,
-                                                      TurboOAuth2ClientProperties oAuth2ClientProperties,
-                                                      PersistentProperties persistentProperties) throws Exception {
+    public SecurityFilterChain socialLoginSecurityFilterChain(HttpSecurity http,
+                                                              OAuth2TokenGenerator oAuth2TokenGenerator,
+                                                              TurboOAuth2ClientProperties oAuth2ClientProperties,
+                                                              PersistentProperties persistentProperties) throws Exception {
         http.authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers("/oauth2/**")
+                                .requestMatchers("/oauth2/authorization/**")
                                 .authenticated()
                 )
-                .securityMatcher("/oauth2/**") // only match prefix path /oauth2
+                .securityMatcher("/oauth2/authorization/**") // only match prefix path /oauth2
                 .oauth2Login(oauth2 ->
                         // third system callback uri such as: /oauth2/code/login/github?code=xxx&state=xxx
                         oauth2.loginProcessingUrl("/oauth2/code/login/*")

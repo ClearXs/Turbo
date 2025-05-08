@@ -1,6 +1,6 @@
 package cc.allio.turbo.modules.ai.api.mapper;
 
-import cc.allio.turbo.modules.ai.api.entity.AITool;
+import cc.allio.turbo.modules.ai.entity.AITool;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 

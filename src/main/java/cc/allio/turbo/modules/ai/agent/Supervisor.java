@@ -1,26 +1,35 @@
 package cc.allio.turbo.modules.ai.agent;
 
 import cc.allio.turbo.common.domain.*;
+import cc.allio.turbo.modules.ai.chat.exception.ChatException;
 import cc.allio.turbo.modules.ai.driver.Driver;
 import cc.allio.turbo.modules.ai.driver.Topics;
 import cc.allio.turbo.modules.ai.driver.model.Input;
+import cc.allio.turbo.modules.ai.driver.model.Order;
 import cc.allio.turbo.modules.ai.driver.model.Output;
+import cc.allio.turbo.modules.ai.entity.AIMessage;
+import cc.allio.turbo.modules.ai.enums.MessageStatus;
 import cc.allio.turbo.modules.ai.exception.AgentInitializationException;
 import cc.allio.turbo.modules.ai.chat.resources.AIResources;
-import cc.allio.turbo.modules.ai.agent.runtime.action.ActionRegistry;
-import cc.allio.turbo.modules.ai.chat.tool.ToolRegistry;
+import cc.allio.turbo.modules.ai.exception.DispatchException;
+import cc.allio.turbo.modules.ai.store.ChatMessageStore;
+import cc.allio.turbo.modules.ai.store.InMemoryChatMessageStore;
 import cc.allio.uno.core.bus.Pathway;
 import cc.allio.uno.core.bus.Topic;
 import cc.allio.uno.core.bus.TopicKey;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.ObjectProvider;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.function.UnaryOperator;
 
@@ -33,21 +42,22 @@ import java.util.function.UnaryOperator;
 @Slf4j
 public class Supervisor implements InitializingBean {
 
-    final Driver<Input> inputDriver;
-    final Driver<Output> outputDriver;
-    final AgentRegistry agentRegistry;
-    final ActionRegistry actionRegistry;
-    final ToolRegistry toolRegistry;
-    final AIResources resources;
+    private final Driver<Input> inputDriver;
+    private final Driver<Output> outputDriver;
+    private final AgentRegistry agentRegistry;
+    private final AIResources resources;
+    private final ChatMessageStore chatMessageStore;
 
-    public Supervisor(Driver<Input> inputDriver, Driver<Output> outputDriver, AgentRegistry agentRegistry,
-                      ActionRegistry actionRegistry, ToolRegistry toolRegistry, AIResources resources) {
+    public Supervisor(Driver<Input> inputDriver,
+                      Driver<Output> outputDriver,
+                      AgentRegistry agentRegistry,
+                      AIResources resources,
+                      ObjectProvider<ChatMessageStore> chatMessageStorageObjectProvider) {
         this.inputDriver = inputDriver;
         this.outputDriver = outputDriver;
         this.agentRegistry = agentRegistry;
         this.resources = resources;
-        this.actionRegistry = actionRegistry;
-        this.toolRegistry = toolRegistry;
+        this.chatMessageStore = chatMessageStorageObjectProvider.getIfAvailable(InMemoryChatMessageStore::new);
     }
 
     /**
@@ -56,10 +66,9 @@ public class Supervisor implements InitializingBean {
     void setup() throws AgentInitializationException {
         // load resource
         resources.readNow();
-
         for (Agent agent : agentRegistry.getAll()) {
             if (agent instanceof ResourceAgent resourceAgent) {
-                resourceAgent.install(resources);
+                resourceAgent.install(resources, chatMessageStore);
             }
         }
     }
@@ -83,7 +92,8 @@ public class Supervisor implements InitializingBean {
                 .observeMany(refineEventContext)
                 .subscribeOn(Schedulers.fromExecutor(Executors.newVirtualThreadPerTaskExecutor()))
                 // handle user input
-                .flatMap(subscription -> this.dispatch(subscription, refineEventContext))
+                .flatMap(subscription ->
+                        this.dispatch(subscription, refineEventContext).onErrorResume(DispatchException.class, this::handleDispatchError))
                 // receive upstream output and publish to evaluation and output
                 .flatMap(this::transform)
                 .onErrorContinue((err, obj) -> log.error("failed handle message", err))
@@ -104,9 +114,11 @@ public class Supervisor implements InitializingBean {
         String agentName = input.getAgent();
         Agent agent = agentRegistry.get(agentName);
         if (agent != null) {
-            return agent.call(Mono.just(input)).observeMany(refineEventContext);
+            return agent.call(Mono.just(input))
+                    .observeMany(refineEventContext)
+                    .onErrorMap(ChatException.class, err -> new DispatchException(subscription, err));
         }
-        return Flux.empty();
+        return Flux.error(new DispatchException(subscription, "not found agent: " + agentName));
     }
 
     /**
@@ -142,6 +154,62 @@ public class Supervisor implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         setup();
+    }
+
+    /**
+     * when {@link DispatchException} occurred, handle the error.
+     * <p>
+     * save {@link Input} to storage {@link ChatMessageStore} .
+     * if correctly save. then return {@link Output}. (have {@link Input#getInstructions()} will be return same quality {@link Output})
+     *
+     * @param error {@link DispatchException} error
+     * @return
+     */
+    Flux<Subscription<Output>> handleDispatchError(DispatchException error) {
+        Subscription<Input> subscription = error.getSubscription();
+        String errorMessage = error.getMessage();
+        return Flux.from(Mono.justOrEmpty(subscription.getDomain()))
+                .flatMap(input -> {
+                    // handel to save messages
+                    Set<Order> instructions = input.getInstructions();
+                    Long conversationId = Long.valueOf(input.getConversationId());
+                    List<AIMessage> messages =
+                            instructions.stream()
+                                    .map(order -> {
+                                        AIMessage message = new AIMessage();
+                                        // when order have id, then set id.
+                                        // and describe message existing db already.
+                                        if (order.getId() != null) {
+                                            message.setId(order.getId());
+                                        }
+                                        message.setSessionId(input.getSessionId());
+                                        message.setChatId(conversationId);
+                                        message.setState(MessageStatus.ERROR);
+                                        message.setErrorMsg(errorMessage);
+                                        message.setContent(order.getMessage());
+                                        message.setRole(order.getRole());
+                                        return message;
+                                    })
+                                    .toList();
+
+                    chatMessageStore.saveOrUpdateBatch(messages);
+
+                    return Flux.fromIterable(messages)
+                            .map(message -> {
+                                // covert output
+                                Output output = Output.fromAIMessage(message);
+                                output.setCreateAt(new Date().getTime());
+                                output.setConversationId(input.getConversationId());
+                                output.setSessionId(input.getSessionId());
+                                output.setErrorMsg(errorMessage);
+                                output.setAgent(input.getAgent());
+                                output.setExecutionMode(input.getExecutionMode());
+                                output.setStatus(message.getState());
+                                output.setInput(input);
+                                output.setMetadata(Maps.newHashMap());
+                                return Subscription.of(output);
+                            });
+                });
     }
 
 }

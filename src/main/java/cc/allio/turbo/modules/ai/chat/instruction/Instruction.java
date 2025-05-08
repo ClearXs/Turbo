@@ -19,17 +19,17 @@ import java.util.Set;
 public interface Instruction {
 
     /**
-     * stream chat.
+     * withStream chat.
      *
      * @param prompt the chat prompt
      * @param tools  the list of tools
-     * @return stream of chat response
+     * @return withStream of chat response
      */
     Mono<StreamMessage> stream(@Nullable Prompt prompt, Set<FunctionTool> tools);
 
 
     /**
-     * call chat.
+     * withCall chat.
      *
      * @param prompt the chat prompt
      * @param tools  the list of tools

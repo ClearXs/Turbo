@@ -1,17 +1,22 @@
 package cc.allio.turbo.modules.ai.driver.model;
 
 import cc.allio.turbo.modules.ai.enums.Role;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Order {
 
+    private Long id;
     private String message;
     private Role role;
+
+    public Order() {
+    }
+
+    public Order(String message, Role role) {
+        this.message = message;
+        this.role = role;
+    }
 
     /**
      * create {@link Order} instance, default role is {@link Role#USER}

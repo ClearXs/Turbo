@@ -1,6 +1,8 @@
-package cc.allio.turbo.modules.ai.api.entity;
+package cc.allio.turbo.modules.ai.entity;
 
 import cc.allio.turbo.common.db.entity.Entity;
+import cc.allio.turbo.common.db.entity.EntityTableResolver;
+import cc.allio.uno.data.orm.dsl.helper.TableResolve;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -12,6 +14,7 @@ import static com.baomidou.mybatisplus.annotation.IdType.ASSIGN_ID;
 @Data
 @TableName("ai_chat_session")
 @Schema(description = "chat session")
+@TableResolve(EntityTableResolver.class)
 public class AIChatSession implements Entity {
 
     /**

@@ -6,12 +6,12 @@ import lombok.Data;
 import java.util.Map;
 
 /**
- * call chat message.
+ * withCall chat message.
  */
 @Data
 public class MessageImpl implements AdvancedMessage {
 
-    private String id;
+    private Long id;
     private String model;
     private Role role;
     private String content;
@@ -20,6 +20,11 @@ public class MessageImpl implements AdvancedMessage {
     private String conversationId;
     private String sessionId;
     private Map<String, Object> metadata;
+
+    @Override
+    public Long id() {
+        return id;
+    }
 
     @Override
     public String content() {

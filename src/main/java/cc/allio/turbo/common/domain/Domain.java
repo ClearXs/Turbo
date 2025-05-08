@@ -73,7 +73,7 @@ public interface Domain<D> extends DomainEventBusAware, DomainEventBusGetter {
     }
 
     /**
-     * get domain call before path. use by {@link Subscriber} {@link Publisher} in {@link EventBus}
+     * get domain withCall before path. use by {@link Subscriber} {@link Publisher} in {@link EventBus}
      *
      * @param path the original path
      * @return the before path
@@ -85,7 +85,7 @@ public interface Domain<D> extends DomainEventBusAware, DomainEventBusGetter {
     }
 
     /**
-     * get domain call after path. use by {@link Subscriber} {@link Publisher} in {@link EventBus}
+     * get domain withCall after path. use by {@link Subscriber} {@link Publisher} in {@link EventBus}
      *
      * @param path the original path
      * @return the after path
@@ -97,7 +97,7 @@ public interface Domain<D> extends DomainEventBusAware, DomainEventBusGetter {
     }
 
     /**
-     * get domain call destroy path. use by {@link Subscriber} {@link Publisher} in {@link EventBus}
+     * get domain withCall destroy path. use by {@link Subscriber} {@link Publisher} in {@link EventBus}
      *
      * @return the destroy path
      * @see BehaviorMethodInterceptor

@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * call chat message.
+ * withCall chat message.
  *
  * @author j.x
  * @since 0.2.0
@@ -25,6 +25,8 @@ public interface AdvancedMessage extends org.springframework.ai.chat.messages.Me
     String FINISH_LENGTH = "length";
     String FINISH_CONTENT_FILTER = "content_filter";
     String FINISH_ERROR = "error";
+
+    Long id();
 
     /**
      * message content

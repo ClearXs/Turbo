@@ -60,7 +60,7 @@ public final class DomainTools<D> implements SubPuber<D>, Watcher<DomainEventCon
     public UntilComplete<DomainEventContext> untilComplete(Runnable trigger, Runnable executable) {
         return Optional.ofNullable(watcher)
                 .map(w -> w.untilComplete(trigger, executable))
-                .orElseThrow(() -> new UnsupportedOperationException("call untilComplete method before acquire call watch method."));
+                .orElseThrow(() -> new UnsupportedOperationException("withCall untilComplete method before acquire withCall watch method."));
     }
 
     /**

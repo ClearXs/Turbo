@@ -22,9 +22,9 @@ public class OllamaModelLoader implements ModelLoader {
         OllamaApi ollamaApi;
         String address = options.getAddress();
         if (StringUtils.isNotEmpty(address)) {
-            ollamaApi = new OllamaApi(address);
+            ollamaApi = OllamaApi.builder().baseUrl(address).build();
         } else {
-            ollamaApi = new OllamaApi();
+            ollamaApi = OllamaApi.builder().build();
         }
         // @see https://github.com/ollama/ollama/blob/main/docs/modelfile.md#parameter
         OllamaOptions ollamaOptions =

@@ -87,11 +87,9 @@ public class Input implements Copyable<Input> {
      * add message. default the message role is {@link Role#USER}
      */
     public void addMessage(String message) {
-
         Order instruction = new Order();
         instruction.setMessage(message);
         instruction.setRole(Role.USER);
-
         this.instructions.add(instruction);
     }
 

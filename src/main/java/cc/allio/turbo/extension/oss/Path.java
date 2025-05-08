@@ -4,6 +4,7 @@ import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.util.DateUtil;
 import cc.allio.uno.core.util.StringUtils;
 import com.google.common.collect.Lists;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -21,12 +22,15 @@ public class Path {
 
     @Getter
     private int depth;
+    @Getter
+    private final String fullPath;
     private List<String> nameList;
     private final String separator;
     private final AppendStrategy strategy;
 
-    public Path(String separator, AppendStrategy strategy) {
+    public Path(String fullPath, String separator, AppendStrategy strategy) {
         this.depth = 0;
+        this.fullPath = fullPath;
         this.nameList = Lists.newArrayList();
         this.separator = separator;
         this.strategy = strategy;
@@ -39,7 +43,7 @@ public class Path {
      * @return {@link Path} instance
      */
     public Path append(String name) {
-        return append(from(name, AppendStrategy.None));
+        return append(from(fullPath, name, AppendStrategy.None));
     }
 
     /**
@@ -51,7 +55,7 @@ public class Path {
     public Path append(List<String> nameList) {
         this.depth += nameList.size();
         for (String name : nameList) {
-            this.append(from(name, AppendStrategy.None));
+            this.append(from(fullPath, name, AppendStrategy.None));
         }
         return this;
     }
@@ -106,7 +110,7 @@ public class Path {
     public Path withStrategy() {
         if (strategy == AppendStrategy.Date) {
             String nowPart = DateUtil.getNowPart("/yyyy/MM/dd");
-            this.appendFirst(Path.from(nowPart, this.strategy));
+            this.appendFirst(Path.from(fullPath, nowPart, strategy));
         }
         return this;
     }
@@ -137,34 +141,42 @@ public class Path {
     }
 
     /**
-     * from the parameter name build new {@link Path} instance
-     *
-     * @param name the name
-     * @return the {@link Path} instance
+     * @see #from(String, String, String, AppendStrategy)
      */
     public static Path from(String name) {
-        return from(name, StringPool.SLASH, AppendStrategy.None);
+        return from(name, name, StringPool.SLASH, AppendStrategy.None);
     }
 
     /**
-     * from the parameter name build new {@link Path} instance
-     *
-     * @param name the name
-     * @return the {@link Path} instance
+     * @see #from(String, String, String, AppendStrategy)
      */
     public static Path from(String name, AppendStrategy strategy) {
-        return from(name, StringPool.SLASH, strategy);
+        return from(name, name, StringPool.SLASH, strategy);
+    }
+
+    /**
+     * @see #from(String, String, String, AppendStrategy)
+     */
+    public static Path from(String fullPath, String name) {
+        return from(fullPath, name, StringPool.SLASH, AppendStrategy.None);
+    }
+
+    /**
+     * @see #from(String, String, String, AppendStrategy)
+     */
+    public static Path from(String fullPath, String name, AppendStrategy strategy) {
+        return from(fullPath, name, StringPool.SLASH, strategy);
     }
 
     /**
      * from the parameter name and separator build new {@link Path} instance
      *
-     * @param name the name
+     * @param name      the name
      * @param separator the separator name
      * @return the {@link Path} instance
      */
-    public static Path from(String name, String separator, AppendStrategy strategy) {
-        Path path = new Path(separator, strategy);
+    public static Path from(String fullPath, String name, String separator, AppendStrategy strategy) {
+        Path path = new Path(fullPath, separator, strategy);
         if (path.isPath(name)) {
             String[] nameList = name.split(path.separator);
             path.depth += nameList.length;
@@ -178,8 +190,13 @@ public class Path {
         return path;
     }
 
+    @AllArgsConstructor
+    @Getter
     public enum AppendStrategy {
-        None,
-        Date,
+        None("none", "none"),
+        Date("date", "date");
+
+        private final String value;
+        private final String label;
     }
 }

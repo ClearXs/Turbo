@@ -3,6 +3,7 @@ package cc.allio.turbo.extension.oss;
 import cc.allio.turbo.extension.oss.request.OssGetRequest;
 import cc.allio.turbo.extension.oss.request.OssPutRequest;
 import cc.allio.turbo.extension.oss.request.OssRemoveRequest;
+import cc.allio.uno.core.StringPool;
 import io.minio.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,25 +29,28 @@ public class MinioOssExecutor extends BaseOssExecutor {
     }
 
     @Override
-    protected Path doUpload(OssPutRequest ossPutRequest, OssProperties ossProperties) throws Throwable {
+    protected Path doUpload(OssPutRequest ossPutRequest) throws Throwable {
         Path path = ossPutRequest.getPath();
-        String baseDir = ossProperties.getBaseDir();
-        path.withStrategy().appendFirst(Path.from(baseDir, ossProperties.getStrategy()));
+        String baseDir = ossTrait.getBaseDir();
+        String bucket = ossTrait.getBucket();
+        path.withStrategy().appendFirst(Path.from(baseDir, ossTrait.getStrategy()));
         String object = path.compose();
         PutObjectArgs putObjectArgs = PutObjectArgs.builder()
-                .bucket(ossTrait.getBucket())
+                .bucket(bucket)
                 .object(object)
                 // 不进断点续传
                 .stream(ossPutRequest.getInputStream(), -1, Integer.MAX_VALUE)
                 .build();
         if (minioClient.putObject(putObjectArgs) != null) {
-            return Path.from(object);
+            String endpoint = ossTrait.getEndpoint();
+            String fullPath = endpoint + StringPool.SLASH + bucket + StringPool.SLASH + object;
+            return Path.from(fullPath, object);
         }
         return null;
     }
 
     @Override
-    protected OssResponse doDownload(OssGetRequest ossGetRequest, OssProperties ossProperties) throws Throwable {
+    protected OssResponse doDownload(OssGetRequest ossGetRequest) throws Throwable {
         Path path = ossGetRequest.getPath();
         String object = path.compose();
         GetObjectResponse response =
@@ -64,7 +68,7 @@ public class MinioOssExecutor extends BaseOssExecutor {
     }
 
     @Override
-    protected boolean doRemove(OssRemoveRequest ossRemoveRequest, OssProperties ossProperties) throws Throwable {
+    protected boolean doRemove(OssRemoveRequest ossRemoveRequest) throws Throwable {
         String bucket = ossTrait.getBucket();
         RemoveObjectArgs removeObjectArgs =
                 RemoveObjectArgs.builder()
@@ -76,7 +80,7 @@ public class MinioOssExecutor extends BaseOssExecutor {
     }
 
     @Override
-    protected Path doCopyObject(String src, String dest, OssProperties ossProperties) throws Throwable {
+    protected Path doCopyObject(String src, String dest) throws Throwable {
         String bucket = ossTrait.getBucket();
         CopyObjectArgs copyObjectArgs = CopyObjectArgs
                 .builder()
@@ -86,13 +90,15 @@ public class MinioOssExecutor extends BaseOssExecutor {
                 .build();
         try {
             ObjectWriteResponse objectWriteResponse = minioClient.copyObject(copyObjectArgs);
-            if (log.isInfoEnabled()) {
-                log.info("copy source path={} to destination path={}, the result is {}", src, dest, objectWriteResponse.object());
+            if (log.isDebugEnabled()) {
+                log.debug("copy source path={} to destination path={}, the result is {}", src, dest, objectWriteResponse.object());
             }
         } catch (Throwable ex) {
             log.error("Failed copy source filepath={} to destination filepath={}", src, dest, ex);
         }
-        return Path.from(dest, ossProperties.getStrategy());
+        String endpoint = ossTrait.getEndpoint();
+        String fullPath = endpoint + StringPool.SLASH + bucket + StringPool.SLASH + dest;
+        return Path.from(fullPath, dest, ossTrait.getStrategy());
     }
 
     @Override

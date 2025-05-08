@@ -29,6 +29,6 @@ public class SMAAgent extends ResourceAgent implements Agent {
 
     @Override
     public Observable<Output> call(Mono<Input> input) {
-        return new Task(this, actionRegistry).execute(input);
+        return new Task(this, actionRegistry, chatMessageStore).execute(input);
     }
 }

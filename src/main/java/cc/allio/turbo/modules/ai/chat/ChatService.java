@@ -1,8 +1,10 @@
 package cc.allio.turbo.modules.ai.chat;
 
+import cc.allio.turbo.modules.ai.chat.exception.ChatException;
 import cc.allio.turbo.modules.ai.chat.instruction.Help;
 import cc.allio.turbo.modules.ai.chat.instruction.Instruction;
 import cc.allio.turbo.modules.ai.chat.memory.MetricSupervisor;
+import cc.allio.turbo.modules.ai.chat.memory.SessionInMemoryChatMemory;
 import cc.allio.turbo.modules.ai.chat.message.AdvancedMessage;
 import cc.allio.turbo.modules.ai.chat.message.StreamMessage;
 import cc.allio.turbo.modules.ai.chat.tool.MethodFunctionTool;
@@ -15,17 +17,19 @@ import cc.allio.uno.core.util.CollectionUtils;
 import cc.allio.uno.core.util.JsonUtils;
 import com.google.common.collect.Sets;
 import jakarta.annotation.Nullable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.InMemoryChatMemory;
+import org.springframework.ai.chat.memory.ChatMemoryRepository;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.tool.definition.ToolDefinition;
 import org.springframework.ai.tool.metadata.ToolMetadata;
@@ -37,7 +41,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * AI Chat service. support stream chat and call chat.
+ * AI Chat service. support withStream chat and withCall chat.
  *
  * @author j.x
  * @see #call(Prompt, Set, Set, Options)
@@ -50,7 +54,7 @@ public class ChatService {
     private final ChatWithLLM chat;
 
     public ChatService(AgentModel agentModel) {
-        this(agentModel, new InMemoryChatMemory(), UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        this(agentModel, new SessionInMemoryChatMemory(UUID.randomUUID().toString()), UUID.randomUUID().toString(), UUID.randomUUID().toString());
     }
 
     public ChatService(AgentModel agentModel, ChatMemory chatMemory) {
@@ -68,10 +72,8 @@ public class ChatService {
                        String conversationId,
                        String sessionId) {
         this.instructions = new HashMap<>();
-
         Help help = new Help(this);
         instructions.put(help.name(), help);
-
         this.chat = new ChatWithLLM(agentModel, chatMemory, conversationId, sessionId);
     }
 
@@ -104,18 +106,17 @@ public class ChatService {
     }
 
     /**
-     * stream chat.
+     * withStream chat.
      *
      * @param prompt  the chat agentPrompt
      * @param orders  orders
      * @param tools   the list of tools
      * @param options the chat with llm options
-     * @return stream of chat response
+     * @return withStream of chat response
      */
     public Mono<StreamMessage> stream(@Nullable Prompt prompt, Set<Order> orders, Set<FunctionTool> tools, Options options) {
         return Mono.defer(() -> {
             Set<Order> messages = new HashSet<>();
-
             // built in Instruction instance
             List<Instruction> builtinInstruction = new ArrayList<>();
             for (Order order : orders) {
@@ -128,7 +129,7 @@ public class ChatService {
             }
 
             if (CollectionUtils.isEmpty(builtinInstruction)) {
-                return chat.stream(prompt, messages, tools, options);
+                return chat.withStream(prompt, messages, tools, options);
             }
 
             return Flux.fromIterable(builtinInstruction)
@@ -138,7 +139,7 @@ public class ChatService {
                         if (CollectionUtils.isEmpty(messages)) {
                             return StreamMessage.fromOthers(upstream);
                         }
-                        return chat.stream(prompt, messages, tools, options)
+                        return chat.withStream(prompt, messages, tools, options)
                                 .doOnNext(streamMessage -> streamMessage.concat(upstream));
                     });
         });
@@ -173,14 +174,17 @@ public class ChatService {
     }
 
     /**
-     * call model for chat
+     * withCall model for chat
      *
      * @param prompt the chat agentPrompt
      * @param orders instruction or user message
      * @param tools  the list of {@link FunctionTool}
-     * @return stream of chat response
+     * @return withStream of chat response
      */
-    public Flux<AdvancedMessage> call(Prompt prompt, Set<Order> orders, Set<FunctionTool> tools, Options options) {
+    public Flux<AdvancedMessage> call(Prompt prompt,
+                                      Set<Order> orders,
+                                      Set<FunctionTool> tools,
+                                      Options options) {
         return Flux.defer(() -> {
             Set<Order> messages = new HashSet<>();
 
@@ -195,12 +199,12 @@ public class ChatService {
             }
 
             if (CollectionUtils.isEmpty(builtinInstruction)) {
-                return chat.call(prompt, messages, tools, options);
+                return chat.withCall(prompt, messages, tools, options);
             }
 
             return Flux.fromIterable(builtinInstruction)
                     .flatMap(builtin -> builtin.call(prompt, tools))
-                    .concatWith(chat.call(prompt, messages, tools, options));
+                    .concatWith(chat.withCall(prompt, messages, tools, options));
         });
     }
 
@@ -214,7 +218,7 @@ public class ChatService {
         return instructions.get(name);
     }
 
-
+    @Slf4j
     static class ChatWithLLM {
 
         private final AgentModel agentModel;
@@ -232,10 +236,10 @@ public class ChatService {
             this.sessionId = sessionId;
         }
 
-        public Mono<StreamMessage> stream(Prompt prompt,
-                                          Collection<Order> messages,
-                                          Set<FunctionTool> tools,
-                                          Options options) {
+        public Mono<StreamMessage> withStream(Prompt prompt,
+                                              Collection<Order> messages,
+                                              Set<FunctionTool> tools,
+                                              Options options) {
             return Mono.defer(() -> {
                 StreamMessage streamMessage = new StreamMessage();
                 ChatClient.ChatClientRequestSpec request = buildRequest(prompt, messages, tools, options);
@@ -247,21 +251,25 @@ public class ChatService {
                                         .map(generation -> AdvancedMessage.fromGeneration(generation, conversationId, sessionId))
                         )
                         .doOnNext(streamMessage::feed)
-                        .then(Mono.just(streamMessage));
+                        .then(Mono.just(streamMessage))
+                        .onErrorMap(ChatException::new);
             });
         }
 
-        public Flux<AdvancedMessage> call(Prompt prompt,
-                                          Collection<Order> messages,
-                                          Set<FunctionTool> tools,
-                                          Options options) {
+        public Flux<AdvancedMessage> withCall(Prompt prompt,
+                                              Collection<Order> messages,
+                                              Set<FunctionTool> tools,
+                                              Options options) {
             return Flux.defer(() -> {
                 ChatClient.ChatClientRequestSpec request = buildRequest(prompt, messages, tools, options);
                 ChatResponse response = request.call().chatResponse();
                 if (response == null) {
                     return Flux.empty();
                 }
-                return Flux.fromIterable(response.getResults()).map(generation -> AdvancedMessage.fromGeneration(generation, conversationId, sessionId));
+                List<Generation> results = response.getResults();
+                return Flux.fromIterable(results)
+                        .map(generation -> AdvancedMessage.fromGeneration(generation, conversationId, sessionId))
+                        .onErrorMap(ChatException::new);
             });
         }
 
@@ -269,15 +277,9 @@ public class ChatService {
                                                       Collection<Order> messages,
                                                       Set<FunctionTool> tools,
                                                       Options options) {
-
-            List<Advisor> advisors = buildAdvisors(chatMemory, options);
-
             ChatModel chatModel = agentModel.getChatModel(tools);
             ChatClient client = ChatClient.create(chatModel);
-
             List<Message> callMessages = new ArrayList<>();
-
-
             for (Order message : messages) {
                 if (message.getRole() == Role.USER) {
                     callMessages.add(new UserMessage(message.getMessage()));
@@ -287,6 +289,8 @@ public class ChatService {
                 }
             }
 
+            // build advisor
+            List<Advisor> advisors = buildAdvisors(chatMemory, options);
 
             if (prompt == null) {
                 return client.prompt(new Prompt(callMessages))

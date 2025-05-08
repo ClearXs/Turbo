@@ -17,11 +17,11 @@ import java.util.function.Consumer;
 /**
  * when use {@link ExecutionMode#STREAM} mode. this conversation message save to current.
  * <p>
- * design use for {@link FluxSink} and listener mechanism. it is resolve multi-user can't synchronous observeOnConsummation stream message.
+ * design use for {@link FluxSink} and listener mechanism. it is resolve multi-user can't synchronous observeOnConsummation withStream message.
  * <p>
- * such as when user observeOnConsummation message stream, and other user feed message to stream. the observer can't receive message.
+ * such as when user observeOnConsummation message withStream, and other user feed message to withStream. the observer can't receive message.
  * <p>
- * so through listener mechanism and adopt sink source resolve multi-user observeOnConsummation stream message.
+ * so through listener mechanism and adopt sink source resolve multi-user observeOnConsummation withStream message.
  *
  * @author j.x
  * @since 0.2.0
@@ -54,7 +54,7 @@ public class StreamMessage {
     }
 
     /**
-     * feed to stream
+     * feed to withStream
      *
      * @param message th
      */
@@ -85,14 +85,14 @@ public class StreamMessage {
     }
 
     /**
-     * observeOnConsummation {@link AdvancedMessage} stream.
+     * observeOnConsummation {@link AdvancedMessage} withStream.
      */
     public Flux<AdvancedMessage> observe() {
         return Flux.create(this::addListener, FluxSink.OverflowStrategy.BUFFER);
     }
 
     /**
-     * complete stream
+     * complete withStream
      */
     public void complete() {
         if (source != null) {

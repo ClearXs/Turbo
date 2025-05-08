@@ -3,11 +3,14 @@ package cc.allio.turbo.modules.ai.agent.runtime;
 import cc.allio.turbo.common.db.entity.MapEntity;
 import cc.allio.turbo.modules.ai.driver.model.Input;
 import cc.allio.turbo.modules.ai.agent.Agent;
+import cc.allio.turbo.modules.ai.entity.AIMessage;
 import cc.allio.turbo.modules.ai.model.AgentModel;
 import cc.allio.uno.core.api.Copyable;
 import cc.allio.uno.core.api.Self;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
 
 /**
  * Agent runtime environment
@@ -27,6 +30,9 @@ public class Environment extends MapEntity implements Self<Environment>, Copyabl
     private Input input;
     private AgentModel agentModel;
     private Agent agent;
+
+    private List<AIMessage> userMessage;
+    private AIMessage assistantMessage;
 
     public Environment() {
         // set all os environment

@@ -63,7 +63,7 @@ public interface DomainServiceRegistry {
      *
      * @param boKey boKey
      * @return {@link LazyDomainService} domain service
-     * @throws BizException when domain object service is null or call #getBoId
+     * @throws BizException when domain object service is null or withCall #getBoId
      */
     <T extends DomainObject> IDomainService<T> registerDeclarative(String boKey, Class<T> domainObjectClass) throws BizException;
 
@@ -77,7 +77,7 @@ public interface DomainServiceRegistry {
      * @param domainServiceClass domainServiceClass
      * @param <T>                领域对象类型
      * @return IDomainService
-     * @throws BizException when domain object service is null or call #getBoId
+     * @throws BizException when domain object service is null or withCall #getBoId
      */
     <T extends DomainObject, S extends IDomainService<T>> S registerDeclarative(Class<T> domainObjectClass, Class<S> domainServiceClass) throws BizException;
 

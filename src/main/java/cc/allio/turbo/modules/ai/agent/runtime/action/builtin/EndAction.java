@@ -19,7 +19,6 @@ public class EndAction implements Action {
     public Flux<Output> executeMany(Chain<Environment, Output> chain, ChainContext<Environment> context) throws Throwable {
         if (context instanceof ActionContext actionContext) {
             Optional<Output> output = actionContext.takeOutput();
-
             return Flux.from(Mono.justOrEmpty(output));
         }
         return Flux.empty();

@@ -1,5 +1,7 @@
 package cc.allio.turbo.modules.ai.chat.memory;
 
+import org.springframework.ai.chat.client.ChatClientRequest;
+import org.springframework.ai.chat.client.ChatClientResponse;
 import org.springframework.ai.chat.client.advisor.api.*;
 import reactor.core.publisher.Flux;
 
@@ -9,7 +11,7 @@ import reactor.core.publisher.Flux;
  * @author j.x
  * @since 0.2.0
  */
-public class MetricSupervisor implements CallAroundAdvisor, StreamAroundAdvisor {
+public class MetricSupervisor implements CallAdvisor, StreamAdvisor {
 
     @Override
     public String getName() {
@@ -22,12 +24,12 @@ public class MetricSupervisor implements CallAroundAdvisor, StreamAroundAdvisor 
     }
 
     @Override
-    public AdvisedResponse aroundCall(AdvisedRequest advisedRequest, CallAroundAdvisorChain chain) {
-        return chain.nextAroundCall(advisedRequest);
+    public ChatClientResponse adviseCall(ChatClientRequest chatClientRequest, CallAdvisorChain chain) {
+        return chain.nextCall(chatClientRequest);
     }
 
     @Override
-    public Flux<AdvisedResponse> aroundStream(AdvisedRequest advisedRequest, StreamAroundAdvisorChain chain) {
-        return chain.nextAroundStream(advisedRequest);
+    public Flux<ChatClientResponse> adviseStream(ChatClientRequest chatClientRequest, StreamAdvisorChain chain) {
+        return chain.nextStream(chatClientRequest);
     }
 }

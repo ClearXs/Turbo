@@ -5,7 +5,9 @@ import cc.allio.turbo.modules.ai.driver.Driver;
 import cc.allio.turbo.modules.ai.driver.DriverConfiguration;
 import cc.allio.turbo.modules.ai.driver.model.Input;
 import cc.allio.turbo.modules.ai.driver.model.Output;
+import cc.allio.turbo.modules.ai.store.ChatSessionStore;
 import cc.allio.turbo.modules.auth.jwt.JwtCodecConfiguration;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -30,8 +32,9 @@ public class WsConfiguration {
     public ChatHandler chatHandler(
             Supervisor supervisor,
             @Qualifier("Driver_Input") Driver<Input> inputDriver,
-            @Qualifier("Driver_Output") Driver<Output> outputDriver) {
-        return new ChatHandler(supervisor, inputDriver, outputDriver);
+            @Qualifier("Driver_Output") Driver<Output> outputDriver,
+            ObjectProvider<ChatSessionStore> chatSessionStorageObjectProvider) {
+        return new ChatHandler(supervisor, inputDriver, outputDriver, chatSessionStorageObjectProvider);
     }
 
     @Bean

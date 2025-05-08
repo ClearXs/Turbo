@@ -34,7 +34,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfiguration {
 
     @Bean
-    @Order(2)
+    @Order(3)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http,
                                                           SecureProperties secureProperties,
                                                           AuthenticationExceptionHandler authenticationExceptionHandler,

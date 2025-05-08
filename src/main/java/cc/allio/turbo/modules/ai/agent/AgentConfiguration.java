@@ -10,6 +10,8 @@ import cc.allio.turbo.modules.ai.agent.runtime.action.ActionConfiguration;
 import cc.allio.turbo.modules.ai.agent.runtime.action.ActionRegistry;
 import cc.allio.turbo.modules.ai.chat.tool.ToolConfiguration;
 import cc.allio.turbo.modules.ai.chat.tool.ToolRegistry;
+import cc.allio.turbo.modules.ai.store.ChatMessageStore;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -37,9 +39,8 @@ public class AgentConfiguration {
     public Supervisor supervisor(@Qualifier("Driver_Input") Driver<Input> inputDriver,
                                  @Qualifier("Driver_Output") Driver<Output> outputDriver,
                                  AgentRegistry agentRegistry,
-                                 ActionRegistry actionRegistry,
-                                 ToolRegistry toolRegistry,
-                                 AIResources resources) {
-        return new Supervisor(inputDriver, outputDriver, agentRegistry, actionRegistry, toolRegistry, resources);
+                                 AIResources resources,
+                                 ObjectProvider<ChatMessageStore> chatMessageStorageObjectProvider) {
+        return new Supervisor(inputDriver, outputDriver, agentRegistry, resources, chatMessageStorageObjectProvider);
     }
 }

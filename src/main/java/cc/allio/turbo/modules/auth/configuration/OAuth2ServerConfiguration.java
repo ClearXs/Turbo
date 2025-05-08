@@ -3,6 +3,12 @@ package cc.allio.turbo.modules.auth.configuration;
 import cc.allio.turbo.modules.auth.exception.AccessDeniedExceptionHandler;
 import cc.allio.turbo.modules.auth.exception.AuthenticationExceptionHandler;
 import cc.allio.turbo.modules.auth.exception.Oauth2AuthenticationExceptionHandler;
+import cc.allio.turbo.modules.auth.jwt.JwtAuthentication;
+import cc.allio.turbo.modules.auth.properties.SecureProperties;
+import cc.allio.turbo.modules.auth.provider.TurboJwtAuthenticationProvider;
+import cc.allio.turbo.modules.auth.provider.TurboPasswordEncoder;
+import cc.allio.turbo.modules.auth.provider.TurboUserDetailsService;
+import cc.allio.turbo.modules.system.service.ISysUserService;
 import cc.allio.uno.core.util.IoUtils;
 import cc.allio.uno.core.util.JsonUtils;
 import cc.allio.turbo.common.web.R;
@@ -15,6 +21,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
@@ -24,6 +32,7 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2AccessTokenGenerator;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -34,14 +43,13 @@ import java.util.UUID;
 public class OAuth2ServerConfiguration {
 
     @Bean
-    @Order(1)
-    public SecurityFilterChain authFilterChain(HttpSecurity http) throws Exception {
+    @Order(2)
+    public SecurityFilterChain oauth2ServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
-                new OAuth2AuthorizationServerConfigurer();
+                OAuth2AuthorizationServerConfigurer.authorizationServer();
+
         http.with(authorizationServerConfigurer, c ->
                 c.oidc(Customizer.withDefaults())
-                        // /oauth2/token 验证
-                        .tokenEndpoint(token -> token.errorResponseHandler(new Oauth2AuthenticationExceptionHandler()))
                         // /oauth2/authorize 获取授权码
                         .authorizationEndpoint(authorization ->
                                 authorization.errorResponseHandler(new Oauth2AuthenticationExceptionHandler())

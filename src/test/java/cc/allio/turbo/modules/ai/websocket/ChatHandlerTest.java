@@ -13,6 +13,7 @@ import cc.allio.uno.test.BaseTestCase;
 import com.google.common.collect.Maps;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.io.buffer.DefaultDataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
@@ -41,7 +42,8 @@ public class ChatHandlerTest extends BaseTestCase {
         Driver<Input> inputDriver = Driver.from(Input.class);
         Driver<Output> outputDriver = Driver.from(Output.class);
         Supervisor supervisor = Mockito.mock(Supervisor.class);
-        chatHandler = new ChatHandler(supervisor, inputDriver, outputDriver);
+        chatHandler = new ChatHandler(supervisor, inputDriver, outputDriver, new ObjectProvider<>() {
+        });
     }
 
     @Test

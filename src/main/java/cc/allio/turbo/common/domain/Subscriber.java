@@ -323,13 +323,13 @@ public interface Subscriber<D> extends InitializingBean, DisposableBean, Domain<
     }
 
     /**
-     * when bean initialization call method
+     * when bean initialization withCall method
      */
     default void doOnSubscribe() throws Throwable {
     }
 
     /**
-     * when bean destroyed call method
+     * when bean destroyed withCall method
      */
     default void doOnDestroy() throws Throwable {
     }
