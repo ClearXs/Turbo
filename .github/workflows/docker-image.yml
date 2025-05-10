@@ -1,0 +1,48 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "version"
+        required: true
+        default: "master"
+
+jobs:
+
+  build-deployment:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. check
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. 设置 Java 环境
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+
+      # 3. 构建项目
+      - name: Build with Maven
+        run: mvn -B clean package -DskipTests
+
+      # 4. 构建 Docker 镜像
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.REGISTRY_URL }}/${{ secrets.IMAGE_NAME }}:${{ github.event.inputs.version }} .
+
+      # 5. 登录镜像仓库
+      - name: Log in to Docker registry
+        run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login ${{ secrets.REGISTRY_URL }} -u ${{ secrets.REGISTRY_USERNAME }} --password ${{ secrets.REGISTRY_PASSWORD }}
+
+      # 6. 推送镜像
+      - name: Push Docker image
+        run: docker push ${{ secrets.REGISTRY_URL }}/${{ secrets.IMAGE_NAME }}:${{ github.event.inputs.version }}
