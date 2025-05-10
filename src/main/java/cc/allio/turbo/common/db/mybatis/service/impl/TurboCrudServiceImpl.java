@@ -1,20 +1,20 @@
 package cc.allio.turbo.common.db.mybatis.service.impl;
 
-import cc.allio.turbo.common.db.entity.IdEntity;
-import cc.allio.turbo.common.db.event.DomainEventBus;
-import cc.allio.turbo.common.db.event.Subscriber;
+import cc.allio.turbo.common.db.entity.Entity;
 import cc.allio.turbo.common.db.mybatis.service.ITurboCrudService;
+import cc.allio.turbo.common.domain.DomainEventContext;
+import cc.allio.uno.core.bus.EventBus;
 import cc.allio.uno.core.reflect.ReflectTools;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import java.io.Serializable;
 
-public abstract class TurboCrudServiceImpl<M extends BaseMapper<T>, T extends IdEntity>
+public abstract class TurboCrudServiceImpl<M extends BaseMapper<T>, T extends Entity>
         extends ServiceImpl<M, T>
         implements ITurboCrudService<T> {
 
-    private DomainEventBus eventBus;
+    private EventBus<DomainEventContext> eventBus;
 
     @Override
     public <V extends T> V details(Serializable id) {
@@ -32,12 +32,12 @@ public abstract class TurboCrudServiceImpl<M extends BaseMapper<T>, T extends Id
     }
 
     @Override
-    public void setDomainEventBus(DomainEventBus eventBus) {
+    public void setDomainEventBus(EventBus<DomainEventContext> eventBus) {
         this.eventBus = eventBus;
     }
 
     @Override
-    public DomainEventBus getDomainEventBus() {
+    public EventBus<DomainEventContext> getDomainEventBus() {
         return eventBus;
     }
 }

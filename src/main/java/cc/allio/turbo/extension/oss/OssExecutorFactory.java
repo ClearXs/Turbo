@@ -1,7 +1,6 @@
 package cc.allio.turbo.extension.oss;
 
 import com.google.common.collect.Maps;
-import reactor.util.function.Tuple2;
 
 import java.util.Map;
 import java.util.Optional;
@@ -9,7 +8,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * oss execute 静态工厂

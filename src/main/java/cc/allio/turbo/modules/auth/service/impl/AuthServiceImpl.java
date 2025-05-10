@@ -11,6 +11,7 @@ import cc.allio.turbo.modules.system.entity.*;
 import cc.allio.turbo.modules.system.service.*;
 import cc.allio.turbo.modules.system.domain.SysMenuTree;
 import cc.allio.turbo.modules.system.domain.SysUserVO;
+import cc.allio.uno.core.exception.Trys;
 import cc.allio.uno.core.util.BeanUtils;
 import cc.allio.uno.core.util.CollectionUtils;
 import cc.allio.uno.core.util.id.IdGenerator;
@@ -80,21 +81,24 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public TurboJwtAuthenticationToken changePassword(TurboUser user, ChangePasswordDTO changePassword) throws BizException {
-        Long currentUserId = user.getUserId();
+        String currentUserId = user.getUserId();
         SecureUtil.SecureCipher secureCipher = SecureUtil.getSystemSecureCipher();
         // 1.查询旧密码是否与当前数据库存储一致
         String rawEncryptPassword = secureCipher.encrypt(changePassword.getRawPassword(), SecureUtil.getSystemSecretKey(), null);
-        SysUser currentUser = userService.getOne(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getId, currentUserId).eq(SysUser::getPassword, rawEncryptPassword));
+        SysUser currentUser = userService.getOne(
+                Wrappers.<SysUser>lambdaQuery()
+                        .eq(SysUser::getId, Trys.onContinue(() -> Long.valueOf(currentUserId)))
+                        .eq(SysUser::getPassword, rawEncryptPassword));
         if (currentUser == null) {
             throw new BizException(ExceptionCodes.USER_RAW_PASSWORD_MISTAKE);
         }
         // 更新密码
-        Boolean update = userService.changePassword(currentUserId, changePassword.getNewPassword());
+        Boolean update = userService.changePassword(Trys.onContinue(() -> Long.valueOf(currentUserId)), changePassword.getNewPassword());
         if (Boolean.FALSE.equals(update)) {
             throw new BizException(ExceptionCodes.OPERATE_ERROR);
         }
         // 生成新的jwt
-        SysUserVO detailsUser = userService.details(currentUserId);
+        SysUserVO detailsUser = userService.details(Trys.onContinue(() -> Long.valueOf(currentUserId)));
         List<SysRole> roles = detailsUser.getRoles();
         Set<TurboGrantedAuthority> authorities =
                 roles.stream()
@@ -110,7 +114,8 @@ public class AuthServiceImpl implements IAuthService {
         if (sysUser == null) {
             throw new BizException(ExceptionCodes.OPERATE_ERROR);
         }
-        sysUser.setId(user.getUserId());
+        String userId = user.getUserId();
+        sysUser.setId(Trys.onContinue(() -> Long.valueOf(userId)));
         userService.updateById(sysUser);
         // 生成新的jwt
         SysUserVO newUserInfo = userService.findByUsername(user.getUsername());
@@ -130,8 +135,8 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public List<SysMenuTree> getUserMenus(TurboUser user) {
-        long userId = user.getUserId();
-        List<SysRole> roles = roleService.findRolesByUserId(userId);
+        String userId = user.getUserId();
+        List<SysRole> roles = roleService.findRolesByUserId(Trys.onContinue(() -> Long.valueOf(userId)));
         if (CollectionUtils.isEmpty(roles)) {
             return Collections.emptyList();
         }
@@ -154,13 +159,13 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public List<SysRole> getUserRole(TurboUser user) {
-        Long currentUserId = user.getUserId();
-        return roleService.findRolesByUserId(currentUserId);
+        String currentUserId = user.getUserId();
+        return roleService.findRolesByUserId(Trys.onContinue(() -> Long.valueOf(currentUserId)));
     }
 
     @Override
     public List<SysPost> getUserPost(TurboUser user) {
-        Long currentUserId = user.getUserId();
-        return postService.findPostByUserId(currentUserId);
+        String currentUserId = user.getUserId();
+        return postService.findPostByUserId(Trys.onContinue(() -> Long.valueOf(currentUserId)));
     }
 }

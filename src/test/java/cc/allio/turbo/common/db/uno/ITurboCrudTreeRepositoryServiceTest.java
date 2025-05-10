@@ -3,8 +3,6 @@ package cc.allio.turbo.common.db.uno;
 import cc.allio.turbo.common.db.entity.Org;
 import cc.allio.turbo.common.db.uno.repository.mybatis.WrapperAdapter;
 import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
-import cc.allio.uno.data.orm.executor.db.DbCommandExecutor;
-import cc.allio.uno.data.test.executor.CommandExecutorSetter;
 import cc.allio.uno.test.BaseTestCase;
 import cc.allio.uno.test.RunTest;
 import cc.allio.uno.test.env.annotation.MybatisPlusEnv;
@@ -20,7 +18,7 @@ import java.util.List;
 @RunTest
 @MybatisPlusEnv
 @RunContainer(ContainerType.MySQL)
-public class ITurboCrudTreeRepositoryServiceTest extends BaseTestCase implements CommandExecutorSetter<DbCommandExecutor> {
+public class ITurboCrudTreeRepositoryServiceTest extends BaseTestCase {
 
     private AggregateCommandExecutor commandExecutor;
     private OrgService orgService;
@@ -44,10 +42,5 @@ public class ITurboCrudTreeRepositoryServiceTest extends BaseTestCase implements
     void testTreeQuery() {
         List<Org> tree = orgService.tree(Wrappers.lambdaQuery(Org.class));
         assertNotNull(tree);
-    }
-
-    @Override
-    public void setCommandExecutor(DbCommandExecutor executor) {
-        this.commandExecutor = executor;
     }
 }

@@ -42,4 +42,10 @@ public class OssTrait {
      */
     private String secretKey;
 
+    /**
+     * base dir
+     */
+    private String baseDir;
+
+    private Path.AppendStrategy strategy = Path.AppendStrategy.None;
 }

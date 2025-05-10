@@ -1,13 +1,12 @@
 package cc.allio.turbo.modules.system.service.impl;
 
-import cc.allio.turbo.extension.oss.*;
-import cc.allio.turbo.modules.system.service.ISysStorageConfigService;
-import cc.allio.turbo.common.db.mybatis.service.impl.TurboCrudServiceImpl;
 import cc.allio.turbo.common.constant.Enable;
+import cc.allio.turbo.common.db.mybatis.service.impl.TurboCrudServiceImpl;
+import cc.allio.turbo.extension.oss.*;
 import cc.allio.turbo.modules.system.entity.SysStorageConfig;
 import cc.allio.turbo.modules.system.mapper.SysStorageConfigMapper;
+import cc.allio.turbo.modules.system.service.ISysStorageConfigService;
 import cc.allio.turbo.modules.system.wrapper.StorageConfigWrapper;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.BeansException;
@@ -98,6 +97,8 @@ public class SysStorageConfigServiceImpl extends TurboCrudServiceImpl<SysStorage
             trait.setAccessKey(accessKey);
             trait.setSecretKey(secretKey);
             trait.setEndpoint(endpoint);
+            trait.setBaseDir(ossProperties.getBaseDir());
+            trait.setStrategy(ossProperties.getStrategy());
             return trait;
         } else {
             SysStorageConfig storageConfig =

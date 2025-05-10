@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.allio.turbo.modules.ai.api.mapper.AIChatMapper">
+
+    <select id="selectMineConversationPage" resultType="cc.allio.turbo.modules.ai.api.vo.ConversationVO">
+        SELECT chat.*, message.content as latest_user_message
+        FROM ai_chat chat
+                 LEFT JOIN (WITH RankedMessages AS (SELECT *,
+                                                           ROW_NUMBER() OVER (PARTITION BY chat_id ORDER BY created_time DESC) AS rn
+                                                    FROM ai_message
+                                                    WHERE role = 'user'
+                                                    ORDER BY created_time DESC)
+                            SELECT *
+                            FROM RankedMessages
+                            WHERE rn = 1) message ON chat.id = message.chat_id
+        WHERE chat.user_id = #{userId}
+    </select>
+
+</mapper>

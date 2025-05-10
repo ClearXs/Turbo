@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * base on <a href="https://openobserve.ai/docs/">open observe</a>.
+ * base on <a href="https://openobserve.ai/docs/">open observeOnConsummation</a>.
  * <p>the properties describe how to connect it.</p>
  *
  * @author j.x
@@ -41,7 +41,7 @@ public class OpenObserverProperties {
     private String organization = "default";
 
     /**
-     * use the stream, default is 'default'
+     * use the withStream, default is 'default'
      */
     private String stream = "default";
 

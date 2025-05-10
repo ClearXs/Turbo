@@ -2,7 +2,6 @@ package cc.allio.turbo.common.db.entity;
 
 import cc.allio.turbo.common.db.constraint.Sortable;
 import cc.allio.uno.data.orm.dsl.helper.ColumnDefListResolve;
-import cc.allio.uno.data.orm.dsl.helper.ColumnDefResolve;
 import cc.allio.uno.data.orm.dsl.helper.TableResolve;
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;

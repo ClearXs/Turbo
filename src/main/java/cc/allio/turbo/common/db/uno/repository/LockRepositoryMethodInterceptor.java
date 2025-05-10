@@ -1,9 +1,9 @@
 package cc.allio.turbo.common.db.uno.repository;
 
 import cc.allio.turbo.common.db.entity.Entity;
-import cc.allio.uno.core.api.OptionalContext;
-import cc.allio.uno.core.concurrent.LockContext;
 import cc.allio.uno.core.exception.Exceptions;
+import cc.allio.uno.core.util.concurrent.LockContext;
+import cc.allio.uno.core.util.map.OptionalMap;
 import com.google.common.collect.Lists;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -65,10 +65,10 @@ public class LockRepositoryMethodInterceptor implements MethodInterceptor {
      *
      * @param invocation  invocation
      * @param lockContext lockContext
-     * @return invoke result
+     * @return withCall result
      * @throws RuntimeException 当出现异常时抛出
      */
-    protected Object doInvoke(MethodInvocation invocation, OptionalContext lockContext) {
+    protected Object doInvoke(MethodInvocation invocation, OptionalMap<String> lockContext) {
         try {
             return invocation.proceed();
         } catch (Throwable e) {

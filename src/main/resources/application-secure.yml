@@ -1,6 +1,7 @@
 # 安全配置
 turbo:
   secure:
+    cipher: turbo
     # 系统加密密钥
     secret-key: efogaWfblI3TK5u1
     # 系统加密算法
@@ -24,6 +25,7 @@ turbo:
       - /auth/register # 注册
       - /sys/attachment/download/** # 文件下载
       - /sys/attachment/downloadByPath
+      - /sys/resource/permanent-token # 永久token
     jwt:
       issuer: https://allio.cc
       subject: token

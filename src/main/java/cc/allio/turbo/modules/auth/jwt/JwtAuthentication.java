@@ -45,6 +45,16 @@ public class JwtAuthentication {
         SecureProperties.JWT jwtProperties = secureProperties.getJwt();
         Long expireTime = jwtProperties.getExpireAt().getTime().get();
         Instant expiresAt = new Date(expireTime).toInstant();
+        return encode(user, expiresAt);
+    }
+
+    /**
+     * 提供{@link UserDetails}实例生成jwt token
+     *
+     * @param user 实例
+     */
+    public TurboJwtAuthenticationToken encode(TurboUser user, Instant expiresAt) {
+        SecureProperties.JWT jwtProperties = secureProperties.getJwt();
         JwtClaimsSet jwtClaimsSet =
                 JwtClaimsSet.builder()
                         .issuer(jwtProperties.getIssuer())

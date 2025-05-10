@@ -1,11 +1,11 @@
 package cc.allio.turbo.common.db.uno.repository.impl;
 
 import cc.allio.turbo.common.db.entity.Entity;
-import cc.allio.turbo.common.db.event.DomainEventBus;
-import cc.allio.turbo.common.db.event.Subscriber;
 import cc.allio.turbo.common.db.uno.repository.DSExtractor;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepository;
 import cc.allio.turbo.common.db.uno.repository.ITurboCrudRepositoryService;
+import cc.allio.turbo.common.domain.DomainEventContext;
+import cc.allio.uno.core.bus.EventBus;
 import cc.allio.uno.core.reflect.ReflectTools;
 import cc.allio.uno.data.orm.executor.AggregateCommandExecutor;
 
@@ -65,12 +65,12 @@ public abstract class TurboCrudRepositoryServiceImpl<T extends Entity> implement
     }
 
     @Override
-    public void setDomainEventBus(DomainEventBus eventBus) {
+    public void setDomainEventBus(EventBus<DomainEventContext> eventBus) {
         repository.setDomainEventBus(eventBus);
     }
 
     @Override
-    public DomainEventBus getDomainEventBus() {
+    public EventBus<DomainEventContext> getDomainEventBus() {
         return repository.getDomainEventBus();
     }
 }

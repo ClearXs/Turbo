@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>cc.allio</groupId>
+    <groupId>cc.allio.turbo</groupId>
     <artifactId>Turbo</artifactId>
-    <version>0.1.1</version>
+    <version>0.2.0</version>
     <name>Turbo</name>
     <description>Turbo快速开发平台</description>
     <url>https://github.com/ClearXs/Turbo.git</url>
@@ -32,9 +32,10 @@
 
     <properties>
         <java.version>21</java.version>
-        <uno.version>1.2.0</uno.version>
+        <uno.version>1.2.1</uno.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <maven-plugin.version>3.11.0</maven-plugin.version>
+        <spring-ai.version>1.0.0-SNAPSHOT</spring-ai.version>
 
         <knife4j.version>4.5.0</knife4j.version>
         <bcpkix-jdk15on.version>1.70</bcpkix-jdk15on.version>
@@ -46,6 +47,8 @@
         <easyeexcel.version>4.0.2</easyeexcel.version>
         <justauth.version>1.16.6</justauth.version>
         <jodd.version>5.3.0</jodd.version>
+
+        <mapstruct.version>1.6.2</mapstruct.version>
     </properties>
 
     <dependencyManagement>
@@ -64,10 +67,21 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
@@ -91,6 +105,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
@@ -168,6 +192,11 @@
         </dependency>
         <dependency>
             <groupId>cc.allio.uno</groupId>
+            <artifactId>uno-auto</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cc.allio.uno</groupId>
             <artifactId>uno-http</artifactId>
         </dependency>
         <dependency>
@@ -224,6 +253,32 @@
             <artifactId>jodd-core</artifactId>
             <version>${jodd.version}</version>
         </dependency>
+        <!-- AI  -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-openai</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-vertex-ai-gemini</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-anthropic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-zhipuai</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-ollama</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
         <!-- test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -241,6 +296,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
@@ -248,11 +308,6 @@
         <dependency>
             <groupId>cc.allio.uno</groupId>
             <artifactId>uno-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>cc.allio.uno</groupId>
-            <artifactId>uno-data-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -276,6 +331,33 @@
                         <compilerArgs>
                             <arg>-parameters</arg>
                         </compilerArgs>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct</artifactId>
+                                <version>${mapstruct.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${mapstruct.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok-mapstruct-binding</artifactId>
+                                <version>0.2.0</version>
+                            </path>
+                            <path>
+                                <groupId>cc.allio.uno</groupId>
+                                <artifactId>uno-auto</artifactId>
+                                <version>${uno.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
                 <!-- 打jar包 -->
@@ -377,8 +459,19 @@
             <name>Spring Snapshots</name>
             <url>https://repo.spring.io/snapshot</url>
             <releases>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </releases>
+        </repository>
+        <repository>
+            <name>Central Portal Snapshots</name>
+            <id>central-portal-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>snapshots</id>

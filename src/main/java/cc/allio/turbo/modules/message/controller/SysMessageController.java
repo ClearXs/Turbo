@@ -5,10 +5,11 @@ import cc.allio.turbo.common.util.AuthUtil;
 import cc.allio.turbo.common.web.R;
 import cc.allio.turbo.common.web.TurboCrudController;
 import cc.allio.turbo.common.web.params.QueryParam;
-import cc.allio.turbo.modules.message.constant.Status;
+import cc.allio.turbo.modules.message.enums.Status;
 import cc.allio.turbo.modules.message.dto.ReceiveVariables;
 import cc.allio.turbo.modules.message.entity.SysMessage;
 import cc.allio.turbo.modules.message.service.ISysMessageService;
+import cc.allio.uno.core.exception.Trys;
 import cc.allio.uno.core.metadata.endpoint.source.SinkSource;
 import cc.allio.uno.core.util.JsonUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -34,9 +35,9 @@ public class SysMessageController extends TurboCrudController<SysMessage, SysMes
     @Operation(summary = "当前用户消息")
     @PostMapping("/current-user/all")
     public R<IPage<SysMessage>> currentUser(@RequestBody QueryParam<SysMessage> params) {
-        Long currentUserId = AuthUtil.getUserId();
+        String currentUserId = AuthUtil.getUserId();
         SysMessage sysMessage = new SysMessage();
-        params.addTerm(sysMessage::getReceiver, currentUserId);
+        params.addTerm(sysMessage::getReceiver, Trys.onContinue(() -> Long.valueOf(currentUserId)));
         QueryWrapper<SysMessage> queryWrapper = Conditions.entityQuery(params, getEntityType());
         Page<SysMessage> entityPage = service.page(params.getPage(), queryWrapper);
         return R.ok(entityPage);
@@ -45,9 +46,9 @@ public class SysMessageController extends TurboCrudController<SysMessage, SysMes
     @Operation(summary = "当前用户消息数量消息")
     @PostMapping("/current-user/count")
     public R<Long> currentUserCount(@RequestBody QueryParam<SysMessage> params) {
-        Long currentUserId = AuthUtil.getUserId();
+        String currentUserId = AuthUtil.getUserId();
         SysMessage sysMessage = new SysMessage();
-        params.addTerm(sysMessage::getReceiver, currentUserId);
+        params.addTerm(sysMessage::getReceiver, Trys.onContinue(() -> Long.valueOf(currentUserId)));
         QueryWrapper<SysMessage> queryWrapper = Conditions.entityQuery(params, getEntityType());
         long count = service.count(queryWrapper);
         return R.ok(count);

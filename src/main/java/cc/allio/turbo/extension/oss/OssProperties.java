@@ -53,4 +53,16 @@ public class OssProperties {
      * path naming
      */
     private Path.AppendStrategy strategy = Path.AppendStrategy.None;
+
+    public OssTrait copyTo() {
+        OssTrait ossTrait = new OssTrait();
+        ossTrait.setProvider(provider);
+        ossTrait.setEndpoint(endpoint);
+        ossTrait.setAccessKey(accessKey);
+        ossTrait.setSecretKey(secretKey);
+        ossTrait.setBucket(bucket);
+        ossTrait.setBaseDir(baseDir);
+        ossTrait.setStrategy(strategy);
+        return ossTrait;
+    }
 }

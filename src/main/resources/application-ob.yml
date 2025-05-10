@@ -9,7 +9,7 @@ turbo:
         # 组织
         # 日志头
         headers:
-          Authorization: "Basic amlhbmd3MTAyN0BnbWFpbC5jb206RmExZFNhU1VaNXByZ3VVbQ=="
+          Authorization: "Basic xxxxx=="
           stream-name: "default"
         # 日志发送超时时间
         timeout: 100000

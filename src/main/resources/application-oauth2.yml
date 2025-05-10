@@ -3,12 +3,9 @@ turbo:
     client:
       registration:
         github:
-          client-id: bd1d756a53ca039c1675
-          client-secret: f9e53705d74c3a135de407e3ef41aaf1a93cd7b0
-        gitee:
-          client-id: 5e0bbcf4b8312b74799ef3f2b96856bf85a2215290b4509982fa4506a1d91fc4
-          client-secret: 287b58a0b4aece1cbaea115a52b86263965ffb8ada9e88db796896a102b17208
-      domain: https://localhost:5673/
+          client-id: xxxxxxxx
+          client-secret: xxxxxxxx
+      domain: http://localhost:5673/
 spring:
   security:
     oauth2:

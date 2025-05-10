@@ -19,6 +19,10 @@ public class BigNumberSerializer extends NumberSerializer {
     @Override
     public void serialize(Number value, JsonGenerator g, SerializerProvider provider) throws IOException {
         long longValue = value.longValue();
-        g.writeString(String.valueOf(longValue));
+        if (longValue >= (long) Integer.MAX_VALUE) {
+            g.writeString(String.valueOf(longValue));
+        } else {
+            g.writeNumber(longValue);
+        }
     }
 }

@@ -4,7 +4,7 @@ import cc.allio.turbo.common.db.entity.TenantEntity;
 import cc.allio.turbo.modules.message.config.RetryFailed;
 import cc.allio.turbo.modules.message.config.SendTarget;
 import cc.allio.turbo.modules.message.config.SendModel;
-import cc.allio.turbo.modules.message.constant.NotificationType;
+import cc.allio.turbo.modules.message.enums.NotificationType;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.NullSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;

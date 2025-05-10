@@ -28,7 +28,9 @@ public class TurboJwtDecoder implements JwtDecoder {
 
     private final JwtDecoder actual;
 
-    public TurboJwtDecoder() {
+    private static TurboJwtDecoder instance;
+
+    private TurboJwtDecoder() {
         this.actual = new NimbusJwtDecoder(new InternalJWTProcessor());
     }
 
@@ -37,6 +39,19 @@ public class TurboJwtDecoder implements JwtDecoder {
         return actual.decode(token);
     }
 
+    /**
+     * static method synchronize get {@link JwtDecoder} instance
+     *
+     * @return the {@link JwtDecoder} instance
+     */
+    public static JwtDecoder getInstance() {
+        if (instance == null) {
+            synchronized (TurboJwtDecoder.class) {
+                instance = new TurboJwtDecoder();
+            }
+        }
+        return instance;
+    }
 
     static class InternalJWTProcessor extends DefaultJWTProcessor<SecurityContext> {
         JWSVerifier jwsVerifier = new RSASSAVerifier(SecureUtil.getSystemRasPublicKey());

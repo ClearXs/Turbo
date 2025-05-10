@@ -1,8 +1,9 @@
 package cc.allio.turbo.common.db.mybatis.service;
 
 import cc.allio.turbo.common.db.entity.Entity;
-import cc.allio.turbo.common.db.event.MultiObservable;
-import cc.allio.turbo.common.db.event.Subscriber;
+import cc.allio.turbo.common.domain.MultiObservable;
+import cc.allio.turbo.common.domain.Observable;
+import cc.allio.turbo.common.domain.Subscriber;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -41,7 +42,7 @@ public interface ITurboCrudService<T extends Entity> extends IService<T>, Subscr
      *
      * @return the {@link MultiObservable} instance
      */
-    default MultiObservable<T> subscribeOnInsert() {
+    default Observable<T> subscribeOnInsert() {
         return subscribeOnMultiple(
                 subscribeOn("save"),
                 subscribeOn("saveBatch"),
@@ -60,7 +61,7 @@ public interface ITurboCrudService<T extends Entity> extends IService<T>, Subscr
      *
      * @return the {@link MultiObservable} instance
      */
-    default MultiObservable<T> subscribeOnUpdate() {
+    default Observable<T> subscribeOnUpdate() {
         return subscribeOnMultiple(
                 subscribeOn("update"),
                 subscribeOn("updateBatchById"),
@@ -81,7 +82,7 @@ public interface ITurboCrudService<T extends Entity> extends IService<T>, Subscr
      *
      * @return the {@link MultiObservable} instance
      */
-    default MultiObservable<T> subscribeOnDelete() {
+    default Observable<T> subscribeOnDelete() {
         return subscribeOnMultiple(
                 subscribeOn("remove"),
                 subscribeOn("removeBatchByIds"),

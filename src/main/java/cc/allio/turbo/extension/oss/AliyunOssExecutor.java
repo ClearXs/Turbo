@@ -3,6 +3,7 @@ package cc.allio.turbo.extension.oss;
 import cc.allio.turbo.extension.oss.request.OssGetRequest;
 import cc.allio.turbo.extension.oss.request.OssPutRequest;
 import cc.allio.turbo.extension.oss.request.OssRemoveRequest;
+import cc.allio.uno.core.StringPool;
 import cc.allio.uno.core.util.StringUtils;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
@@ -34,20 +35,23 @@ public class AliyunOssExecutor extends BaseOssExecutor {
     }
 
     @Override
-    protected Path doUpload(OssPutRequest ossPutRequest, OssProperties ossProperties) throws Throwable {
+    protected Path doUpload(OssPutRequest ossPutRequest) throws Throwable {
         Path path = ossPutRequest.getPath();
         path.withStrategy();
-        String baseDir = ossProperties.getBaseDir();
+        String baseDir = ossTrait.getBaseDir();
         if (StringUtils.isNotBlank(baseDir)) {
-            path.appendFirst(Path.from(baseDir, ossProperties.getStrategy()));
+            path.appendFirst(Path.from(baseDir, ossTrait.getStrategy()));
         }
         String object = path.compose();
         ossClient.putObject(ossTrait.getBucket(), object, ossPutRequest.getInputStream());
-        return path;
+
+        String endpoint = ossTrait.getEndpoint();
+        String fullPath = endpoint + StringPool.SLASH + object;
+        return Path.from(fullPath, object, ossTrait.getStrategy());
     }
 
     @Override
-    protected OssResponse doDownload(OssGetRequest ossGetRequest, OssProperties ossProperties) throws Throwable {
+    protected OssResponse doDownload(OssGetRequest ossGetRequest) throws Throwable {
         Path path = ossGetRequest.getPath();
         String object = path.compose();
         OSSObject ossObject = ossClient.getObject(ossTrait.getBucket(), object);
@@ -62,13 +66,13 @@ public class AliyunOssExecutor extends BaseOssExecutor {
     }
 
     @Override
-    protected boolean doRemove(OssRemoveRequest ossRemoveRequest, OssProperties ossProperties) throws Throwable {
+    protected boolean doRemove(OssRemoveRequest ossRemoveRequest) throws Throwable {
         return false;
     }
 
     @Override
-    protected Path doCopyObject(String src, String dest, OssProperties ossProperties) throws Throwable {
-        return Path.from(dest, ossProperties.getStrategy());
+    protected Path doCopyObject(String src, String dest) throws Throwable {
+        return null;
     }
 
     @Override

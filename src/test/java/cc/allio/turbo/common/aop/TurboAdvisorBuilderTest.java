@@ -1,7 +1,7 @@
 package cc.allio.turbo.common.aop;
 
-import cc.allio.turbo.common.db.event.BehaviorAdvisor;
-import cc.allio.turbo.common.db.event.DomainEventBus;
+import cc.allio.turbo.common.domain.BehaviorAdvisor;
+import cc.allio.uno.core.bus.EventBusFactory;
 import cc.allio.uno.test.BaseTestCase;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ public class TurboAdvisorBuilderTest extends BaseTestCase {
 
     @Test
     void testBehaviorAdvisor() {
-        BehaviorAdvisor behaviorAdvisor = BehaviorAdvisor.BehaviorAdvisorBuilder.builder(new DomainEventBus())
+        BehaviorAdvisor behaviorAdvisor = BehaviorAdvisor.BehaviorAdvisorBuilder.builder(EventBusFactory.current())
                 .build();
         assertNotNull(behaviorAdvisor);
     }

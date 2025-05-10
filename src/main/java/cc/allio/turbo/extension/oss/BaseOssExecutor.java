@@ -16,9 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class BaseOssExecutor implements OssExecutor {
 
     @Override
-    public Path upload(OssPutRequest ossPutRequest, OssProperties ossProperties) {
+    public Path upload(OssPutRequest ossPutRequest) {
         try {
-            Path path = doUpload(ossPutRequest, ossProperties);
+            Path path = doUpload(ossPutRequest);
             if (log.isDebugEnabled()) {
                 log.debug("{} upload {}", getProvider().getValue(), ossPutRequest.getPath());
             }
@@ -30,9 +30,9 @@ public abstract class BaseOssExecutor implements OssExecutor {
     }
 
     @Override
-    public OssResponse download(OssGetRequest ossGetRequest, OssProperties ossProperties) {
+    public OssResponse download(OssGetRequest ossGetRequest) {
         try {
-            OssResponse result = doDownload(ossGetRequest, ossProperties);
+            OssResponse result = doDownload(ossGetRequest);
             if (log.isDebugEnabled()) {
                 log.debug("{} download {}", getProvider().getValue(), ossGetRequest, result.getObject());
             }
@@ -44,9 +44,9 @@ public abstract class BaseOssExecutor implements OssExecutor {
     }
 
     @Override
-    public Path copyObject(String src, String dest, OssProperties ossProperties) {
+    public Path copyObject(String src, String dest) {
         try {
-            Path path = doCopyObject(src, dest, ossProperties);
+            Path path = doCopyObject(src, dest);
             if (log.isDebugEnabled()) {
                 log.debug("{} copy object src {} to {}", getProvider().getValue(), src, dest);
             }
@@ -58,9 +58,9 @@ public abstract class BaseOssExecutor implements OssExecutor {
     }
 
     @Override
-    public boolean remove(OssRemoveRequest ossRemoveRequest, OssProperties ossProperties) {
+    public boolean remove(OssRemoveRequest ossRemoveRequest) {
         try {
-            boolean result = doRemove(ossRemoveRequest, ossProperties);
+            boolean result = doRemove(ossRemoveRequest);
             if (log.isDebugEnabled()) {
                 log.debug("{} remove {}", getProvider().getValue(), ossRemoveRequest);
             }
@@ -74,21 +74,20 @@ public abstract class BaseOssExecutor implements OssExecutor {
     /**
      * 子类实现，不用关系异常处理
      */
-    protected abstract Path doUpload(OssPutRequest ossPutRequest, OssProperties ossProperties) throws Throwable;
+    protected abstract Path doUpload(OssPutRequest ossPutRequest) throws Throwable;
 
     /**
      * 子类实现，不用关系异常处理
      */
-    protected abstract OssResponse doDownload(OssGetRequest ossGetRequest, OssProperties ossProperties) throws Throwable;
+    protected abstract OssResponse doDownload(OssGetRequest ossGetRequest) throws Throwable;
 
     /**
      * subclass implementation
      */
-    protected abstract boolean doRemove(OssRemoveRequest ossRemoveRequest, OssProperties ossProperties) throws Throwable;
+    protected abstract boolean doRemove(OssRemoveRequest ossRemoveRequest) throws Throwable;
 
     /**
      * subclass implementation
      */
-    protected abstract Path doCopyObject(String src, String dest, OssProperties ossProperties) throws Throwable;
-
+    protected abstract Path doCopyObject(String src, String dest) throws Throwable;
 }
