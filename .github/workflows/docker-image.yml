@@ -13,6 +13,7 @@ jobs:
   build-deployment:
 
     runs-on: ubuntu-latest
+    environment: BUILD_IMAGE
 
     steps:
       # 1. check
